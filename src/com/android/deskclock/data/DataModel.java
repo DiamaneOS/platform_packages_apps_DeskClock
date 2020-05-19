@@ -24,10 +24,11 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.StringRes;
-
 import android.provider.Settings;
 import android.view.View;
+
+import androidx.annotation.Keep;
+import androidx.annotation.StringRes;
 
 import com.android.deskclock.Predicate;
 import com.android.deskclock.R;
@@ -514,6 +515,7 @@ public final class DataModel {
      * @param timer the timer to be reset
      * @return the reset {@code timer}
      */
+    @Keep
     public Timer resetTimer(Timer timer) {
         enforceMainLooper();
         return mTimerModel.resetTimer(timer, false /* allowDelete */, 0 /* eventLabelId */);
