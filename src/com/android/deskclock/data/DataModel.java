@@ -47,6 +47,7 @@ import static android.media.AudioManager.FLAG_SHOW_UI;
 import static android.media.AudioManager.STREAM_ALARM;
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 import static android.provider.Settings.ACTION_SOUND_SETTINGS;
+import static android.provider.Settings.EXTRA_APP_PACKAGE;
 import static com.android.deskclock.Utils.enforceMainLooper;
 import static com.android.deskclock.Utils.enforceNotMainLooper;
 
