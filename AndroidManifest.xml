@@ -35,9 +35,6 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- READ_PHONE_STATE is required to determine when a phone call exists prior to M and on T -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
     <application
         android:name=".DeskClockApplication"
         android:allowBackup="false"
