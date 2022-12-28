@@ -213,7 +213,7 @@ public final class SettingsActivity extends CollapsingToolbarBaseActivity {
          */
         private void loadTimeZoneList() {
             final TimeZones timezones = DataModel.getDataModel().getTimeZones();
-            final ListPreference homeTimezonePref = (ListPreference) findPreference(KEY_HOME_TZ);
+            final ListPreference homeTimezonePref = findPreference(KEY_HOME_TZ);
             homeTimezonePref.setEntryValues(timezones.getTimeZoneIds());
             homeTimezonePref.setEntries(timezones.getTimeZoneNames());
             homeTimezonePref.setSummary(homeTimezonePref.getEntry());
@@ -221,19 +221,16 @@ public final class SettingsActivity extends CollapsingToolbarBaseActivity {
         }
 
         private void refresh() {
-            final ListPreference autoSilencePref =
-                    (ListPreference) findPreference(KEY_AUTO_SILENCE);
+            final ListPreference autoSilencePref = findPreference(KEY_AUTO_SILENCE);
             String delay = autoSilencePref.getValue();
             updateAutoSnoozeSummary(autoSilencePref, delay);
             autoSilencePref.setOnPreferenceChangeListener(this);
 
-            final SimpleMenuPreference clockStylePref = (SimpleMenuPreference)
-                    findPreference(KEY_CLOCK_STYLE);
+            final SimpleMenuPreference clockStylePref = findPreference(KEY_CLOCK_STYLE);
             clockStylePref.setSummary(clockStylePref.getEntry());
             clockStylePref.setOnPreferenceChangeListener(this);
 
-            final SimpleMenuPreference volumeButtonsPref = (SimpleMenuPreference)
-                    findPreference(KEY_VOLUME_BUTTONS);
+            final SimpleMenuPreference volumeButtonsPref = findPreference(KEY_VOLUME_BUTTONS);
             volumeButtonsPref.setSummary(volumeButtonsPref.getEntry());
             volumeButtonsPref.setOnPreferenceChangeListener(this);
 
@@ -245,19 +242,18 @@ public final class SettingsActivity extends CollapsingToolbarBaseActivity {
                     ((TwoStatePreference) autoHomeClockPref).isChecked();
             autoHomeClockPref.setOnPreferenceChangeListener(this);
 
-            final ListPreference homeTimezonePref = (ListPreference) findPreference(KEY_HOME_TZ);
+            final ListPreference homeTimezonePref = findPreference(KEY_HOME_TZ);
             homeTimezonePref.setEnabled(autoHomeClockEnabled);
             refreshListPreference(homeTimezonePref);
 
-            refreshListPreference((ListPreference) findPreference(KEY_ALARM_CRESCENDO));
-            refreshListPreference((ListPreference) findPreference(KEY_TIMER_CRESCENDO));
-            refreshListPreference((ListPreference) findPreference(KEY_ALARM_SNOOZE));
+            refreshListPreference(findPreference(KEY_ALARM_CRESCENDO));
+            refreshListPreference(findPreference(KEY_TIMER_CRESCENDO));
+            refreshListPreference(findPreference(KEY_ALARM_SNOOZE));
 
             final Preference dateAndTimeSetting = findPreference(KEY_DATE_TIME);
             dateAndTimeSetting.setOnPreferenceClickListener(this);
 
-            final SimpleMenuPreference weekStartPref = (SimpleMenuPreference)
-                    findPreference(KEY_WEEK_START);
+            final SimpleMenuPreference weekStartPref = findPreference(KEY_WEEK_START);
             // Set the default value programmatically
             final Weekdays.Order weekdayOrder = DataModel.getDataModel().getWeekdayOrder();
             final Integer firstDay = weekdayOrder.getCalendarDays().get(0);
