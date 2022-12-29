@@ -511,12 +511,11 @@ public final class DataModel {
 
     /**
      * @param timer the timer to be reset
-     * @return the reset {@code timer}
      */
     @Keep
-    public Timer resetTimer(Timer timer) {
+    public void resetTimer(Timer timer) {
         enforceMainLooper();
-        return mTimerModel.resetTimer(timer, false /* allowDelete */, 0 /* eventLabelId */);
+        mTimerModel.resetTimer(timer, false /* allowDelete */, 0 /* eventLabelId */);
     }
 
     /**
@@ -526,11 +525,10 @@ public final class DataModel {
      *
      * @param timer the timer to be reset
      * @param eventLabelId the label of the timer event to send; 0 if no event should be sent
-     * @return the reset {@code timer} or {@code null} if the timer was deleted
      */
-    public Timer resetOrDeleteTimer(Timer timer, @StringRes int eventLabelId) {
+    public void resetOrDeleteTimer(Timer timer, @StringRes int eventLabelId) {
         enforceMainLooper();
-        return mTimerModel.resetTimer(timer, true /* allowDelete */, eventLabelId);
+        mTimerModel.resetTimer(timer, true /* allowDelete */, eventLabelId);
     }
 
     /**
@@ -578,29 +576,6 @@ public final class DataModel {
     public void setTimerLabel(Timer timer, String label) {
         enforceMainLooper();
         mTimerModel.updateTimer(timer.setLabel(label));
-    }
-
-    /**
-     * @param timer the timer whose {@code length} to change
-     * @param length the new length of the timer in milliseconds
-     */
-    public void setTimerLength(Timer timer, long length) {
-        enforceMainLooper();
-        mTimerModel.updateTimer(timer.setLength(length));
-    }
-
-    /**
-     * @param timer the timer whose {@code remainingTime} to change
-     * @param remainingTime the new remaining time of the timer in milliseconds
-     */
-    public void setRemainingTime(Timer timer, long remainingTime) {
-        enforceMainLooper();
-
-        final Timer updated = timer.setRemainingTime(remainingTime);
-        mTimerModel.updateTimer(updated);
-        if (timer.isRunning() && timer.getRemainingTime() <= 0) {
-            mContext.startService(TimerService.createTimerExpiredIntent(mContext, updated));
-        }
     }
 
     /**
@@ -756,27 +731,24 @@ public final class DataModel {
     }
 
     /**
-     * @return the stopwatch after being started
      */
-    public Stopwatch startStopwatch() {
+    public void startStopwatch() {
         enforceMainLooper();
-        return mStopwatchModel.setStopwatch(getStopwatch().start());
+        mStopwatchModel.setStopwatch(getStopwatch().start());
     }
 
     /**
-     * @return the stopwatch after being paused
      */
-    public Stopwatch pauseStopwatch() {
+    public void pauseStopwatch() {
         enforceMainLooper();
-        return mStopwatchModel.setStopwatch(getStopwatch().pause());
+        mStopwatchModel.setStopwatch(getStopwatch().pause());
     }
 
     /**
-     * @return the stopwatch after being reset
      */
-    public Stopwatch resetStopwatch() {
+    public void resetStopwatch() {
         enforceMainLooper();
-        return mStopwatchModel.setStopwatch(getStopwatch().reset());
+        mStopwatchModel.setStopwatch(getStopwatch().reset());
     }
 
     /**
@@ -887,11 +859,10 @@ public final class DataModel {
     /**
      * @param uri the uri of an audio file to use as a ringtone
      * @param title the title of the audio content at the given {@code uri}
-     * @return the ringtone instance created for the audio file
      */
-    public CustomRingtone addCustomRingtone(Uri uri, String title) {
+    public void addCustomRingtone(Uri uri, String title) {
         enforceMainLooper();
-        return mRingtoneModel.addCustomRingtone(uri, title);
+        mRingtoneModel.addCustomRingtone(uri, title);
     }
 
     /**
