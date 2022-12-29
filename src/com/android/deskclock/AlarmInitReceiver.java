@@ -86,20 +86,17 @@ public class AlarmInitReceiver extends BroadcastReceiver {
             Controller.getController().updateShortcuts();
         }
 
-        AsyncHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // Process restored data if any exists
-                    if (!DeskClockBackupAgent.processRestoredData(context)) {
-                        // Update all the alarm instances on time change event
-                        AlarmStateManager.fixAlarmInstances(context);
-                    }
-                } finally {
-                    result.finish();
-                    wl.release();
-                    LogUtils.v("AlarmInitReceiver finished");
+        AsyncHandler.post(() -> {
+            try {
+                // Process restored data if any exists
+                if (!DeskClockBackupAgent.processRestoredData(context)) {
+                    // Update all the alarm instances on time change event
+                    AlarmStateManager.fixAlarmInstances(context);
                 }
+            } finally {
+                result.finish();
+                wl.release();
+                LogUtils.v("AlarmInitReceiver finished");
             }
         });
     }
