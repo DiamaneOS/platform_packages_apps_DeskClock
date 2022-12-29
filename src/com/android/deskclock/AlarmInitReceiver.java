@@ -25,7 +25,6 @@ import android.os.PowerManager.WakeLock;
 import com.android.deskclock.alarms.AlarmStateManager;
 import com.android.deskclock.controller.Controller;
 import com.android.deskclock.data.DataModel;
-import com.android.deskclock.NotificationUtils;
 
 public class AlarmInitReceiver extends BroadcastReceiver {
 
