@@ -162,7 +162,7 @@ public final class SettingsActivity extends CollapsingToolbarBaseActivity {
         }
 
         @Override
-        public boolean onPreferenceClick(Preference pref) {
+        public boolean onPreferenceClick(@NonNull Preference pref) {
             final Context context = getActivity();
             if (context == null) {
                 return false;

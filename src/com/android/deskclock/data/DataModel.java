@@ -441,15 +441,6 @@ public final class DataModel {
     }
 
     /**
-     * @return the timer that last expired and is still expired now; {@code null} if no timers are
-     *      expired
-     */
-    public Timer getMostRecentExpiredTimer() {
-        enforceMainLooper();
-        return mTimerModel.getMostRecentExpiredTimer();
-    }
-
-    /**
      * @param length the length of the timer in milliseconds
      * @param label describes the purpose of the timer
      * @param deleteAfterUse {@code true} indicates the timer should be deleted when it is reset
@@ -756,7 +747,7 @@ public final class DataModel {
      */
     public List<Lap> getLaps() {
         enforceMainLooper();
-        return (mStopwatchModel != null) ? mStopwatchModel.getLaps() : new ArrayList<Lap>();
+        return (mStopwatchModel != null) ? mStopwatchModel.getLaps() : new ArrayList<>();
     }
 
     /**
