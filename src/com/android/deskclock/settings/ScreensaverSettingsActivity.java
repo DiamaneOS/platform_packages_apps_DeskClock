@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2009 The Android Open Source Project
+ * Copyright (C) 2023-2025 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +23,8 @@ import android.view.MenuItem;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreferenceCompat;
 import androidx.preference.SeekBarPreference;
+import androidx.preference.SwitchPreferenceCompat;
 
 import com.android.deskclock.R;
 import com.android.deskclock.data.DataModel;
@@ -58,7 +59,7 @@ public final class ScreensaverSettingsActivity extends CollapsingToolbarBaseActi
     }
 
     @Override
-    public boolean onOptionsItemSelected (MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
@@ -106,7 +107,7 @@ public final class ScreensaverSettingsActivity extends CollapsingToolbarBaseActi
                 case KEY_NIGHT_MODE_BRIGHTNESS:
                     final SeekBarPreference clockBrightness = (SeekBarPreference) pref;
                     final String progress = getResources().getString(
-                            R.string.clock_brightness_percentage, String.valueOf(newValue) );
+                            R.string.clock_brightness_percentage, String.valueOf(newValue));
                     clockBrightness.setSummary(progress);
                     break;
             }
