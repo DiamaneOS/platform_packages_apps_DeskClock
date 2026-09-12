@@ -479,7 +479,8 @@ public final class DataModel {
             if (service != null) {
                 expireTimer(service, started);
             } else {
-                mContext.startService(TimerService.createTimerExpiredIntent(mContext, started));
+                mContext.startForegroundService(
+                        TimerService.createTimerExpiredIntent(mContext, started));
             }
         }
     }
