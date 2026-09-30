@@ -39,7 +39,6 @@ import com.android.deskclock.DeskClock;
 import com.android.deskclock.LogUtils;
 import com.android.deskclock.NotificationUtils;
 import com.android.deskclock.R;
-import com.android.deskclock.ThemeUtils;
 import com.android.deskclock.provider.Alarm;
 import com.android.deskclock.provider.AlarmInstance;
 
@@ -99,7 +98,6 @@ final class AlarmNotifications {
                                 R.string.alarm_alert_predismiss_title))
                         .setContentText(AlarmUtils.getAlarmText(
                                 context, instance, true /* includeLabel */))
-                        .setColor(ThemeUtils.resolveColor(context, R.attr.colorSurface))
                         .setSmallIcon(R.drawable.stat_notify_alarm)
                         .setAutoCancel(false)
                         .setSortKey(createSortKey(instance))
@@ -208,7 +206,6 @@ final class AlarmNotifications {
                         ALARM_UPCOMING_NOTIFICATION_CHANNEL_ID)
                     .setShowWhen(false)
                     .setContentIntent(firstUpcoming.contentIntent)
-                    .setColor(ThemeUtils.resolveColor(context, R.attr.colorSurface))
                     .setSmallIcon(R.drawable.stat_notify_alarm)
                     .setGroup(UPCOMING_GROUP_KEY)
                     .setGroupSummary(true)
@@ -238,7 +235,6 @@ final class AlarmNotifications {
             summary = new NotificationCompat.Builder(context, ALARM_MISSED_NOTIFICATION_CHANNEL_ID)
                     .setShowWhen(false)
                     .setContentIntent(firstMissed.contentIntent)
-                    .setColor(ThemeUtils.resolveColor(context, R.attr.colorSurface))
                     .setSmallIcon(R.drawable.stat_notify_alarm)
                     .setGroup(MISSED_GROUP_KEY)
                     .setGroupSummary(true)
@@ -261,7 +257,6 @@ final class AlarmNotifications {
                         .setContentTitle(instance.getLabelOrDefault(context))
                         .setContentText(context.getString(R.string.alarm_alert_snooze_until,
                                 AlarmUtils.getFormattedTime(context, instance.getAlarmTime())))
-                        .setColor(ThemeUtils.resolveColor(context, R.attr.colorSurface))
                         .setSmallIcon(R.drawable.stat_notify_alarm)
                         .setAutoCancel(false)
                         .setSortKey(createSortKey(instance))
@@ -304,7 +299,6 @@ final class AlarmNotifications {
                         .setContentTitle(context.getString(R.string.alarm_missed_title))
                         .setContentText(instance.mLabel.isEmpty() ? alarmTime :
                                 context.getString(R.string.alarm_missed_text, alarmTime, label))
-                        .setColor(ThemeUtils.resolveColor(context, R.attr.colorSurface))
                         .setSortKey(createSortKey(instance))
                         .setSmallIcon(R.drawable.stat_notify_alarm)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -345,7 +339,6 @@ final class AlarmNotifications {
                         .setContentTitle(instance.getLabelOrDefault(service))
                         .setContentText(AlarmUtils.getFormattedTime(
                                 service, instance.getAlarmTime()))
-                        .setColor(ThemeUtils.resolveColor(service, R.attr.colorSurface))
                         .setSmallIcon(R.drawable.stat_notify_alarm)
                         .setOngoing(true)
                         .setAutoCancel(false)
