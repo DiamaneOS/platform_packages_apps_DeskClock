@@ -37,7 +37,6 @@ import androidx.core.app.NotificationCompat.MetricStyle;
 import com.android.deskclock.DeskClock;
 import com.android.deskclock.NotificationUtils;
 import com.android.deskclock.R;
-import com.android.deskclock.ThemeUtils;
 import com.android.deskclock.Utils;
 import com.android.deskclock.events.Events;
 import com.android.deskclock.timer.ExpiredTimersActivity;
@@ -162,7 +161,6 @@ class TimerNotificationBuilder {
                         .setSmallIcon(R.drawable.stat_notify_timer)
                         .setSortKey(nm.getTimerNotificationSortKey())
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                        .setColor(ThemeUtils.resolveColor(context, R.attr.colorSurface))
                         .setGroup(nm.getTimerNotificationGroupKey())
                         .setRequestPromotedOngoing(true)
                         .setStyle(notificationStyle);
@@ -241,8 +239,7 @@ class TimerNotificationBuilder {
                         .setStyle(notificationStyle)
                         .setDefaults(Notification.DEFAULT_LIGHTS)
                         .setSmallIcon(R.drawable.stat_notify_timer)
-                        .setFullScreenIntent(pendingFullScreen, true)
-                        .setColor(ThemeUtils.resolveColor(context, R.attr.colorSurface));
+                        .setFullScreenIntent(pendingFullScreen, true);
 
         for (Action action : actions) {
             notification.addAction(action);
@@ -312,7 +309,6 @@ class TimerNotificationBuilder {
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setSortKey(nm.getTimerNotificationMissedSortKey())
                         .addAction(action)
-                        .setColor(ThemeUtils.resolveColor(context, R.attr.colorSurface))
                         .setGroup(nm.getTimerNotificationGroupKey());
 
         NotificationUtils.createChannel(context, TIMER_MODEL_NOTIFICATION_CHANNEL_ID);
