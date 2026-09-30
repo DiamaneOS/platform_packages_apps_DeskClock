@@ -38,6 +38,7 @@
 
     <application
         android:name=".DeskClockApplication"
+        android:enableOnBackInvokedCallback="true"
         android:allowBackup="false"
         android:backupAgent="DeskClockBackupAgent"
         android:fullBackupContent="@xml/backup_scheme"
