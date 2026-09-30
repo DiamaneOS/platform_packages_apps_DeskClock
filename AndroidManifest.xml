@@ -38,6 +38,7 @@
         android:allowBackup="false"
         android:backupAgent="DeskClockBackupAgent"
         android:fullBackupContent="@xml/backup_scheme"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupOnly="true"
         android:appCategory="productivity"
         android:icon="@mipmap/ic_launcher"
