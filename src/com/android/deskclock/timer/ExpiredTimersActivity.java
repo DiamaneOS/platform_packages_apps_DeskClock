@@ -14,7 +14,6 @@
 
 package com.android.deskclock.timer;
 
-import android.app.KeyguardManager;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -87,10 +86,10 @@ public class ExpiredTimersActivity extends BaseActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                 | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
 
+        // Show over the lock screen without asking to unlock, as a ringing alarm does: stopping
+        // the timer, or Back, returns to the lock screen.
         setTurnScreenOn(true);
         setShowWhenLocked(true);
-        KeyguardManager kgm = getSystemService(KeyguardManager.class);
-        kgm.requestDismissKeyguard(this, null);
 
         // Honor rotation on tablets; fix the orientation on phones.
         if (!getResources().getBoolean(R.bool.rotateAlarmAlert)) {
