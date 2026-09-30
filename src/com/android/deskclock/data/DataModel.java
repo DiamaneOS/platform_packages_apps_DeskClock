@@ -294,6 +294,15 @@ public final class DataModel {
     }
 
     /**
+     * Checks again the device settings that can silence alarms, for example after the user answered
+     * the notification permission request.
+     */
+    public void updateSilentState() {
+        enforceMainLooper();
+        mSilentSettingsModel.updateSilentState();
+    }
+
+    /**
      * @return {@code true} when the application is open in the foreground; {@code false} otherwise
      */
     public boolean isApplicationInForeground() {
