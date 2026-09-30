@@ -75,7 +75,7 @@ public final class StopwatchCircleView extends View {
 
         mCompletedColor = ThemeUtils.resolveColor(context, R.attr.colorPrimary);
         mCircleColor = ThemeUtils.resolveColor(context, R.attr.colorSurfaceVariant);
-        mMarkerColor = Color.WHITE;
+        mMarkerColor = ThemeUtils.resolveColor(context, R.attr.colorOnSurface);
 
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.STROKE);

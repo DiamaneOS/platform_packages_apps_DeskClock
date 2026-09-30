@@ -20,6 +20,7 @@ import static android.view.View.GONE;
 import static android.view.View.OnClickListener;
 import static android.view.View.VISIBLE;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,11 +29,10 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
-
 import com.android.deskclock.AnimatorUtils;
 import com.android.deskclock.ItemAdapter;
 import com.android.deskclock.R;
+import com.android.deskclock.ThemeUtils;
 import com.android.deskclock.Utils;
 import com.google.android.material.button.MaterialButton;
 
@@ -84,8 +84,9 @@ final class RingtoneViewHolder extends ItemAdapter.ItemViewHolder<RingtoneHolder
 
         mSelectedView.setVisibility(itemHolder.isSelected() ? VISIBLE : GONE);
 
-        final int bgColorId = itemHolder.isSelected() ? R.color.white_08p : R.color.transparent;
-        itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), bgColorId));
+        itemView.setBackgroundColor(itemHolder.isSelected()
+                ? ThemeUtils.resolveColor(itemView.getContext(), R.attr.colorSecondaryContainer)
+                : Color.TRANSPARENT);
 
         if (itemViewType == VIEW_TYPE_CUSTOM_SOUND) {
             mMenuView.setVisibility(VISIBLE);
