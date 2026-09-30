@@ -8,37 +8,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@android:id/background"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="top|center_horizontal"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:background="@drawable/widget_background"
     android:backgroundTint="?appWidgetBackgroundTint"
     android:padding="@dimen/widget_padding"
-    android:paddingTop="@dimen/widget_padding"
-    android:paddingBottom="@dimen/widget_padding"
     android:theme="@style/Theme.DeskClock.DigitalWidgetTransparentDarkBg">
 
+    <!-- The picker shows this at the widget's size, one cell high. The time takes the
+         height the date leaves, up to 48sp, as the placed widget fits its time, so the date
+         is not cut. -->
     <TextClock
         android:id="@+id/clock"
         android:textAppearance="?appWidgetTextAppearancePrimary"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|top"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:autoSizeMaxTextSize="48sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
         android:ellipsize="none"
         android:format12Hour="@string/lock_screen_12_hour_format"
         android:format24Hour="@string/lock_screen_24_hour_format"
+        android:gravity="center_horizontal|bottom"
         android:includeFontPadding="false"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textAlignment="center"
-        android:textSize="48sp"
         tools:text="0123"
         tools:textColor="@android:color/white"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|top"
-        android:layout_marginTop="-10dp">
+        android:layout_marginTop="-8dp">
 
         <TextClock
             android:id="@+id/date"
