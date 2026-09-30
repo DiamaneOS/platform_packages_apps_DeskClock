@@ -298,7 +298,7 @@
         <activity
             android:name="com.android.alarmclock.DigitalAppWidgetConfigurationActivity"
             android:theme="@style/Theme.DeskClock.DigitalWidgetConfigurationTheme"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
