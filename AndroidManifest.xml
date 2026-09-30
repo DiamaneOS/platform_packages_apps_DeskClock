@@ -38,6 +38,7 @@
         android:allowBackup="false"
         android:backupAgent="DeskClockBackupAgent"
         android:fullBackupContent="@xml/backup_scheme"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupOnly="true"
         android:appCategory="productivity"
         android:icon="@mipmap/ic_launcher"
@@ -160,7 +161,7 @@
 
         <receiver
             android:name=".AlarmInitReceiver"
-            android:exported="true"
+            android:exported="false"
             android:directBootAware="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -259,7 +260,7 @@
 
         <receiver
             android:name="com.android.alarmclock.AnalogAppWidgetProvider"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/analog_gadget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -275,7 +276,7 @@
 
         <receiver
             android:name="com.android.alarmclock.DigitalAppWidgetProvider"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/digital_gadget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -283,8 +284,6 @@
                 <action android:name="android.intent.action.LOCALE_CHANGED" />
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
-                <action android:name="${applicationId}.ON_DAY_CHANGE" />
-                <action android:name="${applicationId}.WORLD_CITIES_CHANGED" />
                 <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
             </intent-filter>
             <meta-data
@@ -299,7 +298,7 @@
         <activity
             android:name="com.android.alarmclock.DigitalAppWidgetConfigurationActivity"
             android:theme="@style/Theme.DeskClock.DigitalWidgetConfigurationTheme"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
