@@ -56,6 +56,8 @@ final class AddCustomRingtoneViewHolder extends ItemViewHolder<AddCustomRingtone
                         )
                 )
         );
+        imageView.setImageTintList(ColorStateList.valueOf(
+                ThemeUtils.resolveColor(imageView.getContext(), R.attr.colorOnPrimary)));
     }
 
     @Override

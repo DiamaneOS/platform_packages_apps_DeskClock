@@ -19,25 +19,25 @@
 
     <style name="no_alarms">
         <item name="android:textSize">@dimen/no_alarm_font_size</item>
-        <item name="android:textColor">@color/white_63p</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
 
     <style name="display_time">
         <item name="android:textSize">56sp</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:fontFeatureSettings">tnum</item>
     </style>
 
     <style name="world_clock_time">
         <item name="android:textSize">48sp</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="body">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
@@ -52,7 +52,7 @@
     </style>
 
     <style name="PrimaryLabelTextParentAppearance">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textSize">@dimen/label_text_size</item>
     </style>
 
@@ -302,7 +302,7 @@
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
-    <style name="Theme.DeskClock.DigitalWidgetConfigurationTheme" parent="Theme.Material3Expressive.DynamicColors.Dark.NoActionBar">
+    <style name="Theme.DeskClock.DigitalWidgetConfigurationTheme" parent="Theme.Material3Expressive.DynamicColors.DayNight.NoActionBar">
         <item name="appWidgetConfigBackground">?attr/colorSurface</item>
         <item name="appWidgetConfigTitle">?attr/colorOnSurface</item>
         <item name="appWidgetConfigSubtitle">?attr/colorOnSurfaceVariant</item>

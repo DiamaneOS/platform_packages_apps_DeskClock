@@ -51,6 +51,7 @@ import android.widget.TextClock;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
@@ -150,6 +151,9 @@ public class AlarmActivity extends BaseActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // A ringing alarm or timer is always shown dark, whatever the app's theme, so it never
+        // lights up a dark room.
+        getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
 
         setVolumeControlStream(AudioManager.STREAM_ALARM);

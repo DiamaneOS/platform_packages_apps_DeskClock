@@ -42,7 +42,7 @@
         android:gravity="center_horizontal"
         android:paddingBottom="@dimen/fab_height"
         android:text="@string/no_alarms"
-        android:textColor="@color/no_alarms"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:visibility="gone" />
 
 </FrameLayout>
