@@ -29,6 +29,9 @@ import com.android.deskclock.LogUtils;
 import com.android.deskclock.data.Weekdays;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Helper class for opening the database from multiple providers.  Also provides
@@ -54,23 +57,44 @@ class ClockDatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Removed selected_cities table.
+     *
+     * <p>The database stays at this version, GrapheneOS's Clock's, so that Clock can still open it
+     * if it ships again. The increasing volume column this app adds is created with the tables, or
+     * added by {@link #onOpen} where it is missing. GrapheneOS's Clock names every column it reads
+     * and its inserts leave that column to its default, so the column does not affect it.
+     *
+     * <p>Earlier builds of this app went on to version 12: 10 added the increasing volume column,
+     * 11 a profile column and 12 removed that again. {@link #onDowngrade} takes those back to 8.
      */
     private static final int VERSION_8 = 8;
 
-    /**
-     * Added increasing alarm volume mode
-     */
-    private static final int VERSION_9 = 10;
+    /** The columns of the alarms table at version 8. */
+    private static final String[] ALARMS_COLUMNS_V8 = {
+            ClockContract.AlarmsColumns._ID,
+            ClockContract.AlarmsColumns.HOUR,
+            ClockContract.AlarmsColumns.MINUTES,
+            ClockContract.AlarmsColumns.DAYS_OF_WEEK,
+            ClockContract.AlarmsColumns.ENABLED,
+            ClockContract.AlarmsColumns.VIBRATE,
+            ClockContract.AlarmsColumns.LABEL,
+            ClockContract.AlarmsColumns.RINGTONE,
+            ClockContract.AlarmsColumns.DELETE_AFTER_USE,
+    };
 
-    /**
-     * Added change profile
-     */
-    private static final int VERSION_10 = 11;
-
-    /**
-     * Removed change profile
-     */
-    private static final int VERSION_11 = 12;
+    /** The columns of the instances table at version 8. */
+    private static final String[] INSTANCES_COLUMNS_V8 = {
+            ClockContract.InstancesColumns._ID,
+            ClockContract.InstancesColumns.YEAR,
+            ClockContract.InstancesColumns.MONTH,
+            ClockContract.InstancesColumns.DAY,
+            ClockContract.InstancesColumns.HOUR,
+            ClockContract.InstancesColumns.MINUTES,
+            ClockContract.InstancesColumns.VIBRATE,
+            ClockContract.InstancesColumns.LABEL,
+            ClockContract.InstancesColumns.RINGTONE,
+            ClockContract.InstancesColumns.ALARM_STATE,
+            ClockContract.InstancesColumns.ALARM_ID,
+    };
 
     // This creates a default alarm at 8:30 for every Mon,Tue,Wed,Thu,Fri
     private static final String DEFAULT_ALARM_1 = "(8, 30, 31, 0, 1, '', NULL, 0, 0);";
@@ -120,7 +144,7 @@ class ClockDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public ClockDatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, VERSION_11);
+        super(context, DATABASE_NAME, null, VERSION_8);
     }
 
     @Override
@@ -208,68 +232,94 @@ class ClockDatabaseHelper extends SQLiteOpenHelper {
 
             LogUtils.i("Dropping old alarm table");
             db.execSQL("DROP TABLE IF EXISTS " + OLD_ALARMS_TABLE_NAME + ";");
+        }
+    }
+
+    /**
+     * Takes a database from an earlier build of this app, at version 10 to 12, back to version 8.
+     * Its tables have every column of version 8, and their other columns have defaults, so the
+     * alarms are kept and only the version changes. A database that does not fit is recreated
+     * with the default alarms, since one that cannot be opened schedules no alarms at all.
+     */
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        LogUtils.i("Downgrading alarms database from version %d to %d", oldVersion, newVersion);
+        if (fitsVersion8(db, ALARMS_TABLE_NAME, ALARMS_COLUMNS_V8)
+                && fitsVersion8(db, INSTANCES_TABLE_NAME, INSTANCES_COLUMNS_V8)) {
             return;
         }
 
-        if (oldVersion < VERSION_9) {
-            db.execSQL("ALTER TABLE " + ALARMS_TABLE_NAME
+        LogUtils.w("Alarms database version %d does not fit version %d: recreating it",
+                oldVersion, newVersion);
+        db.execSQL("DROP TABLE IF EXISTS " + INSTANCES_TABLE_NAME + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + ALARMS_TABLE_NAME + ";");
+        onCreate(db);
+    }
+
+    /**
+     * Adds the increasing volume column where the tables lack it, as when GrapheneOS's Clock
+     * created them.
+     */
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        if (db.isReadOnly()) {
+            return;
+        }
+        addIncreasingVolumeIfMissing(db, ALARMS_TABLE_NAME);
+        addIncreasingVolumeIfMissing(db, INSTANCES_TABLE_NAME);
+    }
+
+    private static void addIncreasingVolumeIfMissing(SQLiteDatabase db, String table) {
+        final Map<String, Boolean> columns = readColumns(db, table);
+        if (!columns.isEmpty()
+                && !columns.containsKey(ClockContract.AlarmsColumns.INCREASING_VOLUME)) {
+            LogUtils.i("Adding the increasing volume column to %s", table);
+            db.execSQL("ALTER TABLE " + table
                     + " ADD COLUMN " + ClockContract.AlarmsColumns.INCREASING_VOLUME
                     + " INTEGER NOT NULL DEFAULT 0;");
-            db.execSQL("ALTER TABLE " + INSTANCES_TABLE_NAME
-                    + " ADD COLUMN " + ClockContract.InstancesColumns.INCREASING_VOLUME
-                    + " INTEGER NOT NULL DEFAULT 0;");
         }
+    }
 
-        if (oldVersion < VERSION_10) {
-            db.execSQL("ALTER TABLE " + ALARMS_TABLE_NAME
-                    + " ADD COLUMN profile"
-                    + " TEXT NOT NULL DEFAULT '';");
-            db.execSQL("ALTER TABLE " + INSTANCES_TABLE_NAME
-                    + " ADD COLUMN profile"
-                    + " TEXT NOT NULL DEFAULT '';");
-        }
-
-        if (oldVersion < VERSION_11) {
-            LogUtils.i("Copying alarms to temporary table");
-            final String TEMP_ALARMS_TABLE_NAME = ALARMS_TABLE_NAME + "_temp";
-            final String TEMP_INSTANCES_TABLE_NAME = INSTANCES_TABLE_NAME + "_temp";
-            createAlarmsTable(db, TEMP_ALARMS_TABLE_NAME);
-            createInstanceTable(db, TEMP_INSTANCES_TABLE_NAME);
-            final String[] OLD_TABLE_COLUMNS = {
-                    ClockContract.AlarmsColumns._ID,
-                    ClockContract.AlarmsColumns.HOUR,
-                    ClockContract.AlarmsColumns.MINUTES,
-                    ClockContract.AlarmsColumns.DAYS_OF_WEEK,
-                    ClockContract.AlarmsColumns.ENABLED,
-                    ClockContract.AlarmsColumns.VIBRATE,
-                    ClockContract.AlarmsColumns.LABEL,
-                    ClockContract.AlarmsColumns.RINGTONE,
-                    ClockContract.AlarmsColumns.DELETE_AFTER_USE,
-                    ClockContract.AlarmsColumns.INCREASING_VOLUME
-            };
-
-            try (Cursor cursor = db.query(ALARMS_TABLE_NAME, OLD_TABLE_COLUMNS,
-                    null, null, null, null, null)) {
-                final Calendar currentTime = Calendar.getInstance();
-                while (cursor != null && cursor.moveToNext()) {
-                    final Alarm alarm = new Alarm(cursor);
-                    // Save new version of alarm and create alarm instance for it
-                    db.insert(TEMP_ALARMS_TABLE_NAME, null,
-                            Alarm.createContentValues(alarm));
-                    if (alarm.enabled) {
-                        AlarmInstance newInstance = alarm.createInstanceAfter(currentTime);
-                        db.insert(TEMP_INSTANCES_TABLE_NAME, null,
-                                AlarmInstance.createContentValues(newInstance));
-                    }
-                }
+    /**
+     * Whether {@code table} has all of {@code columnsV8}, and every other column has a default or
+     * accepts null, so that both this app and GrapheneOS's Clock can insert rows. The increasing
+     * volume column may be missing: {@link #onOpen} adds it.
+     */
+    private static boolean fitsVersion8(SQLiteDatabase db, String table, String[] columnsV8) {
+        final Map<String, Boolean> columns = readColumns(db, table);
+        for (String column : columnsV8) {
+            if (columns.remove(column) == null) {
+                return false;
             }
-            db.execSQL("DROP TABLE IF EXISTS " + ALARMS_TABLE_NAME + ";");
-            db.execSQL("DROP TABLE IF EXISTS " + INSTANCES_TABLE_NAME + ";");
-            db.execSQL("ALTER TABLE " + TEMP_ALARMS_TABLE_NAME
-                    + " RENAME TO " + ALARMS_TABLE_NAME + ";");
-            db.execSQL("ALTER TABLE " + TEMP_INSTANCES_TABLE_NAME
-                    + " RENAME TO " + INSTANCES_TABLE_NAME + ";");
         }
+        columns.remove(ClockContract.AlarmsColumns.INCREASING_VOLUME);
+        for (boolean optional : columns.values()) {
+            if (!optional) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns the columns of {@code table}, none if there is no such table, each mapped to whether
+     * an insert may leave it out: it has a default, accepts null or is the row ID.
+     */
+    private static Map<String, Boolean> readColumns(SQLiteDatabase db, String table) {
+        final Map<String, Boolean> columns = new HashMap<>();
+        try (Cursor cursor = db.rawQuery("PRAGMA table_info(" + table + ")", null)) {
+            final int name = cursor.getColumnIndexOrThrow("name");
+            final int notNull = cursor.getColumnIndexOrThrow("notnull");
+            final int defaultValue = cursor.getColumnIndexOrThrow("dflt_value");
+            final int primaryKey = cursor.getColumnIndexOrThrow("pk");
+            while (cursor.moveToNext()) {
+                columns.put(cursor.getString(name).toLowerCase(Locale.ROOT),
+                        cursor.getInt(notNull) == 0 || !cursor.isNull(defaultValue)
+                                || cursor.getInt(primaryKey) != 0);
+            }
+        }
+        return columns;
     }
 
     long fixAlarmInsert(ContentValues values) {
