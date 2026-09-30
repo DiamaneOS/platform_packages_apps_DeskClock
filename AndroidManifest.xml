@@ -260,7 +260,7 @@
 
         <receiver
             android:name="com.android.alarmclock.AnalogAppWidgetProvider"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/analog_gadget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -276,7 +276,7 @@
 
         <receiver
             android:name="com.android.alarmclock.DigitalAppWidgetProvider"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/digital_gadget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
