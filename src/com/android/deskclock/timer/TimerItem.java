@@ -132,19 +132,27 @@ public class TimerItem extends ConstraintLayout {
                     mResetButton.setContentDescription(null);
                     mAddButton.setVisibility(View.INVISIBLE);
                     mPlayPauseButton.setIconResource(R.drawable.ic_pause_play);
+                    mPlayPauseButton.setContentDescription(
+                            context.getString(R.string.timer_start));
                     break;
                 case PAUSED: {
                     mPlayPauseButton.setIconResource(R.drawable.ic_pause_play);
+                    mPlayPauseButton.setContentDescription(
+                            context.getString(R.string.timer_start));
                     break;
                 }
                 case RUNNING: {
                     mPlayPauseButton.setIconResource(R.drawable.ic_play_pause);
+                    mPlayPauseButton.setContentDescription(
+                            context.getString(R.string.timer_pause));
                     break;
                 }
                 case EXPIRED:
                 case MISSED: {
                     mResetButton.setVisibility(View.GONE);
                     mPlayPauseButton.setIconResource(R.drawable.ic_stop_play);
+                    mPlayPauseButton.setContentDescription(
+                            context.getString(R.string.timer_stop));
                     break;
                 }
             }
