@@ -17,8 +17,6 @@
 
 package com.android.deskclock;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 import static android.text.format.DateUtils.SECOND_IN_MILLIS;
 import static com.android.deskclock.AnimatorUtils.getScaleAnimator;
 
@@ -27,10 +25,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -61,9 +57,6 @@ import com.android.deskclock.widget.toast.SnackbarManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.snackbar.Snackbar;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The main activity of the application which displays 4 different tabs contains alarms, world
@@ -120,17 +113,7 @@ public class DeskClock extends BaseActivity
     /** {@code true} when a settings change necessitates recreating this activity. */
     private boolean mRecreateActivity;
 
-    private static final String PERMISSION_POWER_OFF_ALARM =
-            "org.codeaurora.permission.POWER_OFF_ALARM";
-
-    private static final int CODE_FOR_ALARM_PERMISSION = 1;
-
-    private static final int INVALID_RES = -1;
-
-    private static final int[] PERMISSION_ERROR_MESSAGE_RES_IDS = {
-            0,
-            R.string.dialog_permissions_post_notifications,
-    };
+    private static final int CODE_FOR_NOTIFICATION_PERMISSION = 1;
 
     @Override
     public void onNewIntent(Intent newIntent) {
@@ -146,6 +129,10 @@ public class DeskClock extends BaseActivity
 
         setContentView(R.layout.desk_clock);
         mSnackbarAnchor = findViewById(R.id.content);
+
+        if (savedInstanceState == null) {
+            checkPermissions();
+        }
 
         // Configure the toolbar.
         final Toolbar toolbar = findViewById(R.id.toolbar);
@@ -416,118 +403,26 @@ public class DeskClock extends BaseActivity
         }
     }
 
+    /**
+     * Asks for the notification permission when the app is opened without it. Alarms and timers
+     * need it to show when they go off. If it stays denied, the alarms tab shows its blocked
+     * notifications banner, as it does for notifications turned off in Settings.
+     */
     private void checkPermissions() {
-        final List<String> missingPermissions = new ArrayList<>();
-        if (!hasPowerOffPermission()) {
-            missingPermissions.add(PERMISSION_POWER_OFF_ALARM);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] {Manifest.permission.POST_NOTIFICATIONS},
+                    CODE_FOR_NOTIFICATION_PERMISSION);
         }
-        if (!hasNotificationPermission()) {
-            if (Build.VERSION.SDK_INT >= 33) {
-                missingPermissions.add(Manifest.permission.POST_NOTIFICATIONS);
-            }
-        }
-
-        if (!missingPermissions.isEmpty()) {
-            final String[] requestArray = missingPermissions.toArray(new String[0]);
-            requestPermissions(requestArray, CODE_FOR_ALARM_PERMISSION);
-        }
-    }
-
-    private boolean hasPermission(String permission) {
-        return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private boolean hasPowerOffPermission() {
-        return hasPermission(PERMISSION_POWER_OFF_ALARM);
-    }
-
-    private boolean hasNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= 33) {
-            return hasPermission(Manifest.permission.POST_NOTIFICATIONS);
-        }
-        return true;
-    }
-
-    private boolean hasEssentialPermissions() {
-        return hasNotificationPermission();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == CODE_FOR_ALARM_PERMISSION) {
-            if (hasEssentialPermissions()) {
-                LogUtils.i("Essential permissions granted!");
-                if (hasPermission(PERMISSION_POWER_OFF_ALARM)) {
-                    LogUtils.i("Power off alarm permission is granted.");
-                } else {
-                    showRationale(PERMISSION_POWER_OFF_ALARM,
-                            R.string.dialog_permissions_power_off_alarm, INVALID_RES, false);
-                }
-            } else {
-                essentialPermissionsDenied();
-            }
-        }
-    }
-
-    private void showRationale(String permission, @StringRes int messageRes,
-                               @StringRes int errorRes, boolean finishWhenDenied) {
-        if (shouldShowRequestPermissionRationale(permission)) {
-            showPermissionRationale(messageRes, this::checkPermissions, finishWhenDenied);
-        } else if (errorRes != INVALID_RES){
-            showPermissionError(errorRes, finishWhenDenied);
-        }
-    }
-
-    private void essentialPermissionsDenied() {
-        if ((!shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) &&
-                !hasNotificationPermission())) {
-            showPermissionError(R.string.dialog_permissions_no_permission, true);
-        } else {
-            // Explain the user why the denied permission is needed
-            int error = 0;
-
-            if (!hasNotificationPermission()) {
-                error |= 1;
-            }
-
-            showPermissionRationale(PERMISSION_ERROR_MESSAGE_RES_IDS[error],
-                    this::checkPermissions, true);
-        }
-    }
-
-    private void showPermissionRationale(@StringRes int messageRes, Runnable requestAgain,
-                                         Boolean finishWhenDenied) {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.dialog_permissions_title)
-                .setMessage(messageRes)
-                .setPositiveButton(R.string.dialog_permissions_ask,
-                        (dialog, position) -> {
-                            dialog.dismiss();
-                            requestAgain.run();
-                        })
-                .setNegativeButton(R.string.dialog_permissions_dismiss, (dialog, position) ->
-                        maybeFinish(finishWhenDenied))
-                .show();
-    }
-
-    private void showPermissionError(@StringRes int messageRes, boolean finishWhenDenied) {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.dialog_permissions_title)
-                .setMessage(messageRes)
-                .setPositiveButton(R.string.dialog_permissions_settings, (dialog, position) ->
-                        startActivity(new Intent(ACTION_APPLICATION_DETAILS_SETTINGS)
-                                .setData(Uri.fromParts("package", getPackageName(), null))
-                                .addFlags(FLAG_ACTIVITY_NEW_TASK)))
-                .setNegativeButton(R.string.dialog_permissions_dismiss, (dialog, position) ->
-                        maybeFinish(finishWhenDenied))
-                .setOnDismissListener(dialog -> maybeFinish(finishWhenDenied))
-                .show();
-    }
-
-    private void maybeFinish(boolean finish) {
-        if (finish) {
-            finish();
+            @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CODE_FOR_NOTIFICATION_PERMISSION) {
+            DataModel.getDataModel().updateSilentState();
         }
     }
 
