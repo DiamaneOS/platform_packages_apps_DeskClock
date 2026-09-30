@@ -19,8 +19,9 @@ android_app {
     ],
     product_specific: true,
     min_sdk_version: "31",
-    target_sdk_version: "34",
+    target_sdk_version: "37",
     static_libs: [
+        "androidx.activity_activity",
         "androidx.annotation_annotation",
         "androidx.collection_collection",
         "androidx.arch.core_core-common",
