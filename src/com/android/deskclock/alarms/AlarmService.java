@@ -21,6 +21,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.os.Binder;
 import android.os.IBinder;
 
@@ -53,6 +54,8 @@ public class AlarmService extends Service {
     /** Whether the service is currently bound to AlarmActivity */
     private boolean mIsBound = false;
 
+    /** Marks the ringing alarm missed when a phone call starts. */
+    private final CallWatcher mCallWatcher = new CallWatcher();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -94,6 +97,7 @@ public class AlarmService extends Service {
 
         mCurrentAlarm = instance;
         AlarmNotifications.showAlarmNotification(this, mCurrentAlarm);
+        mCallWatcher.start();
         AlarmKlaxon.start(this, mCurrentAlarm);
         sendBroadcast(new Intent(ALARM_ALERT_ACTION));
     }
@@ -108,6 +112,7 @@ public class AlarmService extends Service {
         LogUtils.v("AlarmService.stop with instance: %s", instanceId);
 
         AlarmKlaxon.stop(this);
+        mCallWatcher.stop();
         sendBroadcast(new Intent(ALARM_DONE_ACTION));
 
         stopForeground(true /* removeNotification */);
@@ -174,5 +179,52 @@ public class AlarmService extends Service {
         if (mCurrentAlarm != null) {
             stopCurrentAlarm();
         }
+    }
+
+    /**
+     * Marks the ringing alarm missed when a phone call starts ringing or is answered, as
+     * GrapheneOS's Clock did through the call state. Reading the call state now needs the phone
+     * permission; the audio mode says the same without one. Only the modes the system's call
+     * handling sets count, so an app that merely opens a voice channel does not stop the alarm.
+     */
+    private final class CallWatcher implements AudioManager.OnModeChangedListener {
+        private AudioManager mAudioManager;
+        private int mModeAtStart;
+        private boolean mWatching;
+
+        void start() {
+            if (mWatching) {
+                return;
+            }
+            mAudioManager = getSystemService(AudioManager.class);
+            mModeAtStart = mAudioManager.getMode();
+            mAudioManager.addOnModeChangedListener(getMainExecutor(), this);
+            mWatching = true;
+        }
+
+        void stop() {
+            if (mWatching) {
+                mAudioManager.removeOnModeChangedListener(this);
+                mWatching = false;
+            }
+        }
+
+        @Override
+        public void onModeChanged(int mode) {
+            if (mCurrentAlarm == null || mode == mModeAtStart || !isCallMode(mode)) {
+                return;
+            }
+            LogUtils.i("A call started while the alarm rang: marking it missed");
+            startService(AlarmStateManager.createStateChangeIntent(AlarmService.this,
+                    "AlarmService", mCurrentAlarm, AlarmInstance.MISSED_STATE));
+        }
+    }
+
+    /** Whether {@code mode} is one that the system's call handling sets for a call. */
+    static boolean isCallMode(int mode) {
+        return mode == AudioManager.MODE_RINGTONE
+                || mode == AudioManager.MODE_IN_CALL
+                || mode == AudioManager.MODE_CALL_SCREENING
+                || mode == AudioManager.MODE_CALL_REDIRECT;
     }
 }
