@@ -40,6 +40,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.android.deskclock.actionbarmenu.OptionsMenuManager;
@@ -129,6 +132,20 @@ public class DeskClock extends BaseActivity
 
         setContentView(R.layout.desk_clock);
         mSnackbarAnchor = findViewById(R.id.content);
+
+        // The window is edge to edge: the content keeps clear of the system bars and the display
+        // cutout at the top and the sides, and the bottom navigation reaches under the navigation
+        // bar, keeping its items above it.
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.desk_clock), (view, insets) -> {
+            final Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars()
+                    | WindowInsetsCompat.Type.displayCutout());
+            view.setPadding(bars.left, bars.top, bars.right, 0);
+            final View bottomNavigation = view.findViewById(R.id.bottom_view);
+            bottomNavigation.setPadding(bottomNavigation.getPaddingLeft(),
+                    bottomNavigation.getPaddingTop(), bottomNavigation.getPaddingRight(),
+                    bars.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         if (savedInstanceState == null) {
             checkPermissions();
