@@ -30,13 +30,9 @@ import android.os.PowerManager;
 import android.text.format.DateFormat;
 import android.widget.Toast;
 
-import androidx.core.app.NotificationManagerCompat;
-
 import com.android.deskclock.AlarmAlertWakeLock;
-import com.android.deskclock.AlarmClockFragment;
 import com.android.deskclock.AlarmUtils;
 import com.android.deskclock.AsyncHandler;
-import com.android.deskclock.DeskClock;
 import com.android.deskclock.LogUtils;
 import com.android.deskclock.R;
 import com.android.deskclock.Utils;
@@ -101,9 +97,6 @@ import java.util.List;
 public final class AlarmStateManager extends BroadcastReceiver {
     // Intent action to trigger an instance state change.
     public static final String CHANGE_STATE_ACTION = "change_state";
-
-    // Intent action to show the alarm and dismiss the instance
-    public static final String SHOW_AND_DISMISS_ALARM_ACTION = "show_and_dismiss_alarm";
 
     // Intent action for an AlarmManager alarm serving only to set the next alarm indicators
     private static final String INDICATOR_ACTION = "indicator";
@@ -853,30 +846,6 @@ public final class AlarmStateManager extends BroadcastReceiver {
             } else {
                 registerInstance(context, instance, true);
             }
-        } else if (SHOW_AND_DISMISS_ALARM_ACTION.equals(action)) {
-            Uri uri = intent.getData();
-            AlarmInstance instance = AlarmInstance.getInstance(context.getContentResolver(),
-                    AlarmInstance.getId(uri));
-
-            if (instance == null) {
-                LogUtils.e("Null alarminstance for SHOW_AND_DISMISS");
-                // dismiss the notification
-                final int id = intent.getIntExtra(AlarmNotifications.EXTRA_NOTIFICATION_ID, -1);
-                if (id != -1) {
-                    NotificationManagerCompat.from(context).cancel(id);
-                }
-                return;
-            }
-
-            long alarmId = instance.mAlarmId == null ? Alarm.INVALID_ID : instance.mAlarmId;
-            final Intent viewAlarmIntent = Alarm.createIntent(context, DeskClock.class, alarmId)
-                    .putExtra(AlarmClockFragment.SCROLL_TO_ALARM_INTENT_EXTRA, alarmId)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            // Open DeskClock which is now positioned on the alarms tab.
-            context.startActivity(viewAlarmIntent);
-
-            deleteInstanceAndUpdateParent(context, instance);
         }
     }
 

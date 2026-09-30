@@ -315,12 +315,13 @@ final class AlarmNotifications {
         builder.setDeleteIntent(PendingIntent.getService(context, id,
                 dismissIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
 
-        // Setup content intent
-        Intent showAndDismiss = AlarmInstance.createIntent(context, AlarmStateManager.class,
+        // Setup content intent: open the alarm and dismiss the missed instance. This starts an
+        // activity directly, since one started from a broadcast is blocked from target SDK 31.
+        Intent showAndDismiss = AlarmInstance.createIntent(context, MissedAlarmActivity.class,
                 instance.mId);
         showAndDismiss.putExtra(EXTRA_NOTIFICATION_ID, id);
-        showAndDismiss.setAction(AlarmStateManager.SHOW_AND_DISMISS_ALARM_ACTION);
-        builder.setContentIntent(PendingIntent.getBroadcast(context, id,
+        showAndDismiss.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        builder.setContentIntent(PendingIntent.getActivity(context, id,
                 showAndDismiss, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
 
         NotificationManagerCompat nm = NotificationManagerCompat.from(context);

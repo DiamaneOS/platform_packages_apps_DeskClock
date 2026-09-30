@@ -153,6 +153,16 @@
             android:label="@string/dismiss_alarm"
             android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar" />
 
+        <!-- A tap on a missed-alarm notification. Only that notification's PendingIntent
+             starts it. -->
+        <activity
+            android:name=".alarms.MissedAlarmActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay" />
+
         <provider
             android:name=".provider.ClockProvider"
             android:authorities="${applicationId}"
