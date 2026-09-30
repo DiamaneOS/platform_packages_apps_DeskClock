@@ -182,10 +182,11 @@ public class AlarmService extends Service {
     }
 
     /**
-     * Marks the ringing alarm missed when a phone call starts ringing or is answered, as
-     * GrapheneOS's Clock did through the call state. Reading the call state now needs the phone
-     * permission; the audio mode says the same without one. Only the modes the system's call
-     * handling sets count, so an app that merely opens a voice channel does not stop the alarm.
+     * Marks the ringing alarm missed when a phone call is answered. GrapheneOS's Clock did this
+     * through the call state, which from target SDK 31 needs the phone permission. The audio mode
+     * needs none, but any app with MODIFY_AUDIO_SETTINGS can set most modes, so only the modes
+     * that need MODIFY_PHONE_STATE count (see {@link #isCallMode}). A call that only rings
+     * therefore no longer stops the alarm.
      */
     private final class CallWatcher implements AudioManager.OnModeChangedListener {
         private AudioManager mAudioManager;
@@ -220,11 +221,14 @@ public class AlarmService extends Service {
         }
     }
 
-    /** Whether {@code mode} is one that the system's call handling sets for a call. */
+    /**
+     * Whether {@code mode} means a connected phone call. Only these modes need
+     * MODIFY_PHONE_STATE, so no ordinary app can set them. MODE_RINGTONE, MODE_CALL_SCREENING
+     * and MODE_IN_COMMUNICATION need only MODIFY_AUDIO_SETTINGS, which any app is granted at
+     * install, and must not stop an alarm.
+     */
     static boolean isCallMode(int mode) {
-        return mode == AudioManager.MODE_RINGTONE
-                || mode == AudioManager.MODE_IN_CALL
-                || mode == AudioManager.MODE_CALL_SCREENING
+        return mode == AudioManager.MODE_IN_CALL
                 || mode == AudioManager.MODE_CALL_REDIRECT;
     }
 }

@@ -150,15 +150,18 @@ public final class AsyncRingtonePlayer {
     }
 
     /**
+     * Whether the device is in a call, so that the alarm or timer plays the quiet in-call tone.
+     * Only the modes that need MODIFY_PHONE_STATE count: MODE_IN_COMMUNICATION and
+     * MODE_CALL_SCREENING need only MODIFY_AUDIO_SETTINGS, which any app is granted at install, and
+     * an app holding one of them must not turn alarms and timers down.
+     *
      * @return <code>true</code> iff the device is currently in a telephone call
      */
     private static boolean isInTelephoneCall(AudioManager audioManager) {
         final int audioMode = audioManager.getMode();
-            return audioMode == AudioManager.MODE_IN_COMMUNICATION ||
-                    audioMode == AudioManager.MODE_COMMUNICATION_REDIRECT ||
-                    audioMode == AudioManager.MODE_CALL_REDIRECT ||
-                    audioMode == AudioManager.MODE_CALL_SCREENING ||
-                    audioMode == AudioManager.MODE_IN_CALL;
+        return audioMode == AudioManager.MODE_IN_CALL
+                || audioMode == AudioManager.MODE_CALL_REDIRECT
+                || audioMode == AudioManager.MODE_COMMUNICATION_REDIRECT;
     }
 
     /**
