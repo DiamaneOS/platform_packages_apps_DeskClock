@@ -110,8 +110,13 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
      */
     private static final String ACTION_ON_DAY_CHANGE = BuildConfig.APPLICATION_ID + ".ON_DAY_CHANGE";
 
-    /** Intent used to deliver the {@link #ACTION_ON_DAY_CHANGE} callback. */
-    private static final Intent DAY_CHANGE_INTENT = new Intent(ACTION_ON_DAY_CHANGE);
+    /**
+     * Intent used to deliver the {@link #ACTION_ON_DAY_CHANGE} callback. It names this provider,
+     * so the day change reaches only this app.
+     */
+    private static Intent dayChangeIntent(Context context) {
+        return new Intent(ACTION_ON_DAY_CHANGE).setClass(context, DigitalAppWidgetProvider.class);
+    }
 
     @Override
     public void onEnabled(Context context) {
@@ -180,9 +185,8 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
     private static void registerReceivers(Context context, BroadcastReceiver receiver) {
         if (sReceiversRegistered) return;
 
+        // The day change and the world cities change come as intents naming this provider.
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ACTION_WORLD_CITIES_CHANGED);
-        intentFilter.addAction(ACTION_ON_DAY_CHANGE);
         intentFilter.addAction(ACTION_CONFIGURATION_CHANGED);
         context.getApplicationContext().registerReceiver(receiver, intentFilter,
                 Context.RECEIVER_NOT_EXPORTED);
@@ -406,7 +410,7 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
         }
 
         // Schedule the next day-change callback; at least one city is displayed.
-        final PendingIntent pi = PendingIntent.getBroadcast(context, 0, DAY_CHANGE_INTENT,
+        final PendingIntent pi = PendingIntent.getBroadcast(context, 0, dayChangeIntent(context),
                         FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
         getAlarmManager(context).setExact(AlarmManager.RTC, nextDay.getTime(), pi);
     }
@@ -415,7 +419,7 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
      * Remove the existing day-change callback.
      */
     private void removeDayChangeCallback(Context context) {
-        final PendingIntent pi = PendingIntent.getBroadcast(context, 0, DAY_CHANGE_INTENT,
+        final PendingIntent pi = PendingIntent.getBroadcast(context, 0, dayChangeIntent(context),
                         FLAG_NO_CREATE | FLAG_IMMUTABLE);
         if (pi != null) {
             getAlarmManager(context).cancel(pi);

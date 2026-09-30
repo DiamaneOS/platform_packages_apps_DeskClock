@@ -23,6 +23,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
+import com.android.alarmclock.DigitalAppWidgetProvider;
 import com.android.deskclock.R;
 import com.android.deskclock.Utils;
 import com.android.deskclock.data.DataModel.CitySort;
@@ -235,7 +236,9 @@ final class CityModel {
     }
 
     private void fireCitiesChanged() {
-        mContext.sendBroadcast(new Intent(DataModel.ACTION_WORLD_CITIES_CHANGED));
+        // Only the digital widget listens; the intent names it, so no other app sees the change.
+        mContext.sendBroadcast(new Intent(DataModel.ACTION_WORLD_CITIES_CHANGED)
+                .setClass(mContext, DigitalAppWidgetProvider.class));
         for (CityListener cityListener : mCityListeners) {
             cityListener.citiesChanged();
         }
