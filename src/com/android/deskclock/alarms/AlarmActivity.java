@@ -50,6 +50,7 @@ import android.widget.ImageView;
 import android.widget.TextClock;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.ColorUtils;
@@ -155,6 +156,15 @@ public class AlarmActivity extends BaseActivity
         // lights up a dark room.
         getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
+
+        // Back never dismisses or leaves a ringing alarm: the callback takes it, so there is no
+        // predictive back to the lock screen or the app below either.
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                LOGGER.v("Back ignored while the alarm rings");
+            }
+        });
 
         setVolumeControlStream(AudioManager.STREAM_ALARM);
         final long instanceId = AlarmInstance.getId(getIntent().getData());
@@ -307,10 +317,6 @@ public class AlarmActivity extends BaseActivity
         return super.dispatchKeyEvent(keyEvent);
     }
 
-    @Override
-    public void onBackPressed() {
-        // Don't allow back to dismiss.
-    }
 
     @Override
     public void onClick(View view) {
