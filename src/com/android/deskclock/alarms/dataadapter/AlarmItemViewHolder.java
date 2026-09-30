@@ -92,6 +92,8 @@ public abstract class AlarmItemViewHolder extends ItemAdapter.ItemViewHolder<Ala
         bindClock(alarm);
         final Context context = itemView.getContext();
         itemView.setContentDescription(clock.getText() + " " + alarm.getLabelOrDefault(context));
+        // A screen reader names the switch after its alarm, not just "switch".
+        onOff.setContentDescription(itemView.getContentDescription());
     }
 
     protected void bindOnOffSwitch(Alarm alarm) {
