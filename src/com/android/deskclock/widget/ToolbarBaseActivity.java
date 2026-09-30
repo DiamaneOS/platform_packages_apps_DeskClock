@@ -25,7 +25,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toolbar;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.android.deskclock.R;
@@ -38,8 +42,20 @@ public class ToolbarBaseActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        // Draw behind the system bars; the layout keeps its content clear of them.
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.toolbar_base_layout);
+
+        // The app bar keeps clear of the status bar; the content keeps clear of the navigation
+        // bar and the display cutout.
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.content_frame),
+                (view, insets) -> {
+                    final Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout());
+                    view.setPadding(bars.left, 0, bars.right, bars.bottom);
+                    return insets;
+                });
 
         final Toolbar toolbar = findViewById(R.id.action_bar);
         setActionBar(toolbar);

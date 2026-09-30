@@ -18,8 +18,8 @@ package com.android.deskclock;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.View;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -33,13 +33,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Draw behind the status and navigation bars, with their icons light or dark to match
+        // the theme; each layout keeps its content clear of them.
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-
-        // Allow the content to layout behind the status and navigation bars.
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
 
         final @ColorInt int color = ThemeUtils.resolveColor(this, android.R.attr.windowBackground);
         adjustAppColor(color);
