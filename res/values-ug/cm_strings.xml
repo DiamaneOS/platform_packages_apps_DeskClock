@@ -16,13 +16,6 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">ئۈسكۈنە ئايلاندۇرۇش مەشغۇلاتى</string>
-    <string name="shake_action_title">ئۈسكۈنە سىلكىش مەشغۇلاتى</string>
-    <string-array name="action_setting_entries">
-        <item>كېچىكتۈر</item>
-        <item>پەرۋا قىلما</item>
-        <item>يوق</item>
-    </string-array>
     <string name="firing_alarms_timers_channel">ئوت ئۆچۈرۈش سىگنالى ۋە ۋاقىت خاتىرىلىگۈچ</string>
     <string name="alarm_missed_channel">ئۆتكۈزۈۋەتكەن قوڭغۇراق</string>
     <string name="alarm_snooze_channel">كېچىكتۈرۈلگەن قوڭغۇراق</string>
@@ -30,13 +23,6 @@
     <string name="stopwatch_channel">دەقىقە سائەت</string>
     <string name="timer_channel">ۋاقىت خاتىرىلىگۈچ</string>
     <string name="add_label">بەلگە قوش</string>
-    <string name="dialog_permissions_title">ئىجازەت</string>
-    <string name="dialog_permissions_ask">قايتا سورا</string>
-    <string name="dialog_permissions_dismiss">پەرۋا قىلما</string>
-    <string name="dialog_permissions_settings">تەڭشەكلەر</string>
-    <string name="dialog_permissions_power_off_alarm">بۇ ئىجازەت بولمىسا ئۈسكۈنىڭىز ئۆزلۈكىدىن قوزغىتىلىپ سىگنال بېرەلمەيدۇ</string>
-    <string name="dialog_permissions_no_permission">زۆرۈر ئىجازەت رەت قىلىنغان، ئۇلار تەڭشەك ئەپتىن قوزغىتىلىدۇ</string>
-    <string name="dialog_permissions_post_notifications">بۇ ئەپ ئۇقتۇرۇشقا تايىنىدۇ. ئۇلار بولمىسا ئۇنى ئىجرا قىلغىلى بولمايدۇ!</string>
     <string name="selected">تاللانغان</string>
     <string name="more_options">تېخىمۇ كۆپ تاللانما</string>
     <string name="widget_choice_title">ئۇسلۇب تاللىنىدۇ</string>

@@ -16,13 +16,6 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">Aktion beim Umdrehen</string>
-    <string name="shake_action_title">Aktion beim Schütteln</string>
-    <string-array name="action_setting_entries">
-        <item>Schlummern</item>
-        <item>Verwerfen</item>
-        <item>Keine Aktion</item>
-    </string-array>
     <string name="firing_alarms_timers_channel">Starten von Alarmen &amp; Timern</string>
     <string name="alarm_missed_channel">Entgangene Weckrufe</string>
     <string name="alarm_snooze_channel">Schlummernde Weckrufe</string>
@@ -30,13 +23,6 @@
     <string name="stopwatch_channel">Stoppuhr</string>
     <string name="timer_channel">Timer</string>
     <string name="add_label">Beschriftung hinzufügen</string>
-    <string name="dialog_permissions_title">Berechtigungen</string>
-    <string name="dialog_permissions_ask">Erneut anfragen</string>
-    <string name="dialog_permissions_dismiss">Verwerfen</string>
-    <string name="dialog_permissions_settings">Einstellungen</string>
-    <string name="dialog_permissions_power_off_alarm">Ohne diese Berechtigung kann dein Gerät sich für einen Weckruf nicht selbst einschalten</string>
-    <string name="dialog_permissions_no_permission">Erforderliche Berechtigungen nicht erteilt, bitte in den Einstellungen gewähren</string>
-    <string name="dialog_permissions_post_notifications">Diese App ist auf Benachrichtigungen angewiesen. Andernfalls lässt sie sich nicht ausführen!</string>
     <string name="selected">Ausgewählt</string>
     <string name="more_options">Weitere Optionen</string>
     <string name="widget_choice_title">Wähle deinen Stil</string>

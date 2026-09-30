@@ -16,13 +16,6 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">Ação ao virar o dispositivo</string>
-    <string name="shake_action_title">Ação ao agitar o dispositivo</string>
-    <string-array name="action_setting_entries">
-        <item>Suspender</item>
-        <item>Ignorar</item>
-        <item>Não fazer nada</item>
-    </string-array>
     <string name="firing_alarms_timers_channel">Disparo de alarmes e temporizadores</string>
     <string name="alarm_missed_channel">Alarmes perdidos</string>
     <string name="alarm_snooze_channel">Alarmes adiados</string>
@@ -30,13 +23,6 @@
     <string name="stopwatch_channel">Cronómetro</string>
     <string name="timer_channel">Temporizador</string>
     <string name="add_label">Adicionar etiqueta</string>
-    <string name="dialog_permissions_title">Permissões</string>
-    <string name="dialog_permissions_ask">Perguntar novamente</string>
-    <string name="dialog_permissions_dismiss">Ignorar</string>
-    <string name="dialog_permissions_settings">Definições</string>
-    <string name="dialog_permissions_power_off_alarm">Sem esta permissão o seu dispositivo não será capaz de se ligar para tocar o alarme</string>
-    <string name="dialog_permissions_no_permission">As permissões necessárias foram negadas. Ative-as nas Definições do dispositivo</string>
-    <string name="dialog_permissions_post_notifications">Esta aplicação depende de notificações. Sem elas, não pode ser executada!</string>
     <string name="selected">Selecionado</string>
     <string name="more_options">Mais opções</string>
     <string name="widget_choice_title">Escolha o seu estilo</string>
