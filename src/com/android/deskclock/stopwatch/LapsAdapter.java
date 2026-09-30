@@ -47,14 +47,20 @@ class LapsAdapter extends RecyclerView.Adapter<LapsAdapter.LapItemHolder> {
     private static final long TEN_HOURS = 10 * HOUR;
     private static final long HUNDRED_HOURS = 100 * HOUR;
 
-    /** A single space preceded by a zero-width LRM; This groups adjacent chars left-to-right. */
-    private static final String LRM_SPACE = "\u200E ";
+    /** A zero-width LRM; it keeps the parts of a lap time together left-to-right. */
+    private static final String LRM = "\u200E";
 
     /** Reusable StringBuilder that assembles a formatted time; alleviates memory churn. */
     private static final StringBuilder sTimeBuilder = new StringBuilder(12);
 
     private final LayoutInflater mInflater;
     private final Context mContext;
+
+    /** Separates hours, minutes and seconds as in the stopwatch's main readout. */
+    private final String mTimeSeparator;
+
+    /** The same separator after an LRM, for the times in the list. */
+    private final String mListTimeSeparator;
 
     /** Used to determine when the time format for the lap time column has changed length. */
     private int mLastFormattedLapTimeLength;
@@ -65,6 +71,8 @@ class LapsAdapter extends RecyclerView.Adapter<LapsAdapter.LapItemHolder> {
     LapsAdapter(Context context) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
+        mTimeSeparator = getTimeSeparator(context);
+        mListTimeSeparator = LRM + mTimeSeparator;
         setHasStableIds(true);
     }
 
@@ -183,7 +191,7 @@ class LapsAdapter extends RecyclerView.Adapter<LapsAdapter.LapItemHolder> {
     String getShareText() {
         final Stopwatch stopwatch = getStopwatch();
         final long totalTime = stopwatch.getTotalTime();
-        final String stopwatchTime = formatTime(totalTime, totalTime, ":");
+        final String stopwatchTime = formatTime(totalTime, totalTime, mTimeSeparator);
 
         // Choose a size for the builder that is unlikely to be resized.
         final StringBuilder builder = new StringBuilder(1000);
@@ -199,21 +207,22 @@ class LapsAdapter extends RecyclerView.Adapter<LapsAdapter.LapItemHolder> {
             builder.append("\n");
 
             // Loop through the laps in the order they were recorded; reverse of display order.
-            final String separator = DecimalFormatSymbols.getInstance().getDecimalSeparator() + " ";
+            // Each line starts with the lap number as the list shows it.
+            final int lapCount = laps.size() + 1;
             for (int i = laps.size() - 1; i >= 0; i--) {
                 final Lap lap = laps.get(i);
-                builder.append(lap.getLapNumber());
-                builder.append(separator);
+                builder.append(formatLapNumber(lapCount, lap.getLapNumber()));
+                builder.append("  ");
                 final long lapTime = lap.getLapTime();
-                builder.append(formatTime(lapTime, lapTime, " "));
+                builder.append(formatTime(lapTime, lapTime, mTimeSeparator));
                 builder.append("\n");
             }
 
             // Append the final lap
-            builder.append(laps.size() + 1);
-            builder.append(separator);
+            builder.append(formatLapNumber(lapCount, lapCount));
+            builder.append("  ");
             final long lapTime = DataModel.getDataModel().getCurrentLapTime(totalTime);
-            builder.append(formatTime(lapTime, lapTime, " "));
+            builder.append(formatTime(lapTime, lapTime, mTimeSeparator));
             builder.append("\n");
         }
 
@@ -232,6 +241,22 @@ class LapsAdapter extends RecyclerView.Adapter<LapsAdapter.LapItemHolder> {
         } else {
             return mContext.getString(R.string.lap_number_double_digit, lapNumber);
         }
+    }
+
+    /**
+     * @return the separator the stopwatch's main readout shows between minutes and seconds, taken
+     *     from the localized format it uses; ":" in most languages
+     */
+    private static String getTimeSeparator(Context context) {
+        final String minutesSeconds = context.getString(R.string.minutes_seconds, 0, 0);
+        final StringBuilder separator = new StringBuilder(2);
+        for (int i = 0; i < minutesSeconds.length(); i++) {
+            final char c = minutesSeconds.charAt(i);
+            if (!Character.isDigit(c)) {
+                separator.append(c);
+            }
+        }
+        return separator.length() > 0 ? separator.toString() : ":";
     }
 
     /**
@@ -300,7 +325,7 @@ class LapsAdapter extends RecyclerView.Adapter<LapsAdapter.LapItemHolder> {
     private String formatLapTime(long lapTime, boolean isBinding) {
         // The longest lap dictates the way the given lapTime must be formatted.
         final long longestLapTime = Math.max(DataModel.getDataModel().getLongestLapTime(), lapTime);
-        final String formattedTime = formatTime(longestLapTime, lapTime, LRM_SPACE);
+        final String formattedTime = formatTime(longestLapTime, lapTime, mListTimeSeparator);
 
         // If the newly formatted lap time has altered the format, refresh all laps.
         final int newLength = formattedTime.length();
@@ -321,7 +346,8 @@ class LapsAdapter extends RecyclerView.Adapter<LapsAdapter.LapItemHolder> {
     private String formatAccumulatedTime(long accumulatedTime, boolean isBinding) {
         final long totalTime = getStopwatch().getTotalTime();
         final long longestAccumulatedTime = Math.max(totalTime, accumulatedTime);
-        final String formattedTime = formatTime(longestAccumulatedTime, accumulatedTime, LRM_SPACE);
+        final String formattedTime =
+                formatTime(longestAccumulatedTime, accumulatedTime, mListTimeSeparator);
 
         // If the newly formatted accumulated time has altered the format, refresh all laps.
         final int newLength = formattedTime.length();
