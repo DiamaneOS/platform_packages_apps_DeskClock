@@ -16,13 +16,6 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">Ενέργεια αναποδογυρίσματος συσκευής</string>
-    <string name="shake_action_title">Ενέργεια κουνήματος συσκευής</string>
-    <string-array name="action_setting_entries">
-        <item>Αναβολή</item>
-        <item>Παράβλεψη</item>
-        <item>Καμία</item>
-    </string-array>
     <string name="firing_alarms_timers_channel">Ξυπνητήρια &amp; χρονοδιακόπτες</string>
     <string name="alarm_missed_channel">Χαμένα ξυπνητήρια</string>
     <string name="alarm_snooze_channel">Ξυπνητήρια σε αναβολή</string>
@@ -30,13 +23,6 @@
     <string name="stopwatch_channel">Χρονόμετρο</string>
     <string name="timer_channel">Αντίστροφη μέτρηση</string>
     <string name="add_label">Προσθήκη ετικέτας</string>
-    <string name="dialog_permissions_title">Δικαιώματα</string>
-    <string name="dialog_permissions_ask">Ερώτηση ξανά</string>
-    <string name="dialog_permissions_dismiss">Παράβλεψη</string>
-    <string name="dialog_permissions_settings">Ρυθμίσεις</string>
-    <string name="dialog_permissions_power_off_alarm">Χωρίς αυτήν την άδεια, η συσκευή σας δε θα μπορεί να ενεργοποιήσει τον εαυτό της για να ενεργοποιήσει το ξυπνητήρι</string>
-    <string name="dialog_permissions_no_permission">Τα απαραίτητα δικαιώματα απορρίφθηκαν, ενεργοποιήστε τα από τις Ρυθμίσεις</string>
-    <string name="dialog_permissions_post_notifications">Αυτή η εφαρμογή βασίζεται στις ειδοποιήσεις. Χωρίς αυτές δεν μπορεί να λειτουργήσει!</string>
     <string name="selected">Επιλεγμένο</string>
     <string name="more_options">Περισσότερες επιλογές</string>
     <string name="widget_choice_title">Επιλέξτε το στυλ σας</string>

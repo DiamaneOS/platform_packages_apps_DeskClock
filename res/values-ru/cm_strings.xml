@@ -16,13 +16,6 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">Действие при повороте устройства</string>
-    <string name="shake_action_title">Действие при встряхивании устройства</string>
-    <string-array name="action_setting_entries">
-        <item>Отложить</item>
-        <item>Отклонить</item>
-        <item>Ничего</item>
-    </string-array>
     <string name="firing_alarms_timers_channel">Важные сигналы и таймеры</string>
     <string name="alarm_missed_channel">Пропущенные будильники</string>
     <string name="alarm_snooze_channel">Отложенные будильники</string>
@@ -30,13 +23,6 @@
     <string name="stopwatch_channel">Секундомер</string>
     <string name="timer_channel">Таймер</string>
     <string name="add_label">Добавить метку</string>
-    <string name="dialog_permissions_title">Разрешения</string>
-    <string name="dialog_permissions_ask">Спросить снова</string>
-    <string name="dialog_permissions_dismiss">Отклонить</string>
-    <string name="dialog_permissions_settings">Настройки</string>
-    <string name="dialog_permissions_power_off_alarm">Без этого разрешения ваше устройство не сможет включиться для срабатывания будильника.</string>
-    <string name="dialog_permissions_no_permission">Требуемые разрешения были отклонены, включите их в настройках</string>
-    <string name="dialog_permissions_post_notifications">Это приложение использует уведомления. Без них оно не может быть запущено!</string>
     <string name="selected">Выбрано</string>
     <string name="more_options">Дополнительные опции</string>
     <string name="widget_choice_title">Выберите свой стиль</string>

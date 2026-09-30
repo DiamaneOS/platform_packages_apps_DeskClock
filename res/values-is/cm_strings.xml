@@ -16,25 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">Aðgerð við að fletta tæki</string>
-    <string name="shake_action_title">Aðgerð við að hrista tæki</string>
-    <string-array name="action_setting_entries">
-        <item>Blunda</item>
-        <item>Hafna</item>
-        <item>Ekkert</item>
-    </string-array>
     <string name="firing_alarms_timers_channel">Ræsitímar og niðurteljarar</string>
     <string name="alarm_upcoming_channel">Næstu vekjarar</string>
     <string name="stopwatch_channel">Skeiðklukka</string>
     <string name="timer_channel">Niðurteljari</string>
     <string name="add_label">Bæta við merkingu</string>
-    <string name="dialog_permissions_title">Heimildir</string>
-    <string name="dialog_permissions_ask">Spyrja aftur</string>
-    <string name="dialog_permissions_dismiss">Hafna</string>
-    <string name="dialog_permissions_settings">Stillingar</string>
-    <string name="dialog_permissions_power_off_alarm">Án þessarar heimildar mun tækið þitt ekki geta kveikt á sér til að virkja áminningu</string>
-    <string name="dialog_permissions_no_permission">Nauðsynlegum heimildum var hafnað, virkjaðu þær í stillingaforritinu</string>
-    <string name="dialog_permissions_post_notifications">Þetta forrit reiðir sig á tilkynningar. Án þeirra getur það ekki keyrt!</string>
     <string name="selected">Valið</string>
     <string name="more_options">Fleiri valkostir</string>
     <string name="widget_choice_title">Veldu þinn stíl</string>

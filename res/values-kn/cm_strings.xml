@@ -16,12 +16,4 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">ಸಾಧನದ ಮಗುಚು ಕ್ರಿಯೆ</string>
-    <string name="shake_action_title">ಸಾಧನದ ಕುಲುಕು ಕ್ರಿಯೆ</string>
-    <string-array name="action_setting_entries">
-        <item>ಲಘುನಿದ್ದೆ</item>
-        <item>ವಜಾಮಾಡು</item>
-        <item>ಏನಿಲ್ಲ</item>
-    </string-array>
-    <string name="dialog_permissions_dismiss">ವಜಾಮಾಡು</string>
 </resources>

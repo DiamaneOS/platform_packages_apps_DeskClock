@@ -16,23 +16,12 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">Tindakan membalik perangkat</string>
-    <string name="shake_action_title">Tindakan menggoyangkan perangkat</string>
-    <string-array name="action_setting_entries">
-        <item>Tunda</item>
-        <item>Tutup</item>
-        <item>Tidak ada</item>
-    </string-array>
     <string name="alarm_missed_channel">Alarm yang terlewat</string>
     <string name="alarm_snooze_channel">Alarm yang ditunda</string>
     <string name="alarm_upcoming_channel">Alarm mendatang</string>
     <string name="stopwatch_channel">Stopwatch</string>
     <string name="timer_channel">Timer</string>
     <string name="add_label">Tambah label</string>
-    <string name="dialog_permissions_title">Perizinan</string>
-    <string name="dialog_permissions_ask">Minta izin lagi</string>
-    <string name="dialog_permissions_dismiss">Tutup</string>
-    <string name="dialog_permissions_settings">Setelan</string>
     <string name="selected">Dipilih</string>
     <string name="more_options">Opsi lanjutan</string>
     <string name="widget_choice_title">Pilih gaya Anda</string>

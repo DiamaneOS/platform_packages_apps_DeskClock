@@ -16,13 +16,6 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">פעולת הפיכת המכשיר</string>
-    <string name="shake_action_title">פעולת ניעור המכשיר</string>
-    <string-array name="action_setting_entries">
-        <item>נודניק</item>
-        <item>דחייה</item>
-        <item>שום דבר</item>
-    </string-array>
     <string name="firing_alarms_timers_channel">שעונים מעוררים וטיימרים פעילים</string>
     <string name="alarm_missed_channel">שעונים מעוררים שפוספסו</string>
     <string name="alarm_snooze_channel">שעונים מעוררים בנודניק</string>
@@ -30,13 +23,6 @@
     <string name="stopwatch_channel">שעון עצר</string>
     <string name="timer_channel">טיימר</string>
     <string name="add_label">הוספת תווית</string>
-    <string name="dialog_permissions_title">הרשאות</string>
-    <string name="dialog_permissions_ask">לבקש שוב</string>
-    <string name="dialog_permissions_dismiss">דחייה</string>
-    <string name="dialog_permissions_settings">הגדרות</string>
-    <string name="dialog_permissions_power_off_alarm">ללא הרשאה זו, המכשיר לא יוכל להפעיל את עצמו כדי להפעיל שעון מעורר.</string>
-    <string name="dialog_permissions_no_permission">ההרשאות הדרושות נדחו. יש להפעיל אותן דרך יישומון ההגדרות.</string>
-    <string name="dialog_permissions_post_notifications">יישום זה מסתמך על התראות. ללא הפעלתן, לא ניתן להפעיל את היישום!</string>
     <string name="selected">נבחר</string>
     <string name="more_options">אפשרויות נוספות</string>
     <string name="widget_choice_title">בחירת הסגנון שלך</string>

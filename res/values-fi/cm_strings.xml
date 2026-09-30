@@ -16,22 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">Laitteen kääntö</string>
-    <string name="shake_action_title">Laitteen ravistus</string>
-    <string-array name="action_setting_entries">
-        <item>Torkku</item>
-        <item>Hylkää</item>
-        <item>Ei mitään</item>
-    </string-array>
     <string name="firing_alarms_timers_channel">Hälytysten &amp; ajastimien laukaisu</string>
     <string name="alarm_missed_channel">Vastaamattomat hälytykset</string>
     <string name="alarm_snooze_channel">Torkutetut hälytykset</string>
     <string name="alarm_upcoming_channel">Tulevat hälytykset</string>
     <string name="stopwatch_channel">Sekuntikello</string>
     <string name="timer_channel">Ajastin</string>
-    <string name="dialog_permissions_title">Käyttöoikeudet</string>
-    <string name="dialog_permissions_ask">Kysy uudelleen</string>
-    <string name="dialog_permissions_dismiss">Hylkää</string>
-    <string name="dialog_permissions_settings">Asetukset</string>
     <string name="screensaver_change_settings">Asetukset</string>
 </resources>
