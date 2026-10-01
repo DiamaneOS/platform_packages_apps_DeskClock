@@ -520,6 +520,12 @@ public class DeskClock extends BaseActivity
     private final class TabChangeWatcher implements TabListener {
         @Override
         public void selectedTabChanged(UiDataModel.Tab newSelectedTab) {
+            // While this activity is stopped its fragments cannot change (their state is saved, and
+            // a fragment transaction would throw); onResume shows the selected tab when it returns.
+            if (getSupportFragmentManager().isStateSaved()) {
+                return;
+            }
+
             // Update the view pager and tab layout to agree with the model.
             updateCurrentTab();
 
