@@ -16,13 +16,6 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">Дзеянне пры павароце прылады</string>
-    <string name="shake_action_title">Дзеянне пры ўстрэсванні прылады</string>
-    <string-array name="action_setting_entries">
-        <item>Адкласці</item>
-        <item>Адхіліць</item>
-        <item>Нічога</item>
-    </string-array>
     <string name="firing_alarms_timers_channel">Запуск будзільнікаў і таймераў</string>
     <string name="alarm_missed_channel">Прапушчаныя будзільнікі</string>
     <string name="alarm_snooze_channel">Адкладзеныя будзільнікі</string>
@@ -30,9 +23,5 @@
     <string name="stopwatch_channel">Секундамер</string>
     <string name="timer_channel">Таймер</string>
     <string name="add_label">Дадаць метку</string>
-    <string name="dialog_permissions_title">Дазволы</string>
-    <string name="dialog_permissions_dismiss">Адхіліць</string>
-    <string name="dialog_permissions_settings">Налады</string>
-    <string name="dialog_permissions_power_off_alarm">Без гэтага дазволу ваша прылада не зможа ўключыцца, каб спрацаваў гадзіннік</string>
     <string name="screensaver_change_settings">Налады</string>
 </resources>

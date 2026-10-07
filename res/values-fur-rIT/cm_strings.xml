@@ -16,13 +16,6 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">Azion di ribaltament</string>
-    <string name="shake_action_title">Azion di scjassade</string>
-    <string-array name="action_setting_entries">
-        <item>Posticipe</item>
-        <item>Scarte</item>
-        <item>Nuie</item>
-    </string-array>
     <string name="firing_alarms_timers_channel">Ativazion sveis e temporizadôrs</string>
     <string name="alarm_missed_channel">Sveis pierdudis</string>
     <string name="alarm_snooze_channel">Sveis posticipadis</string>
@@ -30,13 +23,6 @@
     <string name="stopwatch_channel">Cronometri</string>
     <string name="timer_channel">Temporizadôr</string>
     <string name="add_label">Zonte etichete</string>
-    <string name="dialog_permissions_title">Permès</string>
-    <string name="dialog_permissions_ask">Torne domande</string>
-    <string name="dialog_permissions_dismiss">Scarte</string>
-    <string name="dialog_permissions_settings">Impostazions</string>
-    <string name="dialog_permissions_power_off_alarm">Cence chest permès il to dispositîf nol rivarà a impiâsi di bessôl par fâ sunâ la svee</string>
-    <string name="dialog_permissions_no_permission">I permès domandâts a son stâts dineâts, abilitiju de aplicazion Impostazions</string>
-    <string name="dialog_permissions_post_notifications">Cheste aplicazion e fâs cont su lis notifichis. Cence di chês nol pues zirâ!</string>
     <string name="selected">Selezionât</string>
     <string name="more_options">Altris opzions</string>
     <string name="widget_choice_title">Sielç il to stîl</string>

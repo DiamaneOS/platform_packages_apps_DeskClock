@@ -16,13 +16,6 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="flip_action_title">Snu eining</string>
-    <string name="shake_action_title">Rist eining</string>
-    <string-array name="action_setting_entries">
-        <item>Slumra</item>
-        <item>Slå av</item>
-        <item>Ingenting</item>
-    </string-array>
     <string name="firing_alarms_timers_channel">Alarmar og nedteljingar som ringer</string>
     <string name="alarm_missed_channel">Miste alarmar</string>
     <string name="alarm_snooze_channel">Slumra alarmar</string>
@@ -30,13 +23,6 @@
     <string name="stopwatch_channel">Stoppeklokke</string>
     <string name="timer_channel">Nedteljing</string>
     <string name="add_label">Legg til etikett</string>
-    <string name="dialog_permissions_title">Løyve</string>
-    <string name="dialog_permissions_ask">Spør på nytt</string>
-    <string name="dialog_permissions_dismiss">Lukk</string>
-    <string name="dialog_permissions_settings">Innstillingar</string>
-    <string name="dialog_permissions_power_off_alarm">Utan dette løyvet kan ikkje eininga slå seg på sjølv for å utløysa ein alarm</string>
-    <string name="dialog_permissions_no_permission">Nødvendige løyve vart avviste, slå dei på i innstillingane</string>
-    <string name="dialog_permissions_post_notifications">Denne appen er avhengig av varsel. Han kan ikkje køyrast utan!</string>
     <string name="selected">Vald</string>
     <string name="more_options">Fleire val</string>
     <string name="widget_choice_title">Vel stil</string>
