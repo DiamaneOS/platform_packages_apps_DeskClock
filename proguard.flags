@@ -1,1 +1,9 @@
 -keep class androidx.viewpager.widget.* { *; }
+
+# SharedPreferences holds its change listeners only weakly. The models keep each listener in a
+# field for that reason, but the optimizer drops a field that is read only in the constructor,
+# after which the listener is collected and cached settings (timer sound, home time zone) go
+# stale until the app restarts. Keep those fields.
+-keepclassmembers,allowobfuscation class com.android.deskclock.** {
+    android.content.SharedPreferences$OnSharedPreferenceChangeListener *;
+}
