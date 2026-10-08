@@ -190,7 +190,8 @@ public class AlarmService extends Service {
      */
     private final class CallWatcher implements AudioManager.OnModeChangedListener {
         private AudioManager mAudioManager;
-        private int mModeAtStart;
+        /** The last mode seen: a call that was already on when the alarm started does not count. */
+        private int mLastMode;
         private boolean mWatching;
 
         void start() {
@@ -198,7 +199,7 @@ public class AlarmService extends Service {
                 return;
             }
             mAudioManager = getSystemService(AudioManager.class);
-            mModeAtStart = mAudioManager.getMode();
+            mLastMode = mAudioManager.getMode();
             mAudioManager.addOnModeChangedListener(getMainExecutor(), this);
             mWatching = true;
         }
@@ -212,7 +213,9 @@ public class AlarmService extends Service {
 
         @Override
         public void onModeChanged(int mode) {
-            if (mCurrentAlarm == null || mode == mModeAtStart || !isCallMode(mode)) {
+            final int previous = mLastMode;
+            mLastMode = mode;
+            if (mCurrentAlarm == null || !callAnswered(previous, mode)) {
                 return;
             }
             LogUtils.i("A call started while the alarm rang: marking it missed");
@@ -230,5 +233,13 @@ public class AlarmService extends Service {
     static boolean isCallMode(int mode) {
         return mode == AudioManager.MODE_IN_CALL
                 || mode == AudioManager.MODE_CALL_REDIRECT;
+    }
+
+    /**
+     * Whether the change from {@code previous} to {@code mode} connects a call. A call that ends
+     * and a new one that is answered while the alarm still rings counts again.
+     */
+    static boolean callAnswered(int previous, int mode) {
+        return !isCallMode(previous) && isCallMode(mode);
     }
 }
