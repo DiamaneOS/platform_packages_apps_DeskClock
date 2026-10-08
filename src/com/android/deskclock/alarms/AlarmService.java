@@ -21,6 +21,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.os.Binder;
 import android.os.IBinder;
 
@@ -53,6 +54,8 @@ public class AlarmService extends Service {
     /** Whether the service is currently bound to AlarmActivity */
     private boolean mIsBound = false;
 
+    /** Marks the ringing alarm missed when a phone call starts. */
+    private final CallWatcher mCallWatcher = new CallWatcher();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -94,6 +97,7 @@ public class AlarmService extends Service {
 
         mCurrentAlarm = instance;
         AlarmNotifications.showAlarmNotification(this, mCurrentAlarm);
+        mCallWatcher.start();
         AlarmKlaxon.start(this, mCurrentAlarm);
         sendBroadcast(new Intent(ALARM_ALERT_ACTION));
     }
@@ -108,6 +112,7 @@ public class AlarmService extends Service {
         LogUtils.v("AlarmService.stop with instance: %s", instanceId);
 
         AlarmKlaxon.stop(this);
+        mCallWatcher.stop();
         sendBroadcast(new Intent(ALARM_DONE_ACTION));
 
         stopForeground(true /* removeNotification */);
@@ -174,5 +179,82 @@ public class AlarmService extends Service {
         if (mCurrentAlarm != null) {
             stopCurrentAlarm();
         }
+    }
+
+    /**
+     * Marks the ringing alarm missed when a phone call is answered. GrapheneOS's Clock did this
+     * through the call state, which from target SDK 31 needs the phone permission. The audio mode
+     * needs none, but any app with MODIFY_AUDIO_SETTINGS can set most modes, so only the modes
+     * that need MODIFY_PHONE_STATE count (see {@link #isCallMode}). A call that only rings
+     * therefore no longer stops the alarm.
+     */
+    private final class CallWatcher {
+        private AudioManager mAudioManager;
+        /**
+         * The listener for the ringing alarm. Each alarm gets its own, so a mode change still
+         * queued for an earlier alarm's listener finds it replaced and is ignored.
+         */
+        private Listener mListener;
+
+        void start() {
+            if (mListener != null) {
+                return;
+            }
+            mAudioManager = getSystemService(AudioManager.class);
+            mListener = new Listener(mCurrentAlarm.mId, mAudioManager.getMode());
+            mAudioManager.addOnModeChangedListener(getMainExecutor(), mListener);
+            // A call answered while the listener was being added has no callback of its own.
+            mListener.onModeChanged(mAudioManager.getMode());
+        }
+
+        void stop() {
+            if (mListener != null) {
+                mAudioManager.removeOnModeChangedListener(mListener);
+                mListener = null;
+            }
+        }
+
+        private final class Listener implements AudioManager.OnModeChangedListener {
+            private final long mAlarmId;
+            /** The last mode seen: a call already on when the alarm started does not count. */
+            private int mLastMode;
+
+            Listener(long alarmId, int mode) {
+                mAlarmId = alarmId;
+                mLastMode = mode;
+            }
+
+            @Override
+            public void onModeChanged(int mode) {
+                final int previous = mLastMode;
+                mLastMode = mode;
+                if (mListener != this || mCurrentAlarm == null || mCurrentAlarm.mId != mAlarmId
+                        || !callAnswered(previous, mode)) {
+                    return;
+                }
+                LogUtils.i("A call started while the alarm rang: marking it missed");
+                startService(AlarmStateManager.createStateChangeIntent(AlarmService.this,
+                        "AlarmService", mCurrentAlarm, AlarmInstance.MISSED_STATE));
+            }
+        }
+    }
+
+    /**
+     * Whether {@code mode} means a connected phone call. Only these modes need
+     * MODIFY_PHONE_STATE, so no ordinary app can set them. MODE_RINGTONE, MODE_CALL_SCREENING
+     * and MODE_IN_COMMUNICATION need only MODIFY_AUDIO_SETTINGS, which any app is granted at
+     * install, and must not stop an alarm.
+     */
+    static boolean isCallMode(int mode) {
+        return mode == AudioManager.MODE_IN_CALL
+                || mode == AudioManager.MODE_CALL_REDIRECT;
+    }
+
+    /**
+     * Whether the change from {@code previous} to {@code mode} connects a call. A call that ends
+     * and a new one that is answered while the alarm still rings counts again.
+     */
+    static boolean callAnswered(int previous, int mode) {
+        return !isCallMode(previous) && isCallMode(mode);
     }
 }
