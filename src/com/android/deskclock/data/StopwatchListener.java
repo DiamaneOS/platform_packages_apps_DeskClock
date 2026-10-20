@@ -22,13 +22,8 @@ package com.android.deskclock.data;
 public interface StopwatchListener {
 
     /**
-     * @param before the stopwatch state before the update
+     * @param ignoredBefore the stopwatch state before the update
      * @param after the stopwatch state after the update
      */
-    void stopwatchUpdated(Stopwatch before, Stopwatch after);
-
-    /**
-     * @param lap the lap that was added
-     */
-    void lapAdded(Lap lap);
+    void stopwatchUpdated(Stopwatch ignoredBefore, Stopwatch after);
 }

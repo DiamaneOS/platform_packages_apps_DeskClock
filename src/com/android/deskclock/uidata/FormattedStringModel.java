@@ -16,6 +16,8 @@
 
 package com.android.deskclock.uidata;
 
+import static java.util.Calendar.JULY;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,8 +30,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Map;
-
-import static java.util.Calendar.JULY;
 
 /**
  * All formatted strings that are cached for performance are accessed via this model.
@@ -56,7 +56,8 @@ final class FormattedStringModel {
     FormattedStringModel(Context context) {
         // Clear caches affected by locale when locale changes.
         final IntentFilter localeBroadcastFilter = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
-        context.registerReceiver(mLocaleChangedReceiver, localeBroadcastFilter);
+        context.registerReceiver(mLocaleChangedReceiver, localeBroadcastFilter,
+                Context.RECEIVER_NOT_EXPORTED);
     }
 
     /**

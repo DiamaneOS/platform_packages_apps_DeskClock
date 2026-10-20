@@ -17,13 +17,15 @@
 package com.android.deskclock.stopwatch;
 
 import android.content.Context;
-import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.deskclock.R;
 import com.android.deskclock.data.DataModel;
@@ -78,14 +80,15 @@ class LapsAdapter extends RecyclerView.Adapter<LapsAdapter.LapItemHolder> {
         return currentLapCount + lapCount;
     }
 
+    @NonNull
     @Override
-    public LapItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public LapItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View v = mInflater.inflate(R.layout.lap_view, parent, false /* attachToRoot */);
         return new LapItemHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(LapItemHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull LapItemHolder viewHolder, int position) {
         final long lapTime;
         final int lapNumber;
         final long totalTime;
@@ -350,9 +353,9 @@ class LapsAdapter extends RecyclerView.Adapter<LapsAdapter.LapItemHolder> {
         LapItemHolder(View itemView) {
             super(itemView);
 
-            lapTime = (TextView) itemView.findViewById(R.id.lap_time);
-            lapNumber = (TextView) itemView.findViewById(R.id.lap_number);
-            accumulatedTime = (TextView) itemView.findViewById(R.id.lap_total);
+            lapTime = itemView.findViewById(R.id.lap_time);
+            lapNumber = itemView.findViewById(R.id.lap_number);
+            accumulatedTime = itemView.findViewById(R.id.lap_total);
         }
     }
 }

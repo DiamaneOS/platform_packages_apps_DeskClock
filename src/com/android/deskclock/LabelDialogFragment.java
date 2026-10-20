@@ -16,11 +16,12 @@
 
 package com.android.deskclock;
 
+import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -30,6 +31,7 @@ import android.view.KeyEvent;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatEditText;
@@ -41,8 +43,6 @@ import androidx.fragment.app.FragmentTransaction;
 import com.android.deskclock.data.DataModel;
 import com.android.deskclock.data.Timer;
 import com.android.deskclock.provider.Alarm;
-
-import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE;
 
 /**
  * DialogFragment to edit label.
@@ -117,6 +117,7 @@ public class LabelDialogFragment extends DialogFragment {
         }
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Bundle args = getArguments() == null ? Bundle.EMPTY : getArguments();
@@ -150,7 +151,7 @@ public class LabelDialogFragment extends DialogFragment {
         mLabelBox.setSingleLine();
         mLabelBox.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         mLabelBox.setText(label);
-        mLabelBox.selectAll();
+        mLabelBox.setSelectAllOnFocus(true);
 
         // The line at the bottom of EditText is part of its background therefore the padding
         // must be added to its container.

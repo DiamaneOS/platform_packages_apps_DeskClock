@@ -16,16 +16,14 @@
 
 package com.android.deskclock.timer;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.net.Uri;
-import android.os.Build;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 
 import com.android.deskclock.AsyncRingtonePlayer;
 import com.android.deskclock.LogUtils;
-import com.android.deskclock.Utils;
 import com.android.deskclock.data.DataModel;
 
 /**
@@ -67,21 +65,13 @@ public abstract class TimerKlaxon {
 
         if (DataModel.getDataModel().getTimerVibrate()) {
             final Vibrator vibrator = getVibrator(context);
-            if (Utils.isLOrLater()) {
-                vibrateLOrLater(vibrator);
-            } else {
-                vibrator.vibrate(VIBRATE_PATTERN, 0);
-            }
+            VibrationEffect effect = VibrationEffect.createWaveform(VIBRATE_PATTERN, 0);
+            vibrator.vibrate(effect, new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build());
         }
         sStarted = true;
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private static void vibrateLOrLater(Vibrator vibrator) {
-        vibrator.vibrate(VIBRATE_PATTERN, 0, new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_ALARM)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build());
     }
 
     private static Vibrator getVibrator(Context context) {

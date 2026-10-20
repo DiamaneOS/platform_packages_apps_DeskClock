@@ -16,13 +16,6 @@
 
 package com.android.deskclock.data;
 
-import android.text.TextUtils;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-
-import static android.text.format.DateUtils.HOUR_IN_MILLIS;
 import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
 import static android.text.format.DateUtils.SECOND_IN_MILLIS;
 import static com.android.deskclock.Utils.now;
@@ -32,6 +25,12 @@ import static com.android.deskclock.data.Timer.State.MISSED;
 import static com.android.deskclock.data.Timer.State.PAUSED;
 import static com.android.deskclock.data.Timer.State.RESET;
 import static com.android.deskclock.data.Timer.State.RUNNING;
+
+import android.text.TextUtils;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * A read-only domain object representing a countdown timer.
@@ -71,10 +70,6 @@ public final class Timer {
 
     /** The minimum duration of a timer. */
     public static final long MIN_LENGTH = SECOND_IN_MILLIS;
-
-    /** The maximum duration of a new timer created via the user interface. */
-    static final long MAX_LENGTH =
-            99 * HOUR_IN_MILLIS + 99 * MINUTE_IN_MILLIS + 99 * SECOND_IN_MILLIS;
 
     static final long UNUSED = Long.MIN_VALUE;
 
@@ -131,13 +126,6 @@ public final class Timer {
     public boolean isMissed() { return mState == MISSED; }
 
     /**
-     * @return the amount of remaining time when the timer was last started or paused.
-     */
-    public long getLastRemainingTime() {
-        return mRemainingTime;
-    }
-
-    /**
      * @return the total amount of time remaining up to this moment; expired and missed timers will
      *      return a negative amount
      */
@@ -162,17 +150,6 @@ public final class Timer {
         }
 
         return mLastStartTime + mRemainingTime;
-    }
-
-    /**
-     * @return the wall clock time at which this timer will or did expire
-     */
-    public long getWallClockExpirationTime() {
-        if (mState != RUNNING && mState != EXPIRED && mState != MISSED) {
-            throw new IllegalStateException("cannot compute expiration time in state " + mState);
-        }
-
-        return mLastStartWallClockTime + mRemainingTime;
     }
 
     /**
@@ -305,29 +282,6 @@ public final class Timer {
     }
 
     /**
-     * @return a copy of this timer with the given {@code length} or this timer if the length could
-     *      not be legally adjusted
-     */
-    Timer setLength(long length) {
-        if (mLength == length || length <= Timer.MIN_LENGTH) {
-            return this;
-        }
-
-        final long totalLength;
-        final long remainingTime;
-        if (mState == RESET) {
-            totalLength = length;
-            remainingTime = length;
-        } else {
-            totalLength = mTotalLength;
-            remainingTime = mRemainingTime;
-        }
-
-        return new Timer(mId, mState, length, totalLength, mLastStartTime,
-                mLastStartWallClockTime, remainingTime, mLabel, mDeleteAfterUse);
-    }
-
-    /**
      * @return a copy of this timer with the given {@code remainingTime} or this timer if the
      *      remaining time could not be legally adjusted
      */
@@ -389,12 +343,8 @@ public final class Timer {
     /**
      * Orders timers by their IDs. Oldest timers are at the bottom. Newest timers are at the top.
      */
-    static Comparator<Timer> ID_COMPARATOR = new Comparator<Timer>() {
-        @Override
-        public int compare(Timer timer1, Timer timer2) {
-            return Integer.compare(timer2.getId(), timer1.getId());
-        }
-    };
+    static final Comparator<Timer> ID_COMPARATOR =
+            (timer1, timer2) -> Integer.compare(timer2.getId(), timer1.getId());
 
     /**
      * Orders timers by their expected/actual expiration time. The general order is:
@@ -407,7 +357,7 @@ public final class Timer {
      *     <li>{@link State#RESET RESET} timers; ties broken by {@link #getLength()}</li>
      * </ol>
      */
-    static Comparator<Timer> EXPIRY_COMPARATOR = new Comparator<Timer>() {
+    static final Comparator<Timer> EXPIRY_COMPARATOR = new Comparator<>() {
 
         private final List<State> stateExpiryOrder = Arrays.asList(MISSED, EXPIRED, RUNNING, PAUSED,
                 RESET);

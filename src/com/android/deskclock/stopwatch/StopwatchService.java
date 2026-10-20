@@ -20,13 +20,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.android.deskclock.DeskClock;
 import com.android.deskclock.R;
 import com.android.deskclock.data.DataModel;
 import com.android.deskclock.events.Events;
-import com.android.deskclock.uidata.UiDataModel;
-
-import static com.android.deskclock.uidata.UiDataModel.Tab.STOPWATCH;
 
 /**
  * This service exists solely to allow the stopwatch notification to alter the state of the
@@ -60,16 +56,6 @@ public final class StopwatchService extends Service {
         final String action = intent.getAction();
         final int label = intent.getIntExtra(Events.EXTRA_EVENT_LABEL, R.string.label_intent);
         switch (action) {
-            case ACTION_SHOW_STOPWATCH: {
-                Events.sendStopwatchEvent(R.string.action_show, label);
-
-                // Open DeskClock positioned on the stopwatch tab.
-                UiDataModel.getUiDataModel().setSelectedTab(STOPWATCH);
-                final Intent showStopwatch = new Intent(this, DeskClock.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(showStopwatch);
-                break;
-            }
             case ACTION_START_STOPWATCH: {
                 Events.sendStopwatchEvent(R.string.action_start, label);
                 DataModel.getDataModel().startStopwatch();

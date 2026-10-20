@@ -16,28 +16,52 @@
 
 package com.android.alarmclock;
 
+import static android.app.AlarmManager.ACTION_NEXT_ALARM_CLOCK_CHANGED;
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
+import static android.app.PendingIntent.FLAG_NO_CREATE;
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT;
+import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH;
+import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT;
+import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH;
+import static android.content.Intent.ACTION_CONFIGURATION_CHANGED;
+import static android.content.Intent.ACTION_LOCALE_CHANGED;
+import static android.content.Intent.ACTION_TIMEZONE_CHANGED;
+import static android.content.Intent.ACTION_TIME_CHANGED;
+import static android.util.TypedValue.COMPLEX_UNIT_PX;
+import static android.view.View.GONE;
+import static android.view.View.MeasureSpec.UNSPECIFIED;
+import static android.view.View.VISIBLE;
+import static com.android.deskclock.data.DataModel.ACTION_WORLD_CITIES_CHANGED;
+import static java.lang.Math.max;
+import static java.lang.Math.round;
+
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.ArraySet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.TextClock;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
+import com.android.deskclock.BuildConfig;
 import com.android.deskclock.DeskClock;
 import com.android.deskclock.LogUtils;
 import com.android.deskclock.R;
@@ -53,27 +77,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
-
-import static android.app.AlarmManager.ACTION_NEXT_ALARM_CLOCK_CHANGED;
-import static android.app.PendingIntent.FLAG_NO_CREATE;
-import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
-import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT;
-import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH;
-import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT;
-import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH;
-import static android.content.Intent.ACTION_DATE_CHANGED;
-import static android.content.Intent.ACTION_LOCALE_CHANGED;
-import static android.content.Intent.ACTION_SCREEN_ON;
-import static android.content.Intent.ACTION_TIMEZONE_CHANGED;
-import static android.content.Intent.ACTION_TIME_CHANGED;
-import static android.util.TypedValue.COMPLEX_UNIT_PX;
-import static android.view.View.GONE;
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.View.VISIBLE;
-import static com.android.deskclock.alarms.AlarmStateManager.ACTION_ALARM_CHANGED;
-import static com.android.deskclock.data.DataModel.ACTION_WORLD_CITIES_CHANGED;
-import static java.lang.Math.max;
-import static java.lang.Math.round;
 
 /**
  * <p>This provider produces a widget resembling one of the formats below.</p>
@@ -98,12 +101,14 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
 
     private static final LogUtils.Logger LOGGER = new LogUtils.Logger("DigitalWidgetProvider");
 
+    private static boolean sReceiversRegistered;
+
     /**
      * Intent action used for refreshing a world city display when any of them changes days or when
      * the default TimeZone changes days. This affects the widget display because the day-of-week is
      * only visible when the world city day-of-week differs from the default TimeZone's day-of-week.
      */
-    private static final String ACTION_ON_DAY_CHANGE = "com.android.deskclock.ON_DAY_CHANGE";
+    private static final String ACTION_ON_DAY_CHANGE = BuildConfig.APPLICATION_ID + ".ON_DAY_CHANGE";
 
     /** Intent used to deliver the {@link #ACTION_ON_DAY_CHANGE} callback. */
     private static final Intent DAY_CHANGE_INTENT = new Intent(ACTION_ON_DAY_CHANGE);
@@ -140,14 +145,12 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
         final String action = intent.getAction();
         switch (action) {
             case ACTION_NEXT_ALARM_CLOCK_CHANGED:
-            case ACTION_DATE_CHANGED:
             case ACTION_LOCALE_CHANGED:
-            case ACTION_SCREEN_ON:
             case ACTION_TIME_CHANGED:
             case ACTION_TIMEZONE_CHANGED:
-            case ACTION_ALARM_CHANGED:
             case ACTION_ON_DAY_CHANGE:
             case ACTION_WORLD_CITIES_CHANGED:
+            case ACTION_CONFIGURATION_CHANGED:
                 for (int widgetId : widgetIds) {
                     relayoutWidget(context, wm, widgetId, wm.getAppWidgetOptions(widgetId));
                 }
@@ -167,10 +170,24 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager wm, int[] widgetIds) {
         super.onUpdate(context, wm, widgetIds);
+        registerReceivers(context, this);
 
         for (int widgetId : widgetIds) {
             relayoutWidget(context, wm, widgetId, wm.getAppWidgetOptions(widgetId));
         }
+    }
+
+    private static void registerReceivers(Context context, BroadcastReceiver receiver) {
+        if (sReceiversRegistered) return;
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_WORLD_CITIES_CHANGED);
+        intentFilter.addAction(ACTION_ON_DAY_CHANGE);
+        intentFilter.addAction(ACTION_CONFIGURATION_CHANGED);
+        context.getApplicationContext().registerReceiver(receiver, intentFilter,
+                Context.RECEIVER_NOT_EXPORTED);
+
+        sReceiversRegistered = true;
     }
 
     /**
@@ -181,7 +198,7 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
             Bundle options) {
         super.onAppWidgetOptionsChanged(context, wm, widgetId, options);
 
-        // scale the fonts of the clock to fit inside the new size
+        // Scale the fonts of the clock to fit inside the new size
         relayoutWidget(context, AppWidgetManager.getInstance(context), widgetId, options);
     }
 
@@ -198,6 +215,10 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
         wm.notifyAppWidgetViewDataChanged(widgetId, R.id.world_city_list);
     }
 
+    public static void updateAppWidget(Context context, AppWidgetManager wm, int widgetId) {
+        relayoutWidget(context, wm, widgetId, wm.getAppWidgetOptions(widgetId));
+    }
+
     /**
      * Compute optimal font and icon sizes offscreen for the given orientation.
      */
@@ -205,13 +226,18 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
             Bundle options, boolean portrait) {
         // Create a remote view for the digital clock.
         final String packageName = context.getPackageName();
-        final RemoteViews rv = new RemoteViews(packageName, R.layout.digital_widget);
+        int[] layoutIds = WidgetUtils.getWidgetLayouts(context, widgetId);
+        final RemoteViews rv = new RemoteViews(packageName, layoutIds[0]);
+        rv.setLightBackgroundLayoutId(layoutIds[1]);
+
+        rv.removeAllViews(R.id.themed_root);
+        rv.addView(R.id.themed_root, new RemoteViews(packageName, R.layout.digital_widget));
 
         // Tapping on the widget opens the app (if not on the lock screen).
         if (Utils.isWidgetClickable(wm, widgetId)) {
             final Intent openApp = new Intent(context, DeskClock.class);
-            final PendingIntent pi = PendingIntent.getActivity(context, 0, openApp, 0);
-            rv.setOnClickPendingIntent(R.id.digital_widget, pi);
+            final PendingIntent pi = PendingIntent.getActivity(context, 0, openApp, FLAG_IMMUTABLE);
+            rv.setOnClickPendingIntent(android.R.id.background, pi);
         }
 
         // Configure child views of the remote view.
@@ -255,10 +281,15 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
         }
 
         // Apply the computed sizes to the remote views.
-        rv.setImageViewBitmap(R.id.nextAlarmIcon, sizes.mIconBitmap);
+        rv.setInt(R.id.nextAlarmIcon, "setMaxHeight", sizes.mFontSizePx);
+        rv.setViewPadding(R.id.nextAlarmIcon, sizes.mIconPaddingPx, 0, sizes.mIconPaddingPx, 0);
         rv.setTextViewTextSize(R.id.date, COMPLEX_UNIT_PX, sizes.mFontSizePx);
         rv.setTextViewTextSize(R.id.nextAlarm, COMPLEX_UNIT_PX, sizes.mFontSizePx);
         rv.setTextViewTextSize(R.id.clock, COMPLEX_UNIT_PX, sizes.mClockFontSizePx);
+        // Shift the bottom view up by half of the non-removable TextView padding
+        rv.setViewLayoutMargin(R.id.bottom_view, RemoteViews.MARGIN_TOP,
+                sizes.mBottomViewMarginTopPx, COMPLEX_UNIT_PX);
+        rv.setViewPadding(R.id.bottom_view, 0, 0, 0, sizes.mBottomViewPaddingBottomPx);
 
         final int smallestWorldCityListSizePx =
                 resources.getDimensionPixelSize(R.dimen.widget_min_world_city_list_size);
@@ -276,7 +307,8 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
             // Tapping on the widget opens the city selection activity (if not on the lock screen).
             if (Utils.isWidgetClickable(wm, widgetId)) {
                 final Intent selectCity = new Intent(context, CitySelectionActivity.class);
-                final PendingIntent pi = PendingIntent.getActivity(context, 0, selectCity, 0);
+                final PendingIntent pi = PendingIntent.getActivity(context, 0, selectCity,
+                        FLAG_IMMUTABLE);
                 rv.setPendingIntentTemplate(R.id.world_city_list, pi);
             }
         }
@@ -294,15 +326,17 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
         @SuppressLint("InflateParams")
         final View sizer = inflater.inflate(R.layout.digital_widget_sizer, null /* root */);
 
+        int padding = context.getResources().getDimensionPixelSize(R.dimen.widget_padding);
+        sizer.findViewById(R.id.widget_item).setPadding(padding, padding, padding, padding);
         // Configure the date to display the current date string.
         final CharSequence dateFormat = getDateFormat(context);
-        final TextClock date = (TextClock) sizer.findViewById(R.id.date);
+        final TextClock date = sizer.findViewById(R.id.date);
         date.setFormat12Hour(dateFormat);
         date.setFormat24Hour(dateFormat);
 
         // Configure the next alarm views to display the next alarm time or be gone.
-        final TextView nextAlarmIcon = (TextView) sizer.findViewById(R.id.nextAlarmIcon);
-        final TextView nextAlarm = (TextView) sizer.findViewById(R.id.nextAlarm);
+        final TextView nextAlarmIcon = sizer.findViewById(R.id.nextAlarmIcon);
+        final TextView nextAlarm = sizer.findViewById(R.id.nextAlarm);
         if (TextUtils.isEmpty(nextAlarmTime)) {
             nextAlarm.setVisibility(GONE);
             nextAlarmIcon.setVisibility(GONE);
@@ -367,10 +401,13 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
             zones.add(city.getTimeZone());
         }
         final Date nextDay = Utils.getNextDay(new Date(), zones);
+        if (nextDay == null) {
+            return;
+        }
 
         // Schedule the next day-change callback; at least one city is displayed.
-        final PendingIntent pi =
-                PendingIntent.getBroadcast(context, 0, DAY_CHANGE_INTENT, FLAG_UPDATE_CURRENT);
+        final PendingIntent pi = PendingIntent.getBroadcast(context, 0, DAY_CHANGE_INTENT,
+                        FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
         getAlarmManager(context).setExact(AlarmManager.RTC, nextDay.getTime(), pi);
     }
 
@@ -378,8 +415,8 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
      * Remove the existing day-change callback.
      */
     private void removeDayChangeCallback(Context context) {
-        final PendingIntent pi =
-                PendingIntent.getBroadcast(context, 0, DAY_CHANGE_INTENT, FLAG_NO_CREATE);
+        final PendingIntent pi = PendingIntent.getBroadcast(context, 0, DAY_CHANGE_INTENT,
+                        FLAG_NO_CREATE | FLAG_IMMUTABLE);
         if (pi != null) {
             getAlarmManager(context).cancel(pi);
             pi.cancel();
@@ -400,10 +437,11 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
         final Sizes measuredSizes = template.newSize();
 
         // Configure the clock to display the widest time string.
-        final TextClock date = (TextClock) sizer.findViewById(R.id.date);
-        final TextClock clock = (TextClock) sizer.findViewById(R.id.clock);
-        final TextView nextAlarm = (TextView) sizer.findViewById(R.id.nextAlarm);
-        final TextView nextAlarmIcon = (TextView) sizer.findViewById(R.id.nextAlarmIcon);
+        final TextClock date = sizer.findViewById(R.id.date);
+        final TextClock clock = sizer.findViewById(R.id.clock);
+        final TextView nextAlarm = sizer.findViewById(R.id.nextAlarm);
+        final TextView nextAlarmIcon = sizer.findViewById(R.id.nextAlarmIcon);
+        final LinearLayout bottomView = sizer.findViewById(R.id.bottom_view);
 
         // Adjust the font sizes.
         measuredSizes.setClockFontSizePx(clockFontSize);
@@ -413,6 +451,17 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
         nextAlarm.setTextSize(COMPLEX_UNIT_PX, measuredSizes.mFontSizePx);
         nextAlarmIcon.setTextSize(COMPLEX_UNIT_PX, measuredSizes.mIconFontSizePx);
         nextAlarmIcon.setPadding(measuredSizes.mIconPaddingPx, 0, measuredSizes.mIconPaddingPx, 0);
+        // We want to shift the date line up by half the invisible padding of the clock (which is
+        // 33% of the font size)
+        measuredSizes.setBottomViewMarginPx(-1 * (int)(measuredSizes.mClockFontSizePx * 0.33 / 2));
+        // We want the bottom padding of the date be equal to the top padding of the clock
+        measuredSizes.setBottomViewPaddingPx(
+                (int)(measuredSizes.mClockFontSizePx * 0.28 - measuredSizes.mFontSizePx * 0.33));
+        bottomView.setPadding(0, 0, 0, measuredSizes.getBottomViewPaddingPx());
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams)
+                bottomView.getLayoutParams();
+        layoutParams.topMargin = measuredSizes.getBottomViewMarginTopPx();
+        bottomView.setLayoutParams(layoutParams);
 
         // Measure and layout the sizer.
         final int widthSize = View.MeasureSpec.getSize(measuredSizes.mTargetWidthPx);
@@ -427,11 +476,6 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
         measuredSizes.mMeasuredHeightPx = sizer.getMeasuredHeight();
         measuredSizes.mMeasuredTextClockWidthPx = clock.getMeasuredWidth();
         measuredSizes.mMeasuredTextClockHeightPx = clock.getMeasuredHeight();
-
-        // If an alarm icon is required, generate one from the TextView with the special font.
-        if (nextAlarmIcon.getVisibility() == VISIBLE) {
-            measuredSizes.mIconBitmap = Utils.createBitmap(nextAlarmIcon);
-        }
 
         return measuredSizes;
     }
@@ -467,7 +511,6 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
         private final int mTargetHeightPx;
         private final int mLargestClockFontSizePx;
         private final int mSmallestClockFontSizePx;
-        private Bitmap mIconBitmap;
 
         private int mMeasuredWidthPx;
         private int mMeasuredHeightPx;
@@ -483,6 +526,9 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
         private int mIconFontSizePx;
         private int mIconPaddingPx;
 
+        private int mBottomViewMarginTopPx;
+        private int mBottomViewPaddingBottomPx;
+
         private Sizes(int targetWidthPx, int targetHeightPx, int largestClockFontSizePx) {
             mTargetWidthPx = targetWidthPx;
             mTargetHeightPx = targetHeightPx;
@@ -495,9 +541,19 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
         private int getClockFontSizePx() { return mClockFontSizePx; }
         private void setClockFontSizePx(int clockFontSizePx) {
             mClockFontSizePx = clockFontSizePx;
-            mFontSizePx = max(1, round(clockFontSizePx / 7.5f));
+            mFontSizePx = max(1, round(clockFontSizePx / 5.5f));
             mIconFontSizePx = (int) (mFontSizePx * 1.4f);
             mIconPaddingPx = mFontSizePx / 3;
+        }
+
+        private int getBottomViewMarginTopPx() { return mBottomViewMarginTopPx; }
+        private void setBottomViewMarginPx(int bottomViewMarginPx) {
+            mBottomViewMarginTopPx = bottomViewMarginPx;
+        }
+
+        private int getBottomViewPaddingPx() { return mBottomViewPaddingBottomPx; }
+        private void setBottomViewPaddingPx(int bottomViewPaddingPx) {
+            mBottomViewPaddingBottomPx = bottomViewPaddingPx;
         }
 
         /**
@@ -515,6 +571,7 @@ public class DigitalAppWidgetProvider extends AppWidgetProvider {
             return new Sizes(mTargetWidthPx, mTargetHeightPx, mLargestClockFontSizePx);
         }
 
+        @NonNull
         @Override
         public String toString() {
             final StringBuilder builder = new StringBuilder(1000);

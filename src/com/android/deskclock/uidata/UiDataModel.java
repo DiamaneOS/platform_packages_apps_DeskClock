@@ -16,10 +16,14 @@
 
 package com.android.deskclock.uidata;
 
+import static com.android.deskclock.Utils.enforceMainLooper;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import androidx.annotation.DrawableRes;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.IntegerRes;
 import androidx.annotation.StringRes;
 
 import com.android.deskclock.AlarmClockFragment;
@@ -30,8 +34,6 @@ import com.android.deskclock.timer.TimerFragment;
 
 import java.util.Calendar;
 
-import static com.android.deskclock.Utils.enforceMainLooper;
-
 /**
  * All application-wide user interface data is accessible through this singleton.
  */
@@ -39,23 +41,23 @@ public final class UiDataModel {
 
     /** Identifies each of the primary tabs within the application. */
     public enum Tab {
-        ALARMS(AlarmClockFragment.class, R.drawable.ic_tab_alarm, R.string.menu_alarm),
-        CLOCKS(ClockFragment.class, R.drawable.ic_tab_clock, R.string.menu_clock),
-        TIMERS(TimerFragment.class, R.drawable.ic_tab_timer, R.string.menu_timer),
-        STOPWATCH(StopwatchFragment.class, R.drawable.ic_tab_stopwatch, R.string.menu_stopwatch);
+        ALARMS(AlarmClockFragment.class, R.id.page_alarm, R.string.menu_alarm),
+        CLOCKS(ClockFragment.class, R.id.page_clock, R.string.menu_clock),
+        TIMERS(TimerFragment.class, R.id.page_timer, R.string.menu_timer),
+        STOPWATCH(StopwatchFragment.class, R.id.page_stopwatch, R.string.menu_stopwatch);
 
         private final String mFragmentClassName;
-        private final @DrawableRes int mIconResId;
+        private final @IdRes int mPageResId;
         private final @StringRes int mLabelResId;
 
-        Tab(Class fragmentClass, @DrawableRes int iconResId, @StringRes int labelResId) {
+        Tab(Class fragmentClass, @IntegerRes int pageResId, @StringRes int labelResId) {
             mFragmentClassName = fragmentClass.getName();
-            mIconResId = iconResId;
+            mPageResId = pageResId;
             mLabelResId = labelResId;
         }
 
         public String getFragmentClassName() { return mFragmentClassName; }
-        public @DrawableRes int getIconResId() { return mIconResId; }
+        public @IdRes int getPageResId() { return mPageResId; }
         public @StringRes int getLabelResId() { return mLabelResId; }
     }
 
@@ -136,25 +138,6 @@ public final class UiDataModel {
     }
 
     /**
-     * This method is intended to be used when formatting numbers occurs in a hotspot such as the
-     * update loop of a timer or stopwatch. It returns cached results when possible in order to
-     * provide speed and limit garbage to be collected by the virtual machine.
-     *
-     * @param negative force a minus sign (-) onto the display, even if {@code value} is {@code 0}
-     * @param value a positive integer to format as a String
-     * @param length the length of the String; zeroes are padded to match this length. If
-     *      {@code negative} is {@code true} the return value will contain a minus sign and a total
-     *      length of {@code length + 1}.
-     * @return the {@code value} formatted as a String in the current locale and padded to the
-     *      requested {@code length}
-     * @throws IllegalArgumentException if {@code value} is negative
-     */
-    public String getFormattedNumber(boolean negative, int value, int length) {
-        enforceMainLooper();
-        return mFormattedStringModel.getFormattedNumber(negative, value, length);
-    }
-
-    /**
      * @param calendarDay any of the following values
      *                     <ul>
      *                     <li>{@link Calendar#SUNDAY}</li>
@@ -203,6 +186,14 @@ public final class UiDataModel {
     }
 
     /**
+     * @return the duration in milliseconds of medium animations
+     */
+    public long getMediumAnimationDuration() {
+        enforceMainLooper();
+        return mContext.getResources().getInteger(android.R.integer.config_mediumAnimTime);
+    }
+
+    /**
      * @return the duration in milliseconds of long animations
      */
     public long getLongAnimationDuration() {
@@ -236,24 +227,6 @@ public final class UiDataModel {
     public int getTabCount() {
         enforceMainLooper();
         return mTabModel.getTabCount();
-    }
-
-    /**
-     * @param ordinal the ordinal of the tab
-     * @return the tab at the given {@code ordinal}
-     */
-    public Tab getTab(int ordinal) {
-        enforceMainLooper();
-        return mTabModel.getTab(ordinal);
-    }
-
-    /**
-     * @param position the position of the tab in the user interface
-     * @return the tab at the given {@code ordinal}
-     */
-    public Tab getTabAt(int position) {
-        enforceMainLooper();
-        return mTabModel.getTabAt(position);
     }
 
     /**
@@ -338,29 +311,18 @@ public final class UiDataModel {
 
     /**
      * @param runnable to be called every quarter-hour
-     * @param offset an offset applied to the quarter-hour to control when the callback occurs
      */
-    public void addQuarterHourCallback(Runnable runnable, long offset) {
+    public void addQuarterHourCallback(Runnable runnable) {
         enforceMainLooper();
-        mPeriodicCallbackModel.addQuarterHourCallback(runnable, offset);
-    }
-
-    /**
-     * @param runnable to be called every hour
-     * @param offset an offset applied to the hour to control when the callback occurs
-     */
-    public void addHourCallback(Runnable runnable, long offset) {
-        enforceMainLooper();
-        mPeriodicCallbackModel.addHourCallback(runnable, offset);
+        mPeriodicCallbackModel.addQuarterHourCallback(runnable);
     }
 
     /**
      * @param runnable to be called every midnight
-     * @param offset an offset applied to the midnight to control when the callback occurs
      */
-    public void addMidnightCallback(Runnable runnable, long offset) {
+    public void addMidnightCallback(Runnable runnable) {
         enforceMainLooper();
-        mPeriodicCallbackModel.addMidnightCallback(runnable, offset);
+        mPeriodicCallbackModel.addMidnightCallback(runnable);
     }
 
     /**

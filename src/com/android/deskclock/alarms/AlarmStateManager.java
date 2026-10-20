@@ -15,7 +15,8 @@
  */
 package com.android.deskclock.alarms;
 
-import android.annotation.TargetApi;
+import static android.content.Context.ALARM_SERVICE;
+
 import android.app.AlarmManager;
 import android.app.AlarmManager.AlarmClockInfo;
 import android.app.PendingIntent;
@@ -24,13 +25,12 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
-import android.provider.Settings;
-import androidx.core.app.NotificationManagerCompat;
 import android.text.format.DateFormat;
 import android.widget.Toast;
+
+import androidx.core.app.NotificationManagerCompat;
 
 import com.android.deskclock.AlarmAlertWakeLock;
 import com.android.deskclock.AlarmClockFragment;
@@ -46,12 +46,7 @@ import com.android.deskclock.provider.Alarm;
 import com.android.deskclock.provider.AlarmInstance;
 
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-
-import static android.content.Context.ALARM_SERVICE;
-import static android.provider.Settings.System.NEXT_ALARM_FORMATTED;
 
 /**
  * This class handles all the state changes for alarm instances. You need to
@@ -113,9 +108,6 @@ public final class AlarmStateManager extends BroadcastReceiver {
     // Intent action for an AlarmManager alarm serving only to set the next alarm indicators
     private static final String INDICATOR_ACTION = "indicator";
 
-    // System intent action to notify AppWidget that we changed the alarm text.
-    public static final String ACTION_ALARM_CHANGED = "com.android.deskclock.ALARM_CHANGED";
-
     // Extra key to set the desired state change.
     public static final String ALARM_STATE_EXTRA = "intent.extra.alarm.state";
 
@@ -136,28 +128,23 @@ public final class AlarmStateManager extends BroadcastReceiver {
     // Buffer time in seconds to fire alarm instead of marking it missed.
     public static final int ALARM_FIRE_BUFFER = 15;
 
-    // A factory for the current time; can be mocked for testing purposes.
-    private static CurrentTimeFactory sCurrentTimeFactory;
-
     // Schedules alarm state transitions; can be mocked for testing purposes.
-    private static StateChangeScheduler sStateChangeScheduler =
+    private static final StateChangeScheduler sStateChangeScheduler =
             new AlarmManagerStateChangeScheduler();
 
+    private static final String ACTION_SET_POWEROFF_ALARM =
+            "org.codeaurora.poweroffalarm.action.SET_ALARM";
+
+    private static final String ACTION_CANCEL_POWEROFF_ALARM =
+            "org.codeaurora.poweroffalarm.action.CANCEL_ALARM";
+
+    private static final String POWER_OFF_ALARM_PACKAGE =
+            "com.qualcomm.qti.poweroffalarm";
+
+    private static final String TIME = "time";
+
     private static Calendar getCurrentTime() {
-        return sCurrentTimeFactory == null
-                ? DataModel.getDataModel().getCalendar()
-                : sCurrentTimeFactory.getCurrentTime();
-    }
-
-    static void setCurrentTimeFactory(CurrentTimeFactory currentTimeFactory) {
-        sCurrentTimeFactory = currentTimeFactory;
-    }
-
-    static void setStateChangeScheduler(StateChangeScheduler stateChangeScheduler) {
-        if (stateChangeScheduler == null) {
-            stateChangeScheduler = new AlarmManagerStateChangeScheduler();
-        }
-        sStateChangeScheduler = stateChangeScheduler;
+        return DataModel.getDataModel().getCalendar();
     }
 
     /**
@@ -167,11 +154,11 @@ public final class AlarmStateManager extends BroadcastReceiver {
     private static void updateNextAlarm(Context context) {
         final AlarmInstance nextAlarm = getNextFiringAlarm(context);
 
-        if (Utils.isPreL()) {
-            updateNextAlarmInSystemSettings(context, nextAlarm);
-        } else {
-            updateNextAlarmInAlarmManager(context, nextAlarm);
+        if (nextAlarm != null) {
+            setPowerOffAlarm(context, nextAlarm);
         }
+
+        updateNextAlarmInAlarmManager(context, nextAlarm);
     }
 
     /**
@@ -195,35 +182,8 @@ public final class AlarmStateManager extends BroadcastReceiver {
     }
 
     /**
-     * Used in pre-L devices, where "next alarm" is stored in system settings.
-     */
-    @SuppressWarnings("deprecation")
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private static void updateNextAlarmInSystemSettings(Context context, AlarmInstance nextAlarm) {
-        // Format the next alarm time if an alarm is scheduled.
-        String time = "";
-        if (nextAlarm != null) {
-            time = AlarmUtils.getFormattedTime(context, nextAlarm.getAlarmTime());
-        }
-
-        try {
-            // Write directly to NEXT_ALARM_FORMATTED in all pre-L versions
-            Settings.System.putString(context.getContentResolver(), NEXT_ALARM_FORMATTED, time);
-
-            LogUtils.i("Updated next alarm time to: \'" + time + '\'');
-
-            // Send broadcast message so pre-L AppWidgets will recognize an update.
-            context.sendBroadcast(new Intent(ACTION_ALARM_CHANGED));
-        } catch (SecurityException se) {
-            // The user has most likely revoked WRITE_SETTINGS.
-            LogUtils.e("Unable to update next alarm to: \'" + time + '\'', se);
-        }
-    }
-
-    /**
      * Used in L and later devices where "next alarm" is stored in the Alarm Manager.
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static void updateNextAlarmInAlarmManager(Context context, AlarmInstance nextAlarm) {
         // Sets a surrogate alarm with alarm manager that provides the AlarmClockInfo for the
         // alarm that is going to fire next. The operation is constructed such that it is ignored
@@ -233,7 +193,8 @@ public final class AlarmStateManager extends BroadcastReceiver {
 
         final int flags = nextAlarm == null ? PendingIntent.FLAG_NO_CREATE : 0;
         final PendingIntent operation = PendingIntent.getBroadcast(context, 0 /* requestCode */,
-                AlarmStateManager.createIndicatorIntent(context), flags);
+                AlarmStateManager.createIndicatorIntent(context),
+                flags | PendingIntent.FLAG_IMMUTABLE);
 
         if (nextAlarm != null) {
             LogUtils.i("Setting upcoming AlarmClockInfo for alarm: " + nextAlarm.mId);
@@ -242,7 +203,7 @@ public final class AlarmStateManager extends BroadcastReceiver {
             // Create an intent that can be used to show or edit details of the next alarm.
             PendingIntent viewIntent = PendingIntent.getActivity(context, nextAlarm.hashCode(),
                     AlarmNotifications.createViewAlarmIntent(context, nextAlarm),
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             final AlarmClockInfo info = new AlarmClockInfo(alarmTime, viewIntent);
             Utils.updateNextAlarm(alarmManager, info, operation);
@@ -263,7 +224,7 @@ public final class AlarmStateManager extends BroadcastReceiver {
         ContentResolver cr = context.getContentResolver();
         Alarm alarm = Alarm.getAlarm(cr, instance.mAlarmId);
         if (alarm == null) {
-            LogUtils.e("Parent has been deleted with instance: " + instance.toString());
+            LogUtils.e("Parent has been deleted with instance: " + instance);
             return;
         }
 
@@ -499,14 +460,11 @@ public final class AlarmStateManager extends BroadcastReceiver {
         // Display the snooze minutes in a toast.
         if (showToast) {
             final Handler mainHandler = new Handler(context.getMainLooper());
-            final Runnable myRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    String displayTime = String.format(context.getResources().getQuantityText
-                            (R.plurals.alarm_alert_snooze_set, snoozeMinutes).toString(),
-                            snoozeMinutes);
-                    Toast.makeText(context, displayTime, Toast.LENGTH_LONG).show();
-                }
+            final Runnable myRunnable = () -> {
+                String displayTime = String.format(context.getResources().getQuantityText
+                        (R.plurals.alarm_alert_snooze_set, snoozeMinutes).toString(),
+                        snoozeMinutes);
+                Toast.makeText(context, displayTime, Toast.LENGTH_LONG).show();
             };
             mainHandler.post(myRunnable);
         }
@@ -543,6 +501,7 @@ public final class AlarmStateManager extends BroadcastReceiver {
         scheduleInstanceStateChange(context, instance.getMissedTimeToLive(),
                 instance, AlarmInstance.DISMISSED_STATE);
 
+        cancelPowerOffAlarm(context, instance);
         // Instance is not valid anymore, so find next alarm that will fire and notify system
         updateNextAlarm(context);
     }
@@ -572,6 +531,7 @@ public final class AlarmStateManager extends BroadcastReceiver {
             updateParentAlarm(context, instance);
         }
 
+        cancelPowerOffAlarm(context, instance);
         updateNextAlarm(context);
     }
 
@@ -583,6 +543,8 @@ public final class AlarmStateManager extends BroadcastReceiver {
         instance.mAlarmState = AlarmInstance.DISMISSED_STATE;
         final ContentResolver contentResolver = context.getContentResolver();
         AlarmInstance.updateInstance(contentResolver, instance);
+
+        cancelPowerOffAlarm(context, instance);
     }
 
     /**
@@ -764,24 +726,6 @@ public final class AlarmStateManager extends BroadcastReceiver {
     }
 
     /**
-     * Delete and unregister all instances unless they are snoozed. This is used whenever an alarm
-     * is modified superficially (label, vibrate, or ringtone change).
-     */
-    public static void deleteNonSnoozeInstances(Context context, long alarmId) {
-        LogUtils.i("Deleting all non-snooze instances of alarm: " + alarmId);
-        ContentResolver cr = context.getContentResolver();
-        List<AlarmInstance> instances = AlarmInstance.getInstancesByAlarmId(cr, alarmId);
-        for (AlarmInstance instance : instances) {
-            if (instance.mAlarmState == AlarmInstance.SNOOZE_STATE) {
-                continue;
-            }
-            unregisterInstance(context, instance);
-            AlarmInstance.deleteInstance(context.getContentResolver(), instance.mId);
-        }
-        updateNextAlarm(context);
-    }
-
-    /**
      * Fix and update all alarm instance when a time change event occurs.
      *
      * @param context application context
@@ -797,12 +741,7 @@ public final class AlarmStateManager extends BroadcastReceiver {
         // instances).
         final List<AlarmInstance> instances = AlarmInstance.getInstances(
                 contentResolver, null /* selection */);
-        Collections.sort(instances, new Comparator<AlarmInstance>() {
-            @Override
-            public int compare(AlarmInstance lhs, AlarmInstance rhs) {
-                return rhs.getAlarmTime().compareTo(lhs.getAlarmTime());
-            }
-        });
+        instances.sort((lhs, rhs) -> rhs.getAlarmTime().compareTo(lhs.getAlarmTime()));
 
         for (AlarmInstance instance : instances) {
             final Alarm alarm = Alarm.getAlarm(contentResolver, instance.mAlarmId);
@@ -887,13 +826,10 @@ public final class AlarmStateManager extends BroadcastReceiver {
         final PendingResult result = goAsync();
         final PowerManager.WakeLock wl = AlarmAlertWakeLock.createPartialWakeLock(context);
         wl.acquire();
-        AsyncHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                handleIntent(context, intent);
-                result.finish();
-                wl.release();
-            }
+        AsyncHandler.post(() -> {
+            handleIntent(context, intent);
+            result.finish();
+            wl.release();
         });
     }
 
@@ -972,15 +908,6 @@ public final class AlarmStateManager extends BroadcastReceiver {
     }
 
     /**
-     * Abstract away how the current time is computed. If no implementation of this interface is
-     * given the default is to return {@link Calendar#getInstance()}. Otherwise, the factory
-     * instance is consulted for the current time.
-     */
-    interface CurrentTimeFactory {
-        Calendar getCurrentTime();
-    }
-
-    /**
      * Abstracts away how state changes are scheduled. The {@link AlarmManagerStateChangeScheduler}
      * implementation schedules callbacks within the system AlarmManager. Alternate
      * implementations, such as test case mocks can subvert this behavior.
@@ -990,6 +917,23 @@ public final class AlarmStateManager extends BroadcastReceiver {
                 AlarmInstance instance, int newState);
 
         void cancelScheduledInstanceStateChange(Context context, AlarmInstance instance);
+    }
+
+    private static void setPowerOffAlarm(Context context, AlarmInstance instance) {
+         LogUtils.i("Set next power off alarm : instance id "+ instance.mId);
+         Intent intent = new Intent(ACTION_SET_POWEROFF_ALARM);
+         intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+         intent.setPackage(POWER_OFF_ALARM_PACKAGE);
+         intent.putExtra(TIME, instance.getAlarmTime().getTimeInMillis());
+         context.sendBroadcast(intent);
+    }
+
+    private static void cancelPowerOffAlarm(Context context, AlarmInstance instance) {
+         Intent intent = new Intent(ACTION_CANCEL_POWEROFF_ALARM);
+         intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+         intent.putExtra(TIME, instance.getAlarmTime().getTimeInMillis());
+         intent.setPackage(POWER_OFF_ALARM_PACKAGE);
+         context.sendBroadcast(intent);
     }
 
     /**
@@ -1007,15 +951,13 @@ public final class AlarmStateManager extends BroadcastReceiver {
             // Treat alarm state change as high priority, use foreground broadcasts
             stateChangeIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
             PendingIntent pendingIntent = PendingIntent.getService(context, instance.hashCode(),
-                    stateChangeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    stateChangeIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             final AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-            if (Utils.isMOrLater()) {
-                // Ensure the alarm fires even if the device is dozing.
-                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
-            } else {
-                am.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
-            }
+            // Ensure the alarm fires even if the device is dozing.
+            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+
         }
 
         @Override
@@ -1025,7 +967,7 @@ public final class AlarmStateManager extends BroadcastReceiver {
             // Create a PendingIntent that will match any one set for this instance
             PendingIntent pendingIntent = PendingIntent.getService(context, instance.hashCode(),
                     createStateChangeIntent(context, ALARM_MANAGER_TAG, instance, null),
-                    PendingIntent.FLAG_NO_CREATE);
+                    PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE);
 
             if (pendingIntent != null) {
                 AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);

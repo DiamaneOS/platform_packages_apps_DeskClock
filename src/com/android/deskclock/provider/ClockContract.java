@@ -59,11 +59,6 @@ public final class ClockContract {
         Uri NO_RINGTONE_URI = Uri.EMPTY;
 
         /**
-         * This string is used to indicate no ringtone.
-         */
-        String NO_RINGTONE = NO_RINGTONE_URI.toString();
-
-        /**
          * True if alarm should vibrate
          * <p>Type: BOOLEAN</p>
          */
@@ -84,6 +79,12 @@ public final class ClockContract {
          * <p>Type: STRING</p>
          */
         String RINGTONE = "ringtone";
+
+        /**
+         * True if alarm should start off quiet and slowly increase volume
+         * <P>Type: BOOLEAN</P>
+         */
+        String INCREASING_VOLUME = "incvol";
     }
 
     /**

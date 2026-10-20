@@ -135,35 +135,6 @@ public class CircleView extends View {
     }
 
     /**
-     * @return the current {@link Gravity} used to align/size the circle
-     */
-    public final int getGravity() {
-        return mGravity;
-    }
-
-    /**
-     * Describes how to align/size the circle relative to the view's bounds. Defaults to
-     * {@link Gravity#NO_GRAVITY}.
-     * <p/>
-     * Note: using {@link #setCenterX(float)}, {@link #setCenterY(float)}, or
-     * {@link #setRadius(float)} will automatically clear any conflicting gravity bits.
-     *
-     * @param gravity the {@link Gravity} flags to use
-     * @return this object, allowing calls to methods in this class to be chained
-     * @see R.styleable#CircleView_android_gravity
-     */
-    public CircleView setGravity(int gravity) {
-        if (mGravity != gravity) {
-            mGravity = gravity;
-
-            if (gravity != Gravity.NO_GRAVITY && isLayoutDirectionResolved()) {
-                applyGravity(gravity, getLayoutDirection());
-            }
-        }
-        return this;
-    }
-
-    /**
      * @return the ARGB color used to fill the circle
      */
     public final int getFillColor() {
@@ -182,7 +153,7 @@ public class CircleView extends View {
             mCirclePaint.setColor(color);
 
             // invalidate the current area
-            invalidate(mCenterX, mCenterY, mRadius);
+            invalidate();
         }
         return this;
     }
@@ -200,8 +171,7 @@ public class CircleView extends View {
             mCenterX = centerX;
 
             // invalidate the old/new areas
-            invalidate(oldCenterX, mCenterY, mRadius);
-            invalidate(centerX, mCenterY, mRadius);
+            invalidate();
         }
 
         // clear the horizontal gravity flags
@@ -223,8 +193,7 @@ public class CircleView extends View {
             mCenterY = centerY;
 
             // invalidate the old/new areas
-            invalidate(mCenterX, oldCenterY, mRadius);
-            invalidate(mCenterX, centerY, mRadius);
+            invalidate();
         }
 
         // clear the vertical gravity flags
@@ -244,19 +213,15 @@ public class CircleView extends View {
      * Sets the radius of the circle and invalidates only the affected area.
      *
      * @param radius the radius to use
-     * @return this object, allowing calls to methods in this class to be chained
      * @see R.styleable#CircleView_radius
      */
-    public CircleView setRadius(float radius) {
+    public void setRadius(float radius) {
         final float oldRadius = mRadius;
         if (oldRadius != radius) {
             mRadius = radius;
 
             // invalidate the old/new areas
-            invalidate(mCenterX, mCenterY, oldRadius);
-            if (radius > oldRadius) {
-                invalidate(mCenterX, mCenterY, radius);
-            }
+            invalidate();
         }
 
         // clear the fill gravity flags
@@ -267,16 +232,6 @@ public class CircleView extends View {
             mGravity &= ~Gravity.FILL_VERTICAL;
         }
 
-        return this;
-    }
-
-    /**
-     * Invalidates the rectangular area that circumscribes the circle defined by {@code centerX},
-     * {@code centerY}, and {@code radius}.
-     */
-    private void invalidate(float centerX, float centerY, float radius) {
-        invalidate((int) (centerX - radius - 0.5f), (int) (centerY - radius - 0.5f),
-                (int) (centerX + radius + 0.5f), (int) (centerY + radius + 0.5f));
     }
 
     /**
@@ -334,8 +289,7 @@ public class CircleView extends View {
         }
 
         if (oldCenterX != mCenterX || oldCenterY != mCenterY || oldRadius != mRadius) {
-            invalidate(oldCenterX, oldCenterY, oldRadius);
-            invalidate(mCenterX, mCenterY, mRadius);
+            invalidate();
         }
     }
 }

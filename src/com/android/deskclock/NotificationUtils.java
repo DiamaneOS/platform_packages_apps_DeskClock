@@ -18,15 +18,13 @@ package com.android.deskclock;
 
 import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_DEFAULT;
 import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_HIGH;
-import static androidx.core.app.NotificationManagerCompat.IMPORTANCE_LOW;
 
 import android.app.NotificationChannel;
 import android.content.Context;
 import android.util.ArraySet;
 import android.util.Log;
-import androidx.core.app.NotificationManagerCompat;
 
-import com.android.deskclock.Utils;
+import androidx.core.app.NotificationManagerCompat;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,17 +37,17 @@ public class NotificationUtils {
     /**
      * Notification channel containing all missed alarm notifications.
      */
-    public static final String ALARM_MISSED_NOTIFICATION_CHANNEL_ID = "alarmMissedNotification";
+    public static final String ALARM_MISSED_NOTIFICATION_CHANNEL_ID = "alarmMissedSilentNotification";
 
     /**
      * Notification channel containing all upcoming alarm notifications.
      */
-    public static final String ALARM_UPCOMING_NOTIFICATION_CHANNEL_ID = "alarmUpcomingNotification";
+    public static final String ALARM_UPCOMING_NOTIFICATION_CHANNEL_ID = "AlarmUpcomingSilentNotification";
 
     /**
      * Notification channel containing all snooze notifications.
      */
-    public static final String ALARM_SNOOZE_NOTIFICATION_CHANNEL_ID = "alarmSnoozingNotification";
+    public static final String ALARM_SNOOZE_NOTIFICATION_CHANNEL_ID = "AlarmSnoozingSilentNotification";
 
     /**
      * Notification channel containing all firing alarm and timer notifications.
@@ -59,12 +57,12 @@ public class NotificationUtils {
     /**
      * Notification channel containing all TimerModel notifications.
      */
-    public static final String TIMER_MODEL_NOTIFICATION_CHANNEL_ID = "timerNotification";
+    public static final String TIMER_MODEL_NOTIFICATION_CHANNEL_ID = "TimerSilentNotification";
 
     /**
      * Notification channel containing all stopwatch notifications.
      */
-    public static final String STOPWATCH_NOTIFICATION_CHANNEL_ID = "stopwatchNotification";
+    public static final String STOPWATCH_NOTIFICATION_CHANNEL_ID = "StopWatchSilentNotification";
 
     /**
      * Values used to bitmask certain channel defaults
@@ -73,19 +71,22 @@ public class NotificationUtils {
     private static final int ENABLE_LIGHTS = 0x02;
     private static final int ENABLE_VIBRATION = 0x04;
 
-    private static Map<String, int[]> CHANNEL_PROPS = new HashMap<String, int[]>();
+    private static final Map<String, int[]> CHANNEL_PROPS = new HashMap<>();
     static {
         CHANNEL_PROPS.put(ALARM_MISSED_NOTIFICATION_CHANNEL_ID, new int[]{
                 R.string.alarm_missed_channel,
-                IMPORTANCE_HIGH
+                IMPORTANCE_HIGH,
+                0
         });
         CHANNEL_PROPS.put(ALARM_SNOOZE_NOTIFICATION_CHANNEL_ID, new int[]{
                 R.string.alarm_snooze_channel,
-                IMPORTANCE_LOW
+                IMPORTANCE_DEFAULT,
+                0
         });
         CHANNEL_PROPS.put(ALARM_UPCOMING_NOTIFICATION_CHANNEL_ID, new int[]{
                 R.string.alarm_upcoming_channel,
-                IMPORTANCE_LOW
+                IMPORTANCE_DEFAULT,
+                0
         });
         CHANNEL_PROPS.put(FIRING_NOTIFICATION_CHANNEL_ID, new int[]{
                 R.string.firing_alarms_timers_channel,
@@ -94,25 +95,23 @@ public class NotificationUtils {
         });
         CHANNEL_PROPS.put(STOPWATCH_NOTIFICATION_CHANNEL_ID, new int[]{
                 R.string.stopwatch_channel,
-                IMPORTANCE_LOW
+                IMPORTANCE_DEFAULT,
+                0
         });
         CHANNEL_PROPS.put(TIMER_MODEL_NOTIFICATION_CHANNEL_ID, new int[]{
                 R.string.timer_channel,
-                IMPORTANCE_LOW
+                IMPORTANCE_DEFAULT,
+                0
         });
     }
 
     public static void createChannel(Context context, String id) {
-        if (!Utils.isOOrLater()) {
-            return;
-        }
-
         if (!CHANNEL_PROPS.containsKey(id)) {
             Log.e(TAG, "Invalid channel requested: " + id);
             return;
         }
 
-        int[] properties = (int[]) CHANNEL_PROPS.get(id);
+        int[] properties = CHANNEL_PROPS.get(id);
         int nameId = properties[0];
         int importance = properties[1];
         NotificationChannel channel = new NotificationChannel(
@@ -145,10 +144,6 @@ public class NotificationUtils {
     }
 
     public static void updateNotificationChannels(Context context) {
-        if (!Utils.isOOrLater()) {
-            return;
-        }
-
         NotificationManagerCompat nm = NotificationManagerCompat.from(context);
 
         // These channels got a new behavior so we need to recreate them with new ids
@@ -158,6 +153,15 @@ public class NotificationUtils {
         deleteChannel(nm, "alarmNotification");
         deleteChannel(nm, "TimerModelNotification");
         deleteChannel(nm, "alarmSnoozeNotification");
+        deleteChannel(nm, "alarmUpcomingNotification");
+        deleteChannel(nm, "alarmSnoozingNotification");
+        deleteChannel(nm, "timerNotification");
+        deleteChannel(nm, "stopwatchNotification");
+        deleteChannel(nm, "StopWatchNotification");
+        deleteChannel(nm, "TimerNotification");
+        deleteChannel(nm, "alarmMissedNotification");
+        deleteChannel(nm, "AlarmUpcomingNotification");
+        deleteChannel(nm, "AlarmSnoozingNotification");
 
         // We recreate all existing channels so any language change or our name changes propagate
         // to the actual channels

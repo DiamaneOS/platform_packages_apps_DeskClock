@@ -21,14 +21,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.android.deskclock.DeskClock;
 import com.android.deskclock.R;
 import com.android.deskclock.data.DataModel;
 import com.android.deskclock.data.Timer;
 import com.android.deskclock.events.Events;
-import com.android.deskclock.uidata.UiDataModel;
-
-import static com.android.deskclock.uidata.UiDataModel.Tab.TIMERS;
 
 /**
  * <p>This service exists solely to allow {@link android.app.AlarmManager} and timer notifications
@@ -99,11 +95,6 @@ public final class TimerService extends Service {
                 .putExtra(EXTRA_TIMER_ID, timerId);
     }
 
-    public static Intent createUpdateNotificationIntent(Context context) {
-        return new Intent(context, TimerService.class)
-                .setAction(ACTION_UPDATE_NOTIFICATION);
-    }
-
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -114,22 +105,25 @@ public final class TimerService extends Service {
         try {
             final String action = intent.getAction();
             final int label = intent.getIntExtra(Events.EXTRA_EVENT_LABEL, R.string.label_intent);
-            switch (action) {
-                case ACTION_UPDATE_NOTIFICATION: {
-                    DataModel.getDataModel().updateTimerNotification();
-                    return START_NOT_STICKY;
-                }
-                case ACTION_RESET_EXPIRED_TIMERS: {
-                    DataModel.getDataModel().resetOrDeleteExpiredTimers(label);
-                    return START_NOT_STICKY;
-                }
-                case ACTION_RESET_UNEXPIRED_TIMERS: {
-                    DataModel.getDataModel().resetUnexpiredTimers(label);
-                    return START_NOT_STICKY;
-                }
-                case ACTION_RESET_MISSED_TIMERS: {
-                    DataModel.getDataModel().resetMissedTimers(label);
-                    return START_NOT_STICKY;
+
+            if (action != null) {
+                switch (action) {
+                    case ACTION_UPDATE_NOTIFICATION: {
+                        DataModel.getDataModel().updateTimerNotification();
+                        return START_NOT_STICKY;
+                    }
+                    case ACTION_RESET_EXPIRED_TIMERS: {
+                        DataModel.getDataModel().resetOrDeleteExpiredTimers(label);
+                        return START_NOT_STICKY;
+                    }
+                    case ACTION_RESET_UNEXPIRED_TIMERS: {
+                        DataModel.getDataModel().resetUnexpiredTimers(label);
+                        return START_NOT_STICKY;
+                    }
+                    case ACTION_RESET_MISSED_TIMERS: {
+                        DataModel.getDataModel().resetMissedTimers(label);
+                        return START_NOT_STICKY;
+                    }
                 }
             }
 
@@ -143,39 +137,28 @@ public final class TimerService extends Service {
             }
 
             // Perform the action on the timer.
-            switch (action) {
-                case ACTION_SHOW_TIMER: {
-                    Events.sendTimerEvent(R.string.action_show, label);
-
-                    // Change to the timers tab.
-                    UiDataModel.getUiDataModel().setSelectedTab(TIMERS);
-
-                    // Open DeskClock which is now positioned on the timers tab and show the timer
-                    // in question.
-                    final Intent showTimers = new Intent(this, DeskClock.class)
-                            .putExtra(EXTRA_TIMER_ID, timerId)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(showTimers);
-                    break;
-                } case ACTION_START_TIMER: {
-                    Events.sendTimerEvent(R.string.action_start, label);
-                    DataModel.getDataModel().startTimer(this, timer);
-                    break;
-                } case ACTION_PAUSE_TIMER: {
-                    Events.sendTimerEvent(R.string.action_pause, label);
-                    DataModel.getDataModel().pauseTimer(timer);
-                    break;
-                } case ACTION_ADD_MINUTE_TIMER: {
-                    Events.sendTimerEvent(R.string.action_add_minute, label);
-                    DataModel.getDataModel().addTimerMinute(timer);
-                    break;
-                } case ACTION_RESET_TIMER: {
-                    DataModel.getDataModel().resetOrDeleteTimer(timer, label);
-                    break;
-                } case ACTION_TIMER_EXPIRED: {
-                    Events.sendTimerEvent(R.string.action_fire, label);
-                    DataModel.getDataModel().expireTimer(this, timer);
-                    break;
+            if (action != null) {
+                switch (action) {
+                    case ACTION_START_TIMER: {
+                        Events.sendTimerEvent(R.string.action_start, label);
+                        DataModel.getDataModel().startTimer(this, timer);
+                        break;
+                    } case ACTION_PAUSE_TIMER: {
+                        Events.sendTimerEvent(R.string.action_pause, label);
+                        DataModel.getDataModel().pauseTimer(timer);
+                        break;
+                    } case ACTION_ADD_MINUTE_TIMER: {
+                        Events.sendTimerEvent(R.string.action_add_minute, label);
+                        DataModel.getDataModel().addTimerMinute(timer);
+                        break;
+                    } case ACTION_RESET_TIMER: {
+                        DataModel.getDataModel().resetOrDeleteTimer(timer, label);
+                        break;
+                    } case ACTION_TIMER_EXPIRED: {
+                        Events.sendTimerEvent(R.string.action_fire, label);
+                        DataModel.getDataModel().expireTimer(this, timer);
+                        break;
+                    }
                 }
             }
         } finally {

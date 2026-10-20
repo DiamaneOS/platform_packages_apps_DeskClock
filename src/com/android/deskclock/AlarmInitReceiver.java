@@ -16,26 +16,42 @@
 
 package com.android.deskclock;
 
+import static com.android.deskclock.DeskClockBackupAgent.ACTION_COMPLETE_RESTORE;
+
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager.WakeLock;
 
+import com.android.deskclock.alarms.AlarmNotifications;
 import com.android.deskclock.alarms.AlarmStateManager;
 import com.android.deskclock.controller.Controller;
 import com.android.deskclock.data.DataModel;
-import com.android.deskclock.NotificationUtils;
+import com.android.deskclock.provider.AlarmInstance;
+
+import java.util.Calendar;
+import java.util.List;
 
 public class AlarmInitReceiver extends BroadcastReceiver {
+
+    private static final String ACTION_UPDATE_ALARM_STATUS =
+            "org.codeaurora.poweroffalarm.action.UPDATE_ALARM";
+
+    private static final int SNOOZE_STATUS = 2;
+    private static final int DISMISS_STATUS = 3;
+
+    private static final String STATUS = "status";
+    private static final String TIME = "time";
+    private static final String SNOOZE_TIME = "snooze_time";
 
     /**
      * When running on N devices, we're interested in the boot completed event that is sent while
      * the user is still locked, so that we can schedule alarms.
      */
     @SuppressLint("InlinedApi")
-    private static final String ACTION_BOOT_COMPLETED = Utils.isNOrLater()
-            ? Intent.ACTION_LOCKED_BOOT_COMPLETED : Intent.ACTION_BOOT_COMPLETED;
+    private static final String ACTION_BOOT_COMPLETED = Intent.ACTION_LOCKED_BOOT_COMPLETED;
 
     /**
      * This receiver handles a variety of actions:
@@ -60,6 +76,12 @@ public class AlarmInitReceiver extends BroadcastReceiver {
 
         // We need to increment the global id out of the async task to prevent race conditions
         DataModel.getDataModel().updateGlobalIntentId();
+
+        if (ACTION_COMPLETE_RESTORE.equals(action)) {
+            // Our "minimalist" state in DeskClockBackupAgent's onRestoreFinished prevents
+            // accessing the data model from there, so we set this here.
+            DataModel.getDataModel().setRestoreBackupFinished(true);
+        }
 
         // Updates stopwatch and timer data after a device reboot so they are as accurate as
         // possible.
@@ -87,20 +109,52 @@ public class AlarmInitReceiver extends BroadcastReceiver {
             Controller.getController().updateShortcuts();
         }
 
-        AsyncHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // Process restored data if any exists
-                    if (!DeskClockBackupAgent.processRestoredData(context)) {
-                        // Update all the alarm instances on time change event
-                        AlarmStateManager.fixAlarmInstances(context);
+        // Update alarm status once receive the status update broadcast
+        if (ACTION_UPDATE_ALARM_STATUS.equals(action)) {
+            long alarmTime = intent.getLongExtra(TIME, 0L);
+            int alarmStatus = intent.getIntExtra(STATUS, 0);
+
+            if (alarmTime != 0) {
+                ContentResolver cr = context.getContentResolver();
+                List<AlarmInstance> alarmInstances = AlarmInstance.getInstances(cr, null);
+                AlarmInstance alarmInstance = null;
+                for (AlarmInstance instance : alarmInstances) {
+                    if (instance.getAlarmTime().getTimeInMillis() == alarmTime) {
+                        alarmInstance = instance;
+                        break;
                     }
-                } finally {
-                    result.finish();
-                    wl.release();
-                    LogUtils.v("AlarmInitReceiver finished");
                 }
+
+                if (alarmInstance != null) {
+                    // Update alarm status if the alarm instance is not null
+                    if (alarmStatus == DISMISS_STATUS) {
+                        AlarmStateManager.setDismissState(context, alarmInstance);
+                    } else if (alarmStatus == SNOOZE_STATUS) {
+                        long snoozeTime = intent.getLongExtra(SNOOZE_TIME, 0L);
+                        if (snoozeTime > System.currentTimeMillis()) {
+                            AlarmNotifications.clearNotification(context, alarmInstance);
+                            Calendar c = Calendar.getInstance();
+                            c.setTimeInMillis(snoozeTime);
+                            alarmInstance.setAlarmTime(c);
+                            alarmInstance.mAlarmState = AlarmInstance.SNOOZE_STATE;
+                            AlarmInstance.updateInstance(cr, alarmInstance);
+                        }
+                    }
+                }
+            }
+        }
+
+        AsyncHandler.post(() -> {
+            try {
+                // Process restored data if any exists
+                if (!DeskClockBackupAgent.processRestoredData(context)) {
+                    // Update all the alarm instances on time change event
+                    AlarmStateManager.fixAlarmInstances(context);
+                }
+            } finally {
+                result.finish();
+                wl.release();
+                LogUtils.v("AlarmInitReceiver finished");
             }
         });
     }

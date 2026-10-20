@@ -16,6 +16,9 @@
 
 package com.android.deskclock.data;
 
+import static android.media.AudioManager.STREAM_ALARM;
+import static android.media.RingtoneManager.TITLE_COLUMN_INDEX;
+
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -44,9 +47,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-
-import static android.media.AudioManager.STREAM_ALARM;
-import static android.media.RingtoneManager.TITLE_COLUMN_INDEX;
 
 /**
  * All ringtone data is accessed via this model.
@@ -78,20 +78,20 @@ final class RingtoneModel {
 
         // Clear caches affected by locale when locale changes.
         final IntentFilter localeBroadcastFilter = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
-        mContext.registerReceiver(mLocaleChangedReceiver, localeBroadcastFilter);
+        mContext.registerReceiver(mLocaleChangedReceiver, localeBroadcastFilter,
+                Context.RECEIVER_NOT_EXPORTED);
     }
 
-    CustomRingtone addCustomRingtone(Uri uri, String title) {
+    void addCustomRingtone(Uri uri, String title) {
         // If the uri is already present in an existing ringtone, do nothing.
         final CustomRingtone existing = getCustomRingtone(uri);
         if (existing != null) {
-            return existing;
+            return;
         }
 
         final CustomRingtone ringtone = CustomRingtoneDAO.addCustomRingtone(mPrefs, uri, title);
         getMutableCustomRingtones().add(ringtone);
         Collections.sort(getMutableCustomRingtones());
-        return ringtone;
     }
 
     void removeCustomRingtone(Uri uri) {
@@ -155,9 +155,9 @@ final class RingtoneModel {
                 final Uri ringtoneUri = ringtoneManager.getRingtoneUri(cursor.getPosition());
                 mRingtoneTitles.put(ringtoneUri, ringtoneTitle);
             }
-        } catch (Throwable ignored) {
+        } catch (Throwable t) {
             // best attempt only
-            LogUtils.e("Error loading ringtone title cache", ignored);
+            LogUtils.e("Error loading ringtone title cache", t);
         }
     }
 

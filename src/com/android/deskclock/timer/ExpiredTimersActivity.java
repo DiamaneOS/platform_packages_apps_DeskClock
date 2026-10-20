@@ -14,11 +14,10 @@
 
 package com.android.deskclock.timer;
 
-import android.content.Intent;
+import android.app.KeyguardManager;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.SystemClock;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
@@ -29,6 +28,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.android.deskclock.BaseActivity;
 import com.android.deskclock.LogUtils;
@@ -73,22 +74,19 @@ public class ExpiredTimersActivity extends BaseActivity {
 
         setContentView(R.layout.expired_timers_activity);
 
-        mExpiredTimersView = (ViewGroup) findViewById(R.id.expired_timers_list);
-        mExpiredTimersScrollView = (ViewGroup) findViewById(R.id.expired_timers_scroll);
-
-        findViewById(R.id.fab).setOnClickListener(new FabClickListener());
+        mExpiredTimersView = findViewById(R.id.expired_timers_list);
+        mExpiredTimersScrollView = findViewById(R.id.expired_timers_scroll);
 
         final View view = findViewById(R.id.expired_timers_activity);
         view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                 | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
 
-        // Close dialogs and window shade, so this is fully visible
-        sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+        setTurnScreenOn(true);
+        setShowWhenLocked(true);
+        KeyguardManager kgm = getSystemService(KeyguardManager.class);
+        kgm.requestDismissKeyguard(this, null);
 
         // Honor rotation on tablets; fix the orientation on phones.
         if (!getResources().getBoolean(R.bool.rotateAlarmAlert)) {
@@ -169,18 +167,29 @@ public class ExpiredTimersActivity extends BaseActivity {
         mExpiredTimersView.addView(timerItem);
 
         // Hide the label hint for expired timers.
-        final TextView labelView = (TextView) timerItem.findViewById(R.id.timer_label);
+        final TextView labelView = timerItem.findViewById(R.id.timer_label);
         labelView.setHint(null);
         labelView.setVisibility(TextUtils.isEmpty(timer.getLabel()) ? View.GONE : View.VISIBLE);
 
         // Add logic to the "Add 1 Minute" button.
-        final View addMinuteButton = timerItem.findViewById(R.id.reset_add);
-        addMinuteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Timer timer = DataModel.getDataModel().getTimer(timerId);
-                DataModel.getDataModel().addTimerMinute(timer);
-            }
+        final View addMinuteButton = timerItem.findViewById(R.id.add_one_min);
+        addMinuteButton.setOnClickListener(v -> {
+            final Timer timer1 = DataModel.getDataModel().getTimer(timerId);
+            DataModel.getDataModel().addTimerMinute(timer1);
+        });
+
+        // Add logic to hide the 'X' and reset button
+        final View closeButton = timerItem.findViewById(R.id.close);
+        closeButton.setVisibility(View.GONE);
+        final View resetButton = timerItem.findViewById(R.id.reset);
+        resetButton.setVisibility(View.GONE);
+
+        // Add logic to the "Stop" button
+        final View stopButton = timerItem.findViewById(R.id.play_pause);
+        stopButton.setOnClickListener(v -> {
+            final Timer timer1 = DataModel.getDataModel().getTimer(timerId);
+            DataModel.getDataModel().resetOrDeleteTimer(timer1, R.string.label_deskclock);
+            removeTimer(timer1);
         });
 
         // If the first timer was just added, center it.
@@ -261,21 +270,8 @@ public class ExpiredTimersActivity extends BaseActivity {
             final long endTime = SystemClock.elapsedRealtime();
 
             // Try to maintain a consistent period of time between redraws.
-            final long delay = Math.max(0L, startTime + 20L - endTime);
+            final long delay = Math.max(0L, startTime + 100L - endTime);
             mExpiredTimersView.postDelayed(this, delay);
-        }
-    }
-
-    /**
-     * Clicking the fab resets all expired timers.
-     */
-    private class FabClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            stopUpdatingTime();
-            DataModel.getDataModel().removeTimerListener(mTimerChangeWatcher);
-            DataModel.getDataModel().resetOrDeleteExpiredTimers(R.string.label_deskclock);
-            finish();
         }
     }
 

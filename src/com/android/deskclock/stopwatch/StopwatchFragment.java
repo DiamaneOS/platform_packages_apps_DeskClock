@@ -16,6 +16,14 @@
 
 package com.android.deskclock.stopwatch;
 
+import static android.R.attr.state_activated;
+import static android.R.attr.state_pressed;
+import static android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM;
+import static android.view.View.GONE;
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+import static com.android.deskclock.uidata.UiDataModel.Tab.STOPWATCH;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -24,23 +32,24 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SimpleItemAnimator;
 import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.android.deskclock.AnimatorUtils;
 import com.android.deskclock.DeskClockFragment;
@@ -57,14 +66,6 @@ import com.android.deskclock.events.Events;
 import com.android.deskclock.uidata.TabListener;
 import com.android.deskclock.uidata.UiDataModel;
 import com.android.deskclock.uidata.UiDataModel.Tab;
-
-import static android.R.attr.state_activated;
-import static android.R.attr.state_pressed;
-import static android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM;
-import static android.view.View.GONE;
-import static android.view.View.INVISIBLE;
-import static android.view.View.VISIBLE;
-import static com.android.deskclock.uidata.UiDataModel.Tab.STOPWATCH;
 
 /**
  * Fragment that shows the stopwatch and recorded laps.
@@ -125,11 +126,10 @@ public final class StopwatchFragment extends DeskClockFragment {
         mGradientItemDecoration = new GradientItemDecoration(getActivity());
 
         final View v = inflater.inflate(R.layout.stopwatch_fragment, container, false);
-        mTime = (StopwatchCircleView) v.findViewById(R.id.stopwatch_circle);
-        mLapsList = (RecyclerView) v.findViewById(R.id.laps_list);
+        mTime = v.findViewById(R.id.stopwatch_circle);
+        mLapsList = v.findViewById(R.id.laps_list);
         ((SimpleItemAnimator) mLapsList.getItemAnimator()).setSupportsChangeAnimations(false);
         mLapsList.setLayoutManager(mLapsLayoutManager);
-        mLapsList.addItemDecoration(mGradientItemDecoration);
 
         // In landscape layouts, the laps list can reach the top of the screen and thus can cause
         // a drop shadow to appear. The same is not true for portrait landscapes.
@@ -138,13 +138,14 @@ public final class StopwatchFragment extends DeskClockFragment {
             mLapsList.addOnLayoutChangeListener(scrollPositionWatcher);
             mLapsList.addOnScrollListener(scrollPositionWatcher);
         } else {
+            mLapsList.addItemDecoration(mGradientItemDecoration);
             setTabScrolledToTop(true);
         }
         mLapsList.setAdapter(mLapsAdapter);
 
         // Timer text serves as a virtual start/stop button.
-        mMainTimeText = (TextView) v.findViewById(R.id.stopwatch_time_text);
-        mHundredthsTimeText = (TextView) v.findViewById(R.id.stopwatch_hundredths_text);
+        mMainTimeText = v.findViewById(R.id.stopwatch_time_text);
+        mHundredthsTimeText = v.findViewById(R.id.stopwatch_hundredths_text);
         mStopwatchTextController = new StopwatchTextController(mMainTimeText, mHundredthsTimeText);
         mStopwatchWrapper = v.findViewById(R.id.stopwatch_time_wrapper);
 
@@ -223,12 +224,12 @@ public final class StopwatchFragment extends DeskClockFragment {
     }
 
     @Override
-    public void onLeftButtonClick(@NonNull Button left) {
+    public void onLeftButtonClick(@NonNull ImageView left) {
         doReset();
     }
 
     @Override
-    public void onRightButtonClick(@NonNull Button right) {
+    public void onRightButtonClick(@NonNull ImageView right) {
         switch (getStopwatch().getState()) {
             case RUNNING:
                 doAddLap();
@@ -239,42 +240,37 @@ public final class StopwatchFragment extends DeskClockFragment {
         }
     }
 
-    private void updateFab(@NonNull ImageView fab, boolean animate) {
+    private void updateFab(@NonNull ImageView fab) {
         if (getStopwatch().isRunning()) {
-            if (animate) {
-                fab.setImageResource(R.drawable.ic_play_pause_animation);
-            } else {
-                fab.setImageResource(R.drawable.ic_play_pause);
-            }
+            fab.setImageResource(R.drawable.ic_play_pause);
             fab.setContentDescription(fab.getResources().getString(R.string.sw_pause_button));
         } else {
-            if (animate) {
-                fab.setImageResource(R.drawable.ic_pause_play_animation);
-            } else {
-                fab.setImageResource(R.drawable.ic_pause_play);
-            }
+            fab.setImageResource(R.drawable.ic_pause_play);
             fab.setContentDescription(fab.getResources().getString(R.string.sw_start_button));
         }
         fab.setVisibility(VISIBLE);
     }
 
+    @Override
     public void onUpdateFab(@NonNull ImageView fab) {
-        updateFab(fab, false);
+        updateFab(fab);
     }
 
     @Override
     public void onMorphFab(@NonNull ImageView fab) {
         // Update the fab's drawable to match the current timer state.
-        updateFab(fab, Utils.isNOrLater());
+        updateFab(fab);
         // Animate the drawable.
         AnimatorUtils.startDrawableAnimation(fab);
     }
 
     @Override
-    public void onUpdateFabButtons(@NonNull Button left, @NonNull Button right) {
+    public void onUpdateFabButtons(@NonNull ImageView left, @NonNull ImageView right) {
         final Resources resources = getResources();
+        final Context context = left.getContext();
+        final Drawable icReset = Utils.getVectorDrawable(context, R.drawable.ic_delete);
         left.setClickable(true);
-        left.setText(R.string.sw_reset_button);
+        left.setImageDrawable(icReset);
         left.setContentDescription(resources.getString(R.string.sw_reset_button));
 
         switch (getStopwatch().getState()) {
@@ -286,7 +282,9 @@ public final class StopwatchFragment extends DeskClockFragment {
             case RUNNING:
                 left.setVisibility(VISIBLE);
                 final boolean canRecordLaps = canRecordMoreLaps();
-                right.setText(R.string.sw_lap_button);
+                final Drawable icLap = Utils.getVectorDrawable(context,
+                        R.drawable.ic_stopwatch_black);
+                right.setImageDrawable(icLap);
                 right.setContentDescription(resources.getString(R.string.sw_lap_button));
                 right.setClickable(canRecordLaps);
                 right.setVisibility(canRecordLaps ? VISIBLE : INVISIBLE);
@@ -295,22 +293,16 @@ public final class StopwatchFragment extends DeskClockFragment {
                 left.setVisibility(VISIBLE);
                 right.setClickable(true);
                 right.setVisibility(VISIBLE);
-                right.setText(R.string.sw_share_button);
+                final Drawable icShare = Utils.getVectorDrawable(context, R.drawable.ic_share);
+                right.setImageDrawable(icShare);
                 right.setContentDescription(resources.getString(R.string.sw_share_button));
                 break;
         }
     }
 
-    /**
-     * @param color the newly installed app window color
-     */
-    protected void onAppColorChanged(@ColorInt int color) {
-        if (mGradientItemDecoration != null) {
-            mGradientItemDecoration.updateGradientColors(color);
-        }
-        if (mLapsList != null) {
-            mLapsList.invalidateItemDecorations();
-        }
+    @Override
+    public int getFabTargetVisibility() {
+        return View.VISIBLE;
     }
 
     /**
@@ -355,10 +347,8 @@ public final class StopwatchFragment extends DeskClockFragment {
         final String text = mLapsAdapter.getShareText();
 
         @SuppressLint("InlinedApi")
-        @SuppressWarnings("deprecation")
         final Intent shareIntent = new Intent(Intent.ACTION_SEND)
-                .addFlags(Utils.isLOrLater() ? Intent.FLAG_ACTIVITY_NEW_DOCUMENT
-                        : Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
                 .putExtra(Intent.EXTRA_SUBJECT, subject)
                 .putExtra(Intent.EXTRA_TEXT, text)
                 .setType("text/plain");
@@ -430,7 +420,8 @@ public final class StopwatchFragment extends DeskClockFragment {
             // When the lap list is visible, it includes the bottom padding. When it is absent the
             // appropriate bottom padding must be applied to the container.
             final Resources res = getResources();
-            final int bottom = lapsVisible ? 0 : res.getDimensionPixelSize(R.dimen.fab_height);
+            final int bottom = lapsVisible ? 0 : res.getDimensionPixelSize(
+                    R.dimen.fab_container_height);
             final int top = sceneRoot.getPaddingTop();
             final int left = sceneRoot.getPaddingLeft();
             final int right = sceneRoot.getPaddingRight();
@@ -571,7 +562,7 @@ public final class StopwatchFragment extends DeskClockFragment {
      */
     private final class TabWatcher implements TabListener {
         @Override
-        public void selectedTabChanged(Tab oldSelectedTab, Tab newSelectedTab) {
+        public void selectedTabChanged(Tab newSelectedTab) {
             adjustWakeLock();
         }
     }
@@ -594,10 +585,6 @@ public final class StopwatchFragment extends DeskClockFragment {
                 updateUI(FAB_MORPH | BUTTONS_IMMEDIATE);
             }
         }
-
-        @Override
-        public void lapAdded(Lap lap) {
-        }
     }
 
     /**
@@ -617,7 +604,7 @@ public final class StopwatchFragment extends DeskClockFragment {
     /**
      * Checks if the user is pressing inside of the stopwatch circle.
      */
-    private final class CircleTouchListener implements View.OnTouchListener {
+    private static final class CircleTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View view, MotionEvent event) {
             final int actionMasked = event.getActionMasked();
@@ -645,7 +632,7 @@ public final class StopwatchFragment extends DeskClockFragment {
     private final class ScrollPositionWatcher extends RecyclerView.OnScrollListener
             implements View.OnLayoutChangeListener {
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             setTabScrolledToTop(Utils.isScrolledToTop(mLapsList));
         }
 
@@ -706,12 +693,11 @@ public final class StopwatchFragment extends DeskClockFragment {
             updateGradientColors(ThemeUtils.resolveColor(context, android.R.attr.windowBackground));
 
             final Resources resources = context.getResources();
-            final float fabHeight = resources.getDimensionPixelSize(R.dimen.fab_height);
-            mGradientHeight = Math.round(fabHeight * 1.2f);
+            mGradientHeight = resources.getDimensionPixelSize(R.dimen.fab_container_height);
         }
 
         @Override
-        public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+        public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
             super.onDrawOver(c, parent, state);
 
             final int w = parent.getWidth();

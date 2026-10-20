@@ -16,20 +16,6 @@
 
 package com.android.deskclock.uidata;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Handler;
-import android.os.Looper;
-import androidx.annotation.VisibleForTesting;
-
-import com.android.deskclock.LogUtils;
-
-import java.util.Calendar;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import static android.content.Intent.ACTION_DATE_CHANGED;
 import static android.content.Intent.ACTION_TIMEZONE_CHANGED;
 import static android.content.Intent.ACTION_TIME_CHANGED;
@@ -41,6 +27,21 @@ import static java.util.Calendar.HOUR_OF_DAY;
 import static java.util.Calendar.MILLISECOND;
 import static java.util.Calendar.MINUTE;
 import static java.util.Calendar.SECOND;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Handler;
+import android.os.Looper;
+
+import androidx.annotation.VisibleForTesting;
+
+import com.android.deskclock.LogUtils;
+
+import java.util.Calendar;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * All callbacks to be delivered at requested times on the main thread if the application is in the
@@ -69,7 +70,8 @@ final class PeriodicCallbackModel {
         timeChangedBroadcastFilter.addAction(ACTION_TIME_CHANGED);
         timeChangedBroadcastFilter.addAction(ACTION_DATE_CHANGED);
         timeChangedBroadcastFilter.addAction(ACTION_TIMEZONE_CHANGED);
-        context.registerReceiver(mTimeChangedReceiver, timeChangedBroadcastFilter);
+        context.registerReceiver(mTimeChangedReceiver, timeChangedBroadcastFilter,
+                Context.RECEIVER_NOT_EXPORTED);
     }
 
     /**
@@ -82,26 +84,30 @@ final class PeriodicCallbackModel {
 
     /**
      * @param runnable to be called every quarter-hour
-     * @param offset an offset applied to the quarter-hour to control when the callback occurs
      */
-    void addQuarterHourCallback(Runnable runnable, long offset) {
-        addPeriodicCallback(runnable, Period.QUARTER_HOUR, offset);
+    void addQuarterHourCallback(Runnable runnable) {
+        // Callbacks *can* occur early so pad in an extra 100ms on the quarter-hour callback
+        // to ensure the sampled wallclock time reflects the subsequent quarter-hour.
+        addPeriodicCallback(runnable, Period.QUARTER_HOUR, 100L);
     }
 
     /**
      * @param runnable to be called every hour
-     * @param offset an offset applied to the hour to control when the callback occurs
      */
-    void addHourCallback(Runnable runnable, long offset) {
-        addPeriodicCallback(runnable, Period.HOUR, offset);
+    @SuppressWarnings("unused")
+    void addHourCallback(Runnable runnable) {
+        // Callbacks *can* occur early so pad in an extra 100ms on the hour callback to ensure
+        // the sampled wallclock time reflects the subsequent hour.
+        addPeriodicCallback(runnable, Period.HOUR, 100L);
     }
 
     /**
      * @param runnable to be called every midnight
-     * @param offset an offset applied to the midnight to control when the callback occurs
      */
-    void addMidnightCallback(Runnable runnable, long offset) {
-        addPeriodicCallback(runnable, Period.MIDNIGHT, offset);
+    void addMidnightCallback(Runnable runnable) {
+        // Callbacks *can* occur early so pad in an extra 100ms on the midnight callback to ensure
+        // the sampled wallclock time reflects the subsequent day.
+        addPeriodicCallback(runnable, Period.MIDNIGHT, 100L);
     }
 
     /**

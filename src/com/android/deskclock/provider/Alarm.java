@@ -26,6 +26,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
 import androidx.loader.content.CursorLoader;
 
 import com.android.deskclock.R;
@@ -59,7 +61,8 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
             VIBRATE,
             LABEL,
             RINGTONE,
-            DELETE_AFTER_USE
+            DELETE_AFTER_USE,
+            INCREASING_VOLUME,
     };
 
     private static final String[] QUERY_ALARMS_WITH_INSTANCES_COLUMNS = {
@@ -72,6 +75,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
             ClockDatabaseHelper.ALARMS_TABLE_NAME + "." + LABEL,
             ClockDatabaseHelper.ALARMS_TABLE_NAME + "." + RINGTONE,
             ClockDatabaseHelper.ALARMS_TABLE_NAME + "." + DELETE_AFTER_USE,
+            ClockDatabaseHelper.ALARMS_TABLE_NAME + "." + INCREASING_VOLUME,
             ClockDatabaseHelper.INSTANCES_TABLE_NAME + "."
                     + ClockContract.InstancesColumns.ALARM_STATE,
             ClockDatabaseHelper.INSTANCES_TABLE_NAME + "." + ClockContract.InstancesColumns._ID,
@@ -97,17 +101,19 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
     private static final int LABEL_INDEX = 6;
     private static final int RINGTONE_INDEX = 7;
     private static final int DELETE_AFTER_USE_INDEX = 8;
-    private static final int INSTANCE_STATE_INDEX = 9;
-    public static final int INSTANCE_ID_INDEX = 10;
-    public static final int INSTANCE_YEAR_INDEX = 11;
-    public static final int INSTANCE_MONTH_INDEX = 12;
-    public static final int INSTANCE_DAY_INDEX = 13;
-    public static final int INSTANCE_HOUR_INDEX = 14;
-    public static final int INSTANCE_MINUTE_INDEX = 15;
-    public static final int INSTANCE_LABEL_INDEX = 16;
-    public static final int INSTANCE_VIBRATE_INDEX = 17;
+    private static final int INCREASING_VOLUME_INDEX = 9;
 
-    private static final int COLUMN_COUNT = DELETE_AFTER_USE_INDEX + 1;
+    public static final int INSTANCE_STATE_INDEX = 10;
+    public static final int INSTANCE_ID_INDEX = 11;
+    public static final int INSTANCE_YEAR_INDEX = 12;
+    public static final int INSTANCE_MONTH_INDEX = 13;
+    public static final int INSTANCE_DAY_INDEX = 14;
+    public static final int INSTANCE_HOUR_INDEX = 15;
+    public static final int INSTANCE_MINUTE_INDEX = 16;
+    public static final int INSTANCE_LABEL_INDEX = 17;
+    public static final int INSTANCE_VIBRATE_INDEX = 18;
+
+    private static final int COLUMN_COUNT = INCREASING_VOLUME_INDEX + 1;
     private static final int ALARM_JOIN_INSTANCE_COLUMN_COUNT = INSTANCE_VIBRATE_INDEX + 1;
 
     public static ContentValues createContentValues(Alarm alarm) {
@@ -123,6 +129,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         values.put(VIBRATE, alarm.vibrate ? 1 : 0);
         values.put(LABEL, alarm.label);
         values.put(DELETE_AFTER_USE, alarm.deleteAfterUse);
+        values.put(INCREASING_VOLUME, alarm.increasingVolume ? 1 : 0);
         if (alarm.alert == null) {
             // We want to put null, so default alarm changes
             values.putNull(RINGTONE);
@@ -196,16 +203,6 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
 
         return null;
     }
-    /**
-     * Get alarm for the {@code contentUri}.
-     *
-     * @param cr provides access to the content model
-     * @param contentUri the {@link #getContentUri deeplink} for the desired alarm
-     * @return instance if found, null otherwise
-     */
-    public static Alarm getAlarm(ContentResolver cr, Uri contentUri) {
-        return getAlarm(cr, ContentUris.parseId(contentUri));
-    }
 
     /**
      * Get all alarms given conditions.
@@ -250,11 +247,10 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         return alarm;
     }
 
-    public static boolean updateAlarm(ContentResolver contentResolver, Alarm alarm) {
-        if (alarm.id == Alarm.INVALID_ID) return false;
+    public static void updateAlarm(ContentResolver contentResolver, Alarm alarm) {
+        if (alarm.id == Alarm.INVALID_ID) return;
         ContentValues values = createContentValues(alarm);
-        long rowsUpdated = contentResolver.update(getContentUri(alarm.id), values, null, null);
-        return rowsUpdated == 1;
+        contentResolver.update(getContentUri(alarm.id), values, null, null);
     }
 
     public static boolean deleteAlarm(ContentResolver contentResolver, long alarmId) {
@@ -263,7 +259,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         return deletedRows == 1;
     }
 
-    public static final Parcelable.Creator<Alarm> CREATOR = new Parcelable.Creator<Alarm>() {
+    public static final Parcelable.Creator<Alarm> CREATOR = new Parcelable.Creator<>() {
         public Alarm createFromParcel(Parcel p) {
             return new Alarm(p);
         }
@@ -284,6 +280,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
     public String label;
     public Uri alert;
     public boolean deleteAfterUse;
+    public boolean increasingVolume;
     public int instanceState;
     public int instanceId;
 
@@ -301,6 +298,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         this.label = "";
         this.alert = DataModel.getDataModel().getDefaultAlarmRingtoneUri();
         this.deleteAfterUse = false;
+        this.increasingVolume = false;
     }
 
     public Alarm(Cursor c) {
@@ -312,6 +310,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         vibrate = c.getInt(VIBRATE_INDEX) == 1;
         label = c.getString(LABEL_INDEX);
         deleteAfterUse = c.getInt(DELETE_AFTER_USE_INDEX) == 1;
+        increasingVolume = c.getInt(INCREASING_VOLUME_INDEX) == 1;
 
         if (c.getColumnCount() == ALARM_JOIN_INSTANCE_COLUMN_COUNT) {
             instanceState = c.getInt(INSTANCE_STATE_INDEX);
@@ -337,13 +336,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         label = p.readString();
         alert = p.readParcelable(null);
         deleteAfterUse = p.readInt() == 1;
-    }
-
-    /**
-     * @return the deeplink that identifies this alarm
-     */
-    public Uri getContentUri() {
-        return getContentUri(id);
+        increasingVolume = p.readInt() == 1;
     }
 
     public String getLabelOrDefault(Context context) {
@@ -371,6 +364,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         p.writeString(label);
         p.writeParcelable(alert, flags);
         p.writeInt(deleteAfterUse ? 1 : 0);
+        p.writeInt(increasingVolume ? 1 : 0);
     }
 
     public int describeContents() {
@@ -383,6 +377,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         result.mVibrate = vibrate;
         result.mLabel = label;
         result.mRingtone = alert;
+        result.mIncreasingVolume = increasingVolume;
         return result;
     }
 
@@ -451,6 +446,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
         return Long.valueOf(id).hashCode();
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Alarm{" +
@@ -463,6 +459,7 @@ public final class Alarm implements Parcelable, ClockContract.AlarmsColumns {
                 ", vibrate=" + vibrate +
                 ", label='" + label + '\'' +
                 ", deleteAfterUse=" + deleteAfterUse +
+                ", increasingVolume=" + increasingVolume +
                 '}';
     }
 }

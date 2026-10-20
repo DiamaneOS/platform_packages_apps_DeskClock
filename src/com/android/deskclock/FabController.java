@@ -1,9 +1,9 @@
 package com.android.deskclock;
 
-import androidx.annotation.NonNull;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
 
 /**
  * Implementers of this interface are able to {@link #onUpdateFab configure the fab} and associated
@@ -35,13 +35,14 @@ public interface FabController {
      * @param left button to the left of the fab to configure based on current state
      * @param right button to the right of the fab to configure based on current state
      */
-    void onUpdateFabButtons(@NonNull Button left, @NonNull Button right);
+    void onUpdateFabButtons(@NonNull ImageView left, @NonNull ImageView right);
 
     /**
      * Handles a click on the fab.
      *
      * @param fab the fab component on which the click occurred
      */
+    @SuppressWarnings("unused")
     void onFabClick(@NonNull ImageView fab);
 
     /**
@@ -49,12 +50,19 @@ public interface FabController {
      *
      * @param left the button to the left of the fab component
      */
-    void onLeftButtonClick(@NonNull Button left);
+    void onLeftButtonClick(@NonNull ImageView left);
 
     /**
      * Handles a click on the button to the right of the fab component.
      *
      * @param right the button to the right of the fab component
      */
-    void onRightButtonClick(@NonNull Button right);
+    @SuppressWarnings("unused")
+    void onRightButtonClick(@NonNull ImageView right);
+
+    /**
+     *
+     * @return the target visibility of the FAB component
+     */
+    int getFabTargetVisibility();
 }

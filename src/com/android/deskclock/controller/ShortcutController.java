@@ -16,16 +16,15 @@
 
 package com.android.deskclock.controller;
 
-import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.os.UserManager;
 import android.provider.AlarmClock;
+
 import androidx.annotation.StringRes;
 
 import com.android.deskclock.DeskClock;
@@ -35,7 +34,6 @@ import com.android.deskclock.LogUtils;
 import com.android.deskclock.R;
 import com.android.deskclock.ScreensaverActivity;
 import com.android.deskclock.data.DataModel;
-import com.android.deskclock.data.Lap;
 import com.android.deskclock.data.Stopwatch;
 import com.android.deskclock.data.StopwatchListener;
 import com.android.deskclock.events.Events;
@@ -46,7 +44,6 @@ import com.android.deskclock.uidata.UiDataModel;
 import java.util.Arrays;
 import java.util.Collections;
 
-@TargetApi(Build.VERSION_CODES.N_MR1)
 class ShortcutController {
 
     private final Context mContext;
@@ -173,10 +170,6 @@ class ShortcutController {
             } catch (IllegalStateException e) {
                 LogUtils.wtf(e);
             }
-        }
-
-        @Override
-        public void lapAdded(Lap lap) {
         }
     }
 }

@@ -17,16 +17,14 @@
 package com.android.deskclock.data;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationManagerCompat;
-
-import com.android.deskclock.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,7 +70,8 @@ final class StopwatchModel {
 
         // Update stopwatch notification when locale changes.
         final IntentFilter localeBroadcastFilter = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
-        mContext.registerReceiver(mLocaleChangedReceiver, localeBroadcastFilter);
+        mContext.registerReceiver(mLocaleChangedReceiver, localeBroadcastFilter,
+                Context.RECEIVER_NOT_EXPORTED);
     }
 
     /**
@@ -103,7 +102,7 @@ final class StopwatchModel {
     /**
      * @param stopwatch the new state of the stopwatch
      */
-    Stopwatch setStopwatch(Stopwatch stopwatch) {
+    void setStopwatch(Stopwatch stopwatch) {
         final Stopwatch before = getStopwatch();
         if (before != stopwatch) {
             StopwatchDAO.setStopwatch(mPrefs, stopwatch);
@@ -125,7 +124,7 @@ final class StopwatchModel {
             }
         }
 
-        return stopwatch;
+        return;
     }
 
     /**
@@ -158,11 +157,6 @@ final class StopwatchModel {
         // Refresh the stopwatch notification to reflect the latest stopwatch state.
         if (!mNotificationModel.isApplicationInForeground()) {
             updateNotification();
-        }
-
-        // Notify listeners of the new lap.
-        for (StopwatchListener stopwatchListener : mStopwatchListeners) {
-            stopwatchListener.lapAdded(lap);
         }
 
         return lap;

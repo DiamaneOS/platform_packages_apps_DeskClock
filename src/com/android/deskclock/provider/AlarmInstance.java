@@ -25,6 +25,8 @@ import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import com.android.deskclock.LogUtils;
 import com.android.deskclock.R;
 import com.android.deskclock.alarms.AlarmStateManager;
@@ -66,7 +68,8 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
             VIBRATE,
             RINGTONE,
             ALARM_ID,
-            ALARM_STATE
+            ALARM_STATE,
+            INCREASING_VOLUME
     };
 
     /**
@@ -84,8 +87,9 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
     private static final int RINGTONE_INDEX = 8;
     private static final int ALARM_ID_INDEX = 9;
     private static final int ALARM_STATE_INDEX = 10;
+    private static final int INCREASING_VOLUME_INDEX = 11;
 
-    private static final int COLUMN_COUNT = ALARM_STATE_INDEX + 1;
+    private static final int COLUMN_COUNT = INCREASING_VOLUME_INDEX + 1;
 
     public static ContentValues createContentValues(AlarmInstance instance) {
         ContentValues values = new ContentValues(COLUMN_COUNT);
@@ -109,11 +113,9 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
         }
         values.put(ALARM_ID, instance.mAlarmId);
         values.put(ALARM_STATE, instance.mAlarmState);
-        return values;
-    }
+        values.put(INCREASING_VOLUME, instance.mIncreasingVolume ? 1 : 0);
 
-    public static Intent createIntent(String action, long instanceId) {
-        return new Intent(action).setData(getContentUri(instanceId));
+        return values;
     }
 
     public static Intent createIntent(Context context, Class<?> cls, long instanceId) {
@@ -149,18 +151,6 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
     }
 
     /**
-     * Get alarm instance for the {@code contentUri}.
-     *
-     * @param cr provides access to the content model
-     * @param contentUri the {@link #getContentUri deeplink} for the desired instance
-     * @return instance if found, null otherwise
-     */
-    public static AlarmInstance getInstance(ContentResolver cr, Uri contentUri) {
-        final long instanceId = ContentUris.parseId(contentUri);
-        return getInstance(cr, instanceId);
-    }
-
-    /**
      * Get an alarm instances by alarmId.
      *
      * @param contentResolver provides access to the content model
@@ -191,15 +181,6 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
             }
         }
         return nextAlarmInstance;
-    }
-
-    /**
-     * Get alarm instance by id and state.
-     */
-    public static List<AlarmInstance> getInstancesByInstanceIdAndState(
-            ContentResolver contentResolver, long alarmInstanceId, int state) {
-        return getInstances(contentResolver, _ID + "=" + alarmInstanceId + " AND " + ALARM_STATE +
-                "=" + state);
     }
 
     /**
@@ -259,17 +240,15 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
         return instance;
     }
 
-    public static boolean updateInstance(ContentResolver contentResolver, AlarmInstance instance) {
-        if (instance.mId == INVALID_ID) return false;
+    public static void updateInstance(ContentResolver contentResolver, AlarmInstance instance) {
+        if (instance.mId == INVALID_ID) return;
         ContentValues values = createContentValues(instance);
-        long rowsUpdated = contentResolver.update(getContentUri(instance.mId), values, null, null);
-        return rowsUpdated == 1;
+        contentResolver.update(getContentUri(instance.mId), values, null, null);
     }
 
-    public static boolean deleteInstance(ContentResolver contentResolver, long instanceId) {
-        if (instanceId == INVALID_ID) return false;
-        int deletedRows = contentResolver.delete(getContentUri(instanceId), "", null);
-        return deletedRows == 1;
+    public static void deleteInstance(ContentResolver contentResolver, long instanceId) {
+        if (instanceId == INVALID_ID) return;
+        contentResolver.delete(getContentUri(instanceId), "", null);
     }
 
     public static void deleteOtherInstances(Context context, ContentResolver contentResolver,
@@ -295,6 +274,7 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
     public Uri mRingtone;
     public Long mAlarmId;
     public int mAlarmState;
+    public boolean mIncreasingVolume;
 
     public AlarmInstance(Calendar calendar, Long alarmId) {
         this(calendar);
@@ -308,6 +288,7 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
         mVibrate = false;
         mRingtone = null;
         mAlarmState = SILENT_STATE;
+        mIncreasingVolume = false;
     }
 
     public AlarmInstance(AlarmInstance instance) {
@@ -322,6 +303,7 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
          this.mRingtone = instance.mRingtone;
          this.mAlarmId = instance.mAlarmId;
          this.mAlarmState = instance.mAlarmState;
+         this.mIncreasingVolume = instance.mIncreasingVolume;
     }
 
     public AlarmInstance(Cursor c, boolean joinedTable) {
@@ -356,13 +338,7 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
             mAlarmId = c.getLong(ALARM_ID_INDEX);
         }
         mAlarmState = c.getInt(ALARM_STATE_INDEX);
-    }
-
-    /**
-     * @return the deeplink that identifies this alarm instance
-     */
-    public Uri getContentUri() {
-        return getContentUri(mId);
+        mIncreasingVolume = c.getInt(INCREASING_VOLUME_INDEX) == 1;
     }
 
     public String getLabelOrDefault(Context context) {
@@ -457,6 +433,7 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
         return Long.valueOf(mId).hashCode();
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "AlarmInstance{" +
@@ -471,6 +448,7 @@ public final class AlarmInstance implements ClockContract.InstancesColumns {
                 ", mRingtone=" + mRingtone +
                 ", mAlarmId=" + mAlarmId +
                 ", mAlarmState=" + mAlarmState +
+                ", mIncreasingVolume=" + mIncreasingVolume +
                 '}';
     }
 }

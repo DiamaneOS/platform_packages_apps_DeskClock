@@ -16,17 +16,22 @@
 
 package com.android.deskclock;
 
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY;
+import static android.appwidget.AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD;
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
+
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.AlarmManager.AlarmClockInfo;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -36,15 +41,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.provider.Settings;
-import androidx.annotation.AnyRes;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.StringRes;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
-import androidx.core.os.BuildCompat;
-import androidx.core.view.AccessibilityDelegateCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -54,9 +50,20 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.text.style.TypefaceSpan;
 import android.util.ArraySet;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextClock;
 import android.widget.TextView;
+
+import androidx.annotation.AnyRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.android.deskclock.data.DataModel;
 import com.android.deskclock.provider.AlarmInstance;
@@ -69,13 +76,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
-import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY;
-import static android.appwidget.AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD;
-import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
-import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
-import static android.graphics.Bitmap.Config.ARGB_8888;
 
 public class Utils {
 
@@ -106,64 +106,6 @@ public class Utils {
     }
 
     /**
-     * @return {@code true} if the device is prior to {@link Build.VERSION_CODES#LOLLIPOP}
-     */
-    public static boolean isPreL() {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
-    }
-
-    /**
-     * @return {@code true} if the device is {@link Build.VERSION_CODES#LOLLIPOP} or
-     * {@link Build.VERSION_CODES#LOLLIPOP_MR1}
-     */
-    public static boolean isLOrLMR1() {
-        final int sdkInt = Build.VERSION.SDK_INT;
-        return sdkInt == Build.VERSION_CODES.LOLLIPOP || sdkInt == Build.VERSION_CODES.LOLLIPOP_MR1;
-    }
-
-    /**
-     * @return {@code true} if the device is {@link Build.VERSION_CODES#LOLLIPOP} or later
-     */
-    public static boolean isLOrLater() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-    }
-
-    /**
-     * @return {@code true} if the device is {@link Build.VERSION_CODES#LOLLIPOP_MR1} or later
-     */
-    public static boolean isLMR1OrLater() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1;
-    }
-
-    /**
-     * @return {@code true} if the device is {@link Build.VERSION_CODES#M} or later
-     */
-    public static boolean isMOrLater() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-    }
-
-    /**
-     * @return {@code true} if the device is {@link Build.VERSION_CODES#N} or later
-     */
-    public static boolean isNOrLater() {
-        return BuildCompat.isAtLeastN();
-    }
-
-    /**
-     * @return {@code true} if the device is {@link Build.VERSION_CODES#N_MR1} or later
-     */
-    public static boolean isNMR1OrLater() {
-        return BuildCompat.isAtLeastNMR1();
-    }
-
-    /**
-     * @return {@code true} if the device is {@link Build.VERSION_CODES#O} or later
-     */
-    public static boolean isOOrLater() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-    }
-
-    /**
      * @param resourceId identifies an application resource
      * @return the Uri by which the application resource is accessed
      */
@@ -181,15 +123,6 @@ public class Utils {
      */
     public static boolean isScrolledToTop(View view) {
         return !view.canScrollVertically(-1);
-    }
-
-    /**
-     * Calculate the amount by which the radius of a CircleTimerView should be offset by any
-     * of the extra painted objects.
-     */
-    public static float calculateRadiusOffset(
-            float strokeSize, float dotStrokeSize, float markerStrokeSize) {
-        return Math.max(strokeSize, Math.max(dotStrokeSize, markerStrokeSize));
     }
 
     /**
@@ -217,17 +150,17 @@ public class Utils {
      * Set whether the digital or analog clock should be displayed in the application.
      * Returns the view to be displayed.
      */
-    public static View setClockStyle(View digitalClock, View analogClock) {
+    public static void setClockStyle(View digitalClock, View analogClock) {
         final DataModel.ClockStyle clockStyle = DataModel.getDataModel().getClockStyle();
         switch (clockStyle) {
             case ANALOG:
                 digitalClock.setVisibility(View.GONE);
                 analogClock.setVisibility(View.VISIBLE);
-                return analogClock;
+                return;
             case DIGITAL:
                 digitalClock.setVisibility(View.VISIBLE);
                 analogClock.setVisibility(View.GONE);
-                return digitalClock;
+                return;
         }
 
         throw new IllegalStateException("unexpected clock style: " + clockStyle);
@@ -237,32 +170,66 @@ public class Utils {
      * For screensavers to set whether the digital or analog clock should be displayed.
      * Returns the view to be displayed.
      */
-    public static View setScreensaverClockStyle(View digitalClock, View analogClock) {
+    public static void setScreensaverClockStyle(View digitalClock, View analogClock) {
         final DataModel.ClockStyle clockStyle = DataModel.getDataModel().getScreensaverClockStyle();
         switch (clockStyle) {
             case ANALOG:
                 digitalClock.setVisibility(View.GONE);
                 analogClock.setVisibility(View.VISIBLE);
-                return analogClock;
+                return;
             case DIGITAL:
                 digitalClock.setVisibility(View.VISIBLE);
                 analogClock.setVisibility(View.GONE);
-                return digitalClock;
+                return;
         }
 
         throw new IllegalStateException("unexpected clock style: " + clockStyle);
     }
 
     /**
-     * For screensavers to dim the lights if necessary.
+     * For screensavers to dim the lights and change the clock color if necessary.
      */
     public static void dimClockView(boolean dim, View clockView) {
+        String colorFilter = getClockColorFilter(dim, clockView);
         Paint paint = new Paint();
         paint.setColor(Color.WHITE);
-        paint.setColorFilter(new PorterDuffColorFilter(
-                (dim ? 0x40FFFFFF : 0xC0FFFFFF),
+        paint.setColorFilter(new PorterDuffColorFilter(Color.parseColor(colorFilter),
                 PorterDuff.Mode.MULTIPLY));
         clockView.setLayerType(View.LAYER_TYPE_HARDWARE, paint);
+    }
+
+    /**
+     * Calculate the color filter to use to dim/color the screensaver display.
+     */
+    public static String getClockColorFilter(boolean dim, View clockView) {
+        boolean nightModeDND = DataModel.getDataModel().getScreensaverNightModeDndOn();
+
+        if (nightModeDND) {
+            NotificationManager mNotificationManager = (NotificationManager) clockView.getContext()
+                    .getSystemService(Context.NOTIFICATION_SERVICE);
+            int filterState = mNotificationManager.getCurrentInterruptionFilter();
+
+            // 0 = INTERRUPTION_FILTER_UNKNOWN
+            // 1 = INTERRUPTION_FILTER_ALL (all notifications pass)
+            // 2 = INTERRUPTION_FILTER_PRIORITY
+            // 3 = INTERRUPTION_FILTER_NONE (no notification passes)
+            // 4 = INTERRUPTION_FILTER_ALARMS
+            dim = filterState > 1;
+        }
+
+        final int brightnessPercentage = DataModel.getDataModel()
+                .getScreensaverNightModeBrightness();
+        String colorFilter = DataModel.getDataModel().getScreensaverClockColor();
+        if (dim) {
+            // The alpha channel should range from 16 (10 hex) to 192 (C0 hex).
+            String alpha = String.format("%02X", 16 + (176 * brightnessPercentage / 100));
+            colorFilter = DataModel.getDataModel().getScreensaverClockNightModeColor();
+            colorFilter = "#" + alpha + colorFilter;
+        } else {
+            colorFilter = "#C0" + colorFilter;
+        }
+
+        return colorFilter;
     }
 
     /**
@@ -273,7 +240,7 @@ public class Utils {
      * @return a PendingIntent that will start a service
      */
     public static PendingIntent pendingServiceIntent(Context context, Intent intent) {
-        return PendingIntent.getService(context, 0, intent, FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(context, 0, intent, FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     /**
@@ -284,25 +251,15 @@ public class Utils {
      * @return a PendingIntent that will start an activity
      */
     public static PendingIntent pendingActivityIntent(Context context, Intent intent) {
-        return PendingIntent.getActivity(context, 0, intent, FLAG_UPDATE_CURRENT);
+        // explicitly set the flag here, as getActivity() documentation states we must do so
+        return PendingIntent.getActivity(context, 0, intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     /**
      * @return The next alarm from {@link AlarmManager}
      */
     public static String getNextAlarm(Context context) {
-        return isPreL() ? getNextAlarmPreL(context) : getNextAlarmLOrLater(context);
-    }
-
-    @SuppressWarnings("deprecation")
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private static String getNextAlarmPreL(Context context) {
-        final ContentResolver cr = context.getContentResolver();
-        return Settings.System.getString(cr, Settings.System.NEXT_ALARM_FORMATTED);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private static String getNextAlarmLOrLater(Context context) {
         final AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         final AlarmClockInfo info = getNextAlarmClock(am);
         if (info != null) {
@@ -315,12 +272,10 @@ public class Utils {
         return null;
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static AlarmClockInfo getNextAlarmClock(AlarmManager am) {
         return am.getNextAlarmClock();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void updateNextAlarm(AlarmManager am, AlarmClockInfo info, PendingIntent op) {
         am.setAlarmClock(info, op);
     }
@@ -335,8 +290,8 @@ public class Utils {
      * Clock views can call this to refresh their alarm to the next upcoming value.
      */
     public static void refreshAlarm(Context context, View clock) {
-        final TextView nextAlarmIconView = (TextView) clock.findViewById(R.id.nextAlarmIcon);
-        final TextView nextAlarmView = (TextView) clock.findViewById(R.id.nextAlarm);
+        final TextView nextAlarmIconView = clock.findViewById(R.id.nextAlarmIcon);
+        final TextView nextAlarmView = clock.findViewById(R.id.nextAlarm);
         if (nextAlarmView == null) {
             return;
         }
@@ -356,7 +311,7 @@ public class Utils {
     }
 
     public static void setClockIconTypeface(View clock) {
-        final TextView nextAlarmIconView = (TextView) clock.findViewById(R.id.nextAlarmIcon);
+        final TextView nextAlarmIconView = clock.findViewById(R.id.nextAlarmIcon);
         nextAlarmIconView.setTypeface(UiDataModel.getUiDataModel().getAlarmIconTypeface());
     }
 
@@ -364,7 +319,7 @@ public class Utils {
      * Clock views can call this to refresh their date.
      **/
     public static void updateDate(String dateSkeleton, String descriptionSkeleton, View clock) {
-        final TextView dateDisplay = (TextView) clock.findViewById(R.id.date);
+        final TextView dateDisplay = clock.findViewById(R.id.date);
         if (dateDisplay == null) {
             return;
         }
@@ -379,6 +334,23 @@ public class Utils {
         dateDisplay.setContentDescription(new SimpleDateFormat(descriptionPattern, l).format(now));
     }
 
+    public static void updateDateGravity(View clockFrame) {
+        View dateAndNextAlarm = clockFrame.findViewById(R.id.date_and_next_alarm_time);
+        LinearLayout.LayoutParams lp =
+                (LinearLayout.LayoutParams)dateAndNextAlarm.getLayoutParams();
+
+        final DataModel.ClockStyle clockStyle = DataModel.getDataModel().getClockStyle();
+        switch (clockStyle) {
+            case ANALOG:
+                lp.gravity = Gravity.CENTER;
+                break;
+            case DIGITAL:
+                lp.gravity = Gravity.START;
+                break;
+        }
+        dateAndNextAlarm.setLayoutParams(lp);
+    }
+
     /***
      * Formats the time in the TextClock according to the Locale with a special
      * formatting treatment for the am/pm label.
@@ -389,7 +361,33 @@ public class Utils {
     public static void setTimeFormat(TextClock clock, boolean includeSeconds) {
         if (clock != null) {
             // Get the best format for 12 hours mode according to the locale
-            clock.setFormat12Hour(get12ModeFormat(0.4f /* amPmRatio */, includeSeconds));
+            clock.setFormat12Hour(get12ModeFormat(0.4f /* amPmRatio */, includeSeconds, true,
+                    true));
+            // Get the best format for 24 hours mode according to the locale
+            clock.setFormat24Hour(get24ModeFormat(includeSeconds));
+        }
+    }
+
+    /***
+     * Formats the time in the TextClock for the screensaver according to the Locale with a special
+     * formatting treatment for the am/pm label.
+     *
+     * @param clock          TextClock to format
+     * @param includeSeconds whether or not to include seconds in the clock's time
+     */
+    public static void setScreensaverTimeFormat(TextClock clock, boolean includeSeconds) {
+        if (clock != null) {
+            final Boolean boldText = DataModel.getDataModel().getScreensaverBoldTextOn();
+            final Boolean showAmPm = DataModel.getDataModel().getScreensaverShowAmPmOn();
+            // Get the best format for 12 hours mode according to the locale
+            CharSequence pattern = get12ModeFormat(0.4f /* amPmRatio */, includeSeconds, boldText,
+                    showAmPm);
+            final Spannable sp = new SpannableString(pattern);
+            if (boldText) {
+                sp.setSpan(new StyleSpan(Typeface.BOLD), 0, pattern.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            clock.setFormat12Hour(sp);
             // Get the best format for 24 hours mode according to the locale
             clock.setFormat24Hour(get24ModeFormat(includeSeconds));
         }
@@ -402,9 +400,22 @@ public class Utils {
      * @return format string for 12 hours mode time, not including seconds
      */
     public static CharSequence get12ModeFormat(float amPmRatio, boolean includeSeconds) {
+        return get12ModeFormat(amPmRatio, includeSeconds, true, true);
+    }
+
+    /**
+     * @param amPmRatio      a value between 0 and 1 that is the ratio of the relative size of the
+     *                       am/pm string to the time string
+     * @param includeSeconds whether or not to include seconds in the time string
+     * @param amPmBolded     whether or not to bold the AM/PM
+     * @param amPmDisplayed  whether or not to show the AM/PM
+     * @return format string for 12 hours mode time, not including seconds
+     */
+    public static CharSequence get12ModeFormat(float amPmRatio, boolean includeSeconds,
+            boolean amPmBolded, boolean amPmDisplayed) {
         String pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(),
                 includeSeconds ? "hmsa" : "hma");
-        if (amPmRatio <= 0) {
+        if (amPmRatio <= 0 || !amPmDisplayed) {
             pattern = pattern.replaceAll("a", "").trim();
         }
 
@@ -419,8 +430,8 @@ public class Utils {
         final Spannable sp = new SpannableString(pattern);
         sp.setSpan(new RelativeSizeSpan(amPmRatio), amPmPos, amPmPos + 1,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sp.setSpan(new StyleSpan(Typeface.NORMAL), amPmPos, amPmPos + 1,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sp.setSpan(new StyleSpan(amPmBolded ? Typeface.BOLD : Typeface.NORMAL), amPmPos,
+                amPmPos + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sp.setSpan(new TypefaceSpan("sans-serif"), amPmPos, amPmPos + 1,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -502,18 +513,6 @@ public class Utils {
      */
     public static VectorDrawableCompat getVectorDrawable(Context context, @DrawableRes int resId) {
         return VectorDrawableCompat.create(context.getResources(), resId, context.getTheme());
-    }
-
-    /**
-     * This method assumes the given {@code view} has already been layed out.
-     *
-     * @return a Bitmap containing an image of the {@code view} at its current size
-     */
-    public static Bitmap createBitmap(View view) {
-        final Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), ARGB_8888);
-        final Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
-        return bitmap;
     }
 
     /**
@@ -613,17 +612,20 @@ public class Utils {
         /** Whether or not to always make the view visible to talkback */
         private final boolean mIsAlwaysAccessibilityVisible;
 
+        @SuppressWarnings("unused")
         public ClickAccessibilityDelegate(String label) {
             this(label, false);
         }
 
+        @SuppressWarnings("unused")
         public ClickAccessibilityDelegate(String label, boolean isAlwaysAccessibilityVisible) {
             mLabel = label;
             mIsAlwaysAccessibilityVisible = isAlwaysAccessibilityVisible;
         }
 
         @Override
-        public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+        public void onInitializeAccessibilityNodeInfo(@NonNull View host,
+                                                      @NonNull AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
             if (mIsAlwaysAccessibilityVisible) {
                 info.setVisibleToUser(true);

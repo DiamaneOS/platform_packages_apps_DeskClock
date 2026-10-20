@@ -16,6 +16,10 @@
 
 package com.android.alarmclock;
 
+import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
+import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
+import static java.util.Calendar.DAY_OF_WEEK;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -37,10 +41,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
-import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
-import static java.util.Calendar.DAY_OF_WEEK;
 
 /**
  * This factory produces entries in the world cities list view displayed at the bottom of the
@@ -93,7 +93,7 @@ public class DigitalAppWidgetCityViewsFactory implements RemoteViewsFactory {
         final int worldClockCount = mCities.size();
         final double totalClockCount = homeClockCount + worldClockCount;
 
-        // number of clocks / 2 clocks per row
+        // Number of clocks / 2 clocks per row
         return (int) Math.ceil(totalClockCount / 2);
     }
 
@@ -113,8 +113,14 @@ public class DigitalAppWidgetCityViewsFactory implements RemoteViewsFactory {
                 (leftIndex < mCities.size() ? mCities.get(leftIndex) : null);
         final City right = rightIndex < mCities.size() ? mCities.get(rightIndex) : null;
 
-        final RemoteViews rv =
-                new RemoteViews(mContext.getPackageName(), R.layout.world_clock_remote_list_item);
+        String packageName = mContext.getPackageName();
+        int[] layoutIds = WidgetUtils.getWidgetLayouts(mContext, mWidgetId);
+        final RemoteViews rv = new RemoteViews(packageName, layoutIds[0]);
+        rv.setLightBackgroundLayoutId(layoutIds[1]);
+
+        rv.removeAllViews(R.id.themed_root);
+        rv.addView(R.id.themed_root, new RemoteViews(packageName,
+                R.layout.world_clock_remote_list_item));
 
         // Show the left clock if one exists.
         if (left != null) {
@@ -216,7 +222,6 @@ public class DigitalAppWidgetCityViewsFactory implements RemoteViewsFactory {
      * occur on the main thread.
      */
     private static final class RefreshRunnable implements Runnable {
-
         private City mHomeCity;
         private List<City> mCities;
         private boolean mShowHomeClock;

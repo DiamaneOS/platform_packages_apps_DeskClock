@@ -16,9 +16,10 @@
 
 package com.android.deskclock.worldclock;
 
+import static android.view.Menu.NONE;
+
 import android.content.Context;
 import android.os.Bundle;
-import androidx.appcompat.widget.SearchView;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.ArraySet;
@@ -35,12 +36,15 @@ import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.SearchView;
+
 import com.android.deskclock.BaseActivity;
 import com.android.deskclock.DropShadowController;
 import com.android.deskclock.R;
 import com.android.deskclock.Utils;
 import com.android.deskclock.actionbarmenu.MenuItemController;
-import com.android.deskclock.actionbarmenu.MenuItemControllerFactory;
 import com.android.deskclock.actionbarmenu.NavUpMenuItemController;
 import com.android.deskclock.actionbarmenu.OptionsMenuManager;
 import com.android.deskclock.actionbarmenu.SearchMenuItemController;
@@ -57,8 +61,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
-
-import static android.view.Menu.NONE;
 
 /**
  * This activity allows the user to alter the cities selected for display.
@@ -105,8 +107,10 @@ public final class CitySelectionActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.cities_activity);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) return;
         mSearchMenuItemController =
-                new SearchMenuItemController(getSupportActionBar().getThemedContext(),
+                new SearchMenuItemController(actionBar.getThemedContext(),
                         new SearchView.OnQueryTextListener() {
                             @Override
                             public boolean onQueryTextSubmit(String query) {
@@ -124,17 +128,15 @@ public final class CitySelectionActivity extends BaseActivity {
         mOptionsMenuManager.addMenuItemController(new NavUpMenuItemController(this))
                 .addMenuItemController(mSearchMenuItemController)
                 .addMenuItemController(new SortOrderMenuItemController())
-                .addMenuItemController(new SettingsMenuItemController(this))
-                .addMenuItemController(MenuItemControllerFactory.getInstance()
-                        .buildMenuItemControllers(this));
-        mCitiesList = (ListView) findViewById(R.id.cities_list);
+                .addMenuItemController(new SettingsMenuItemController(this, false));
+        mCitiesList = findViewById(R.id.cities_list);
         mCitiesList.setAdapter(mCitiesAdapter);
 
         updateFastScrolling();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle bundle) {
+    public void onSaveInstanceState(@NonNull Bundle bundle) {
         super.onSaveInstanceState(bundle);
         mSearchMenuItemController.saveInstance(bundle);
     }
@@ -349,10 +351,10 @@ public final class CitySelectionActivity extends BaseActivity {
                     // Inflate a new view if necessary.
                     if (view == null) {
                         view = mInflater.inflate(R.layout.city_list_item, parent, false);
-                        final TextView index = (TextView) view.findViewById(R.id.index);
-                        final TextView name = (TextView) view.findViewById(R.id.city_name);
-                        final TextView time = (TextView) view.findViewById(R.id.city_time);
-                        final CheckBox selected = (CheckBox) view.findViewById(R.id.city_onoff);
+                        final TextView index = view.findViewById(R.id.index);
+                        final TextView name = view.findViewById(R.id.city_name);
+                        final TextView time = view.findViewById(R.id.city_time);
+                        final CheckBox selected = view.findViewById(R.id.city_onoff);
                         view.setTag(new CityItemHolder(index, name, time, selected));
                     }
 
@@ -416,7 +418,7 @@ public final class CitySelectionActivity extends BaseActivity {
 
         @Override
         public void onClick(View v) {
-            final CheckBox b = (CheckBox) v.findViewById(R.id.city_onoff);
+            final CheckBox b = v.findViewById(R.id.city_onoff);
             b.setChecked(!b.isChecked());
         }
 
@@ -447,15 +449,15 @@ public final class CitySelectionActivity extends BaseActivity {
                                 break;
                             case UTC_OFFSET:
                                 final TimeZone timezone = city.getTimeZone();
-                                sections.add(Utils.getGMTHourOffset(timezone, Utils.isPreL()));
+                                sections.add(Utils.getGMTHourOffset(timezone, false));
                                 break;
                         }
                         positions.add(position);
                     }
                 }
 
-                mSectionHeaders = sections.toArray(new String[sections.size()]);
-                mSectionHeaderPositions = positions.toArray(new Integer[positions.size()]);
+                mSectionHeaders = sections.toArray(new String[0]);
+                mSectionHeaderPositions = positions.toArray(new Integer[0]);
             }
             return mSectionHeaders;
         }
@@ -615,11 +617,9 @@ public final class CitySelectionActivity extends BaseActivity {
 
     private final class SortOrderMenuItemController implements MenuItemController {
 
-        private static final int SORT_MENU_RES_ID = R.id.menu_item_sort;
-
         @Override
         public int getId() {
-            return SORT_MENU_RES_ID;
+            return R.id.menu_item_sort;
         }
 
         @Override

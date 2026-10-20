@@ -15,10 +15,8 @@
  */
 package com.android.deskclock;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.View;
@@ -26,12 +24,13 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.android.deskclock.provider.Alarm;
-import com.android.deskclock.widget.selector.AlarmSelection;
 import com.android.deskclock.widget.selector.AlarmSelectionAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AlarmSelectionActivity extends ListActivity {
 
@@ -44,7 +43,7 @@ public class AlarmSelectionActivity extends ListActivity {
     public static final String EXTRA_ACTION = "com.android.deskclock.EXTRA_ACTION";
     public static final String EXTRA_ALARMS = "com.android.deskclock.EXTRA_ALARMS";
 
-    private final List<AlarmSelection> mSelections = new ArrayList<>();
+    private final List<Alarm> mSelections = new ArrayList<>();
 
     private int mAction;
 
@@ -61,13 +60,8 @@ public class AlarmSelectionActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.selection_layout);
 
-        final Button cancelButton = (Button) findViewById(R.id.cancel_button);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        final Button cancelButton = findViewById(R.id.cancel_button);
+        cancelButton.setOnClickListener(v -> finish());
 
         final Intent intent = getIntent();
         final Parcelable[] alarmsFromIntent = intent.getParcelableArrayExtra(EXTRA_ALARMS);
@@ -78,10 +72,7 @@ public class AlarmSelectionActivity extends ListActivity {
         // so no need to check if alarmsFromIntent is empty
         for (Parcelable parcelable : alarmsFromIntent) {
             final Alarm alarm = (Alarm) parcelable;
-
-            // filling mSelections that go into the UI picker list
-            final String label = String.format(Locale.US, "%d %02d", alarm.hour, alarm.minutes);
-            mSelections.add(new AlarmSelection(label, alarm));
+            mSelections.add(alarm);
         }
 
         setListAdapter(new AlarmSelectionAdapter(this, R.layout.alarm_row, mSelections));
@@ -91,36 +82,23 @@ public class AlarmSelectionActivity extends ListActivity {
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         // id corresponds to mSelections id because the view adapter used mSelections
-        final AlarmSelection selection = mSelections.get((int) id);
-        final Alarm alarm = selection.getAlarm();
+        final Alarm alarm = mSelections.get((int) id);
         if (alarm != null) {
-            new ProcessAlarmActionAsync(alarm, this, mAction).execute();
+            processAlarmActionAsync(alarm);
         }
         finish();
     }
 
-    private static class ProcessAlarmActionAsync extends AsyncTask<Void, Void, Void> {
-
-        private final Alarm mAlarm;
-        private final Activity mActivity;
-        private final int mAction;
-
-        public ProcessAlarmActionAsync(Alarm alarm, Activity activity, int action) {
-            mAlarm = alarm;
-            mActivity = activity;
-            mAction = action;
-        }
-
-        @Override
-        protected Void doInBackground(Void... parameters) {
+    void processAlarmActionAsync(Alarm alarm) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
             switch (mAction) {
                 case ACTION_DISMISS:
-                    HandleApiCalls.dismissAlarm(mAlarm, mActivity);
+                    HandleApiCalls.dismissAlarm(alarm, this);
                     break;
                 case ACTION_INVALID:
                     LogUtils.i("Invalid action");
             }
-            return null;
-        }
+        });
     }
 }

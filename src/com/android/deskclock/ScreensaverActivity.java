@@ -16,28 +16,26 @@
 
 package com.android.deskclock;
 
+import static android.content.Intent.ACTION_BATTERY_CHANGED;
+import static android.os.BatteryManager.EXTRA_PLUGGED;
+
 import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.ContentObserver;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.provider.Settings;
 import android.view.View;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.view.Window;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.TextClock;
 
+import androidx.annotation.NonNull;
+
 import com.android.deskclock.events.Events;
 import com.android.deskclock.uidata.UiDataModel;
-
-import static android.content.Intent.ACTION_BATTERY_CHANGED;
-import static android.os.BatteryManager.EXTRA_PLUGGED;
 
 public class ScreensaverActivity extends BaseActivity {
 
@@ -73,16 +71,6 @@ public class ScreensaverActivity extends BaseActivity {
         }
     };
 
-    /* Register ContentObserver to see alarm changes for pre-L */
-    private final ContentObserver mSettingsContentObserver = Utils.isPreL()
-        ? new ContentObserver(new Handler(Looper.myLooper())) {
-            @Override
-            public void onChange(boolean selfChange) {
-                Utils.refreshAlarm(ScreensaverActivity.this, mContentView);
-            }
-        }
-        : null;
-
     // Runs every midnight or when the time changes and refreshes the date.
     private final Runnable mMidnightUpdater = new Runnable() {
         @Override
@@ -99,6 +87,8 @@ public class ScreensaverActivity extends BaseActivity {
 
     private MoveScreensaverRunnable mPositionUpdater;
 
+    private boolean mAlreadyActive;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,12 +101,11 @@ public class ScreensaverActivity extends BaseActivity {
         mMainClockView = mContentView.findViewById(R.id.main_clock);
 
         final View digitalClock = mMainClockView.findViewById(R.id.digital_clock);
-        final AnalogClock analogClock =
-                (AnalogClock) mMainClockView.findViewById(R.id.analog_clock);
+        final AnalogClock analogClock = mMainClockView.findViewById(R.id.analog_clock);
 
         Utils.setClockIconTypeface(mMainClockView);
-        Utils.setTimeFormat((TextClock) digitalClock, false);
-        Utils.setClockStyle(digitalClock, analogClock);
+        Utils.setScreensaverTimeFormat((TextClock) digitalClock, false);
+        Utils.setScreensaverClockStyle(digitalClock, analogClock);
         Utils.dimClockView(true, mMainClockView);
         analogClock.enableSeconds(false);
 
@@ -125,7 +114,7 @@ public class ScreensaverActivity extends BaseActivity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        mContentView.setOnSystemUiVisibilityChangeListener(new InteractionListener());
+        mContentView.setOnApplyWindowInsetsListener(new InteractionListener());
 
         mPositionUpdater = new MoveScreensaverRunnable(mContentView, mMainClockView);
 
@@ -144,16 +133,8 @@ public class ScreensaverActivity extends BaseActivity {
         filter.addAction(Intent.ACTION_POWER_CONNECTED);
         filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         filter.addAction(Intent.ACTION_USER_PRESENT);
-        if (Utils.isLOrLater()) {
-            filter.addAction(AlarmManager.ACTION_NEXT_ALARM_CLOCK_CHANGED);
-        }
-        registerReceiver(mIntentReceiver, filter);
-
-        if (mSettingsContentObserver != null) {
-            @SuppressWarnings("deprecation")
-            final Uri uri = Settings.System.getUriFor(Settings.System.NEXT_ALARM_FORMATTED);
-            getContentResolver().registerContentObserver(uri, false, mSettingsContentObserver);
-        }
+        filter.addAction(AlarmManager.ACTION_NEXT_ALARM_CLOCK_CHANGED);
+        registerReceiver(mIntentReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
     }
 
     @Override
@@ -164,9 +145,10 @@ public class ScreensaverActivity extends BaseActivity {
         Utils.refreshAlarm(ScreensaverActivity.this, mContentView);
 
         startPositionUpdater();
-        UiDataModel.getUiDataModel().addMidnightCallback(mMidnightUpdater, 100);
+        UiDataModel.getUiDataModel().addMidnightCallback(mMidnightUpdater);
 
-        final Intent intent = registerReceiver(null, new IntentFilter(ACTION_BATTERY_CHANGED));
+        final Intent intent = registerReceiver(null, new IntentFilter(ACTION_BATTERY_CHANGED),
+                Context.RECEIVER_NOT_EXPORTED);
         final boolean pluggedIn = intent != null && intent.getIntExtra(EXTRA_PLUGGED, 0) != 0;
         updateWakeLock(pluggedIn);
     }
@@ -180,9 +162,6 @@ public class ScreensaverActivity extends BaseActivity {
 
     @Override
     public void onStop() {
-        if (mSettingsContentObserver != null) {
-            getContentResolver().unregisterContentObserver(mSettingsContentObserver);
-        }
         unregisterReceiver(mIntentReceiver);
         super.onStop();
     }
@@ -246,14 +225,19 @@ public class ScreensaverActivity extends BaseActivity {
         }
     }
 
-    private final class InteractionListener implements View.OnSystemUiVisibilityChangeListener {
+    private final class InteractionListener implements View.OnApplyWindowInsetsListener {
+        @NonNull
         @Override
-        public void onSystemUiVisibilityChange(int visibility) {
-            // When the user interacts with the screen, the navigation bar reappears
-            if ((visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0) {
-                // We want the screen saver to exit upon user interaction.
-                finish();
+        public WindowInsets onApplyWindowInsets(@NonNull View v, @NonNull WindowInsets insets) {
+            if (insets.isVisible(WindowInsets.Type.navigationBars())) {
+                if (mAlreadyActive) {
+                    mAlreadyActive = false;
+                    finish();
+                } else {
+                    mAlreadyActive = true;
+                }
             }
+            return insets;
         }
     }
 }

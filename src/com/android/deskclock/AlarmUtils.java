@@ -17,16 +17,17 @@
 package com.android.deskclock;
 
 import android.content.Context;
-import androidx.annotation.VisibleForTesting;
-import com.google.android.material.snackbar.Snackbar;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.deskclock.provider.AlarmInstance;
 import com.android.deskclock.widget.toast.SnackbarManager;
 import com.android.deskclock.widget.toast.ToastManager;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -40,12 +41,6 @@ public class AlarmUtils {
         final String skeleton = DateFormat.is24HourFormat(context) ? "EHm" : "Ehma";
         final String pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton);
         return (String) DateFormat.format(pattern, time);
-    }
-
-    public static String getFormattedTime(Context context, long timeInMillis) {
-        final Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(timeInMillis);
-        return getFormattedTime(context, c);
     }
 
     public static String getAlarmText(Context context, AlarmInstance instance,

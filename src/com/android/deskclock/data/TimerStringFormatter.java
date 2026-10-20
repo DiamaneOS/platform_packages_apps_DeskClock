@@ -16,15 +16,16 @@
 
 package com.android.deskclock.data;
 
+import static android.text.format.DateUtils.HOUR_IN_MILLIS;
+import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
+import static android.text.format.DateUtils.SECOND_IN_MILLIS;
+
 import android.content.Context;
+
 import androidx.annotation.StringRes;
 
 import com.android.deskclock.R;
 import com.android.deskclock.Utils;
-
-import static android.text.format.DateUtils.HOUR_IN_MILLIS;
-import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
-import static android.text.format.DateUtils.SECOND_IN_MILLIS;
 
 public class TimerStringFormatter {
 
@@ -50,16 +51,14 @@ public class TimerStringFormatter {
                 if (roundedMinutes == 60) {
                     minutes = 0;
                     roundedHours += 1;
-                    hours = roundedHours;
                 } else {
                     minutes = roundedMinutes;
-                    hours = roundedHours;
                 }
             } else {
                 seconds = roundedSeconds;
                 minutes = roundedMinutes;
-                hours = roundedHours;
             }
+            hours = roundedHours;
         } else {
             // Already perfect precision, or we don't want to consider seconds at all.
             seconds = roundedSeconds;

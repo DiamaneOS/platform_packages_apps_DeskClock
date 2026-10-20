@@ -16,17 +16,18 @@
 
 package com.android.deskclock;
 
+import static androidx.recyclerview.widget.RecyclerView.NO_ID;
+
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import static androidx.recyclerview.widget.RecyclerView.NO_ID;
 
 /**
  * Base adapter class for displaying a collection of items. Provides functionality for handling
@@ -101,12 +102,9 @@ public class ItemAdapter<T extends ItemAdapter.ItemHolder>
 
     /**
      * Convenience for calling {@link #setHasStableIds(boolean)} with {@code true}.
-     *
-     * @return this object, allowing calls to methods in this class to be chained
      */
-    public ItemAdapter setHasStableIds() {
+    public void setHasStableIds() {
         setHasStableIds(true);
-        return this;
     }
 
     /**
@@ -143,9 +141,8 @@ public class ItemAdapter<T extends ItemAdapter.ItemHolder>
      * between new and old holders that have matching {@link ItemHolder#itemId} values.
      *
      * @param itemHolders the new list of item holders
-     * @return this object, allowing calls to methods in this class to be chained
      */
-    public ItemAdapter setItems(List<T> itemHolders) {
+    public void setItems(List<T> itemHolders) {
         final List<T> oldItemHolders = mItemHolders;
         if (oldItemHolders != itemHolders) {
             if (oldItemHolders != null) {
@@ -188,8 +185,6 @@ public class ItemAdapter<T extends ItemAdapter.ItemHolder>
             mItemHolders = itemHolders;
             notifyDataSetChanged();
         }
-
-        return this;
     }
 
     /**
@@ -200,6 +195,7 @@ public class ItemAdapter<T extends ItemAdapter.ItemHolder>
      * @param itemHolder the item holder to add
      * @return this object, allowing calls to methods in this class to be chained
      */
+    @SuppressWarnings("unused")
     public ItemAdapter addItem(int position, @NonNull T itemHolder) {
         itemHolder.addOnItemChangedListener(mItemChangedNotifier);
         position = Math.min(position, mItemHolders.size());
@@ -214,16 +210,14 @@ public class ItemAdapter<T extends ItemAdapter.ItemHolder>
      * {@link #notifyItemRemoved} to update the UI.
      *
      * @param itemHolder the item holder to remove
-     * @return this object, allowing calls to methods in this class to be chained
      */
-    public ItemAdapter removeItem(@NonNull T itemHolder) {
+    public void removeItem(@NonNull T itemHolder) {
         final int index = mItemHolders.indexOf(itemHolder);
         if (index >= 0) {
             itemHolder = mItemHolders.remove(index);
             itemHolder.removeOnItemChangedListener(mItemChangedNotifier);
             notifyItemRemoved(index);
         }
-        return this;
     }
 
     /**
@@ -257,8 +251,9 @@ public class ItemAdapter<T extends ItemAdapter.ItemHolder>
         return mItemHolders.get(position).getItemViewType();
     }
 
+    @NonNull
     @Override
-    public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final ItemViewHolder.Factory factory = mFactoriesByViewType.get(viewType);
         if (factory != null) {
             return factory.createViewHolder(parent, viewType);
@@ -365,6 +360,7 @@ public class ItemAdapter<T extends ItemAdapter.ItemHolder>
          * Invokes {@link OnItemChangedListener#onItemChanged(ItemHolder, Object)} for all
          * listeners added via {@link #addOnItemChangedListener(OnItemChangedListener)}.
          */
+        @SuppressWarnings("unused")
         public final void notifyItemChanged(Object payload) {
             for (OnItemChangedListener listener : mOnItemChangedListeners) {
                 listener.onItemChanged(this, payload);
@@ -504,7 +500,7 @@ public class ItemAdapter<T extends ItemAdapter.ItemHolder>
              * @param viewType the unique id of the item view to create
              * @return a new initialized {@link ItemViewHolder}
              */
-            public ItemViewHolder<?> createViewHolder(ViewGroup parent, int viewType);
+            ItemViewHolder<?> createViewHolder(ViewGroup parent, int viewType);
         }
     }
 

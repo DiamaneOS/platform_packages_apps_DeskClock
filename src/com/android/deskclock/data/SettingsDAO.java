@@ -16,13 +16,26 @@
 
 package com.android.deskclock.data;
 
+import static android.text.format.DateUtils.HOUR_IN_MILLIS;
+import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
+import static com.android.deskclock.data.DataModel.AlarmVolumeButtonBehavior.DISMISS;
+import static com.android.deskclock.data.DataModel.AlarmVolumeButtonBehavior.NOTHING;
+import static com.android.deskclock.data.DataModel.AlarmVolumeButtonBehavior.SNOOZE;
+import static com.android.deskclock.data.Weekdays.Order.MON_TO_SUN;
+import static com.android.deskclock.data.Weekdays.Order.SAT_TO_FRI;
+import static com.android.deskclock.data.Weekdays.Order.SUN_TO_SAT;
+import static java.util.Calendar.MONDAY;
+import static java.util.Calendar.SATURDAY;
+import static java.util.Calendar.SUNDAY;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
 import android.text.format.DateUtils;
+
+import androidx.annotation.NonNull;
 
 import com.android.deskclock.R;
 import com.android.deskclock.data.DataModel.AlarmVolumeButtonBehavior;
@@ -35,18 +48,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import static android.text.format.DateUtils.HOUR_IN_MILLIS;
-import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
-import static com.android.deskclock.data.DataModel.AlarmVolumeButtonBehavior.DISMISS;
-import static com.android.deskclock.data.DataModel.AlarmVolumeButtonBehavior.NOTHING;
-import static com.android.deskclock.data.DataModel.AlarmVolumeButtonBehavior.SNOOZE;
-import static com.android.deskclock.data.Weekdays.Order.MON_TO_SUN;
-import static com.android.deskclock.data.Weekdays.Order.SAT_TO_FRI;
-import static com.android.deskclock.data.Weekdays.Order.SUN_TO_SAT;
-import static java.util.Calendar.MONDAY;
-import static java.util.Calendar.SATURDAY;
-import static java.util.Calendar.SUNDAY;
 
 /**
  * This class encapsulates the storage of application preferences in {@link SharedPreferences}.
@@ -139,6 +140,13 @@ final class SettingsDAO {
     }
 
     /**
+     * @return a value indicating what color the digital clock is in the screensaver in Night Mode
+     */
+    static String getClockNightModeColor(Context context, SharedPreferences prefs) {
+        return getClockColor(context, prefs, ScreensaverSettingsActivity.KEY_NIGHT_MODE_COLOR);
+    }
+
+    /**
      * @return a value indicating whether analog or digital clocks are displayed in the app
      */
     static boolean getDisplayClockSeconds(SharedPreferences prefs) {
@@ -172,10 +180,45 @@ final class SettingsDAO {
     }
 
     /**
+     * @return a value indicating what color to use for the digital clock display on the screensaver
+     */
+    static String getScreensaverClockColor(Context context, SharedPreferences prefs) {
+        return getClockColor(context, prefs, ScreensaverSettingsActivity.KEY_CLOCK_COLOR);
+    }
+
+    /**
      * @return {@code true} if the screen saver should be dimmed for lower contrast at night
      */
     static boolean getScreensaverNightModeOn(SharedPreferences prefs) {
         return prefs.getBoolean(ScreensaverSettingsActivity.KEY_NIGHT_MODE, false);
+    }
+
+    /**
+     * @return {@code true} if the screen saver should be dimmed for lower contrast at night
+     */
+    static boolean getScreensaverNightModeDndOn(SharedPreferences prefs) {
+        return prefs.getBoolean(ScreensaverSettingsActivity.KEY_NIGHT_MODE_DND, false);
+    }
+
+    /**
+     * @return {@code int} the screen saver brightness level at night
+     */
+    static int getScreensaverNightModeBrightness(SharedPreferences prefs) {
+        return prefs.getInt(ScreensaverSettingsActivity.KEY_NIGHT_MODE_BRIGHTNESS, 40);
+    }
+
+    /**
+     * @return {@code true} if the screen saver should show AM/PM in 12 hour mode
+     */
+    static boolean getScreensaverShowAmPmOn(SharedPreferences prefs) {
+        return prefs.getBoolean(ScreensaverSettingsActivity.KEY_SHOW_AMPM, true);
+    }
+
+    /**
+     * @return {@code true} if the screen saver should show the clock in bold
+     */
+    static boolean getScreensaverBoldTextOn(SharedPreferences prefs) {
+        return prefs.getBoolean(ScreensaverSettingsActivity.KEY_BOLD_TEXT, false);
     }
 
     /**
@@ -349,12 +392,30 @@ final class SettingsDAO {
         return new TimeZones(tzIds, tzNames);
     }
 
+    static int getFlipAction(SharedPreferences prefs) {
+        final String string = prefs.getString(SettingsActivity.KEY_FLIP_ACTION, "0");
+        return Integer.parseInt(string);
+    }
+
+    static int getShakeAction(SharedPreferences prefs) {
+        final String string = prefs.getString(SettingsActivity.KEY_SHAKE_ACTION, "0");
+        return Integer.parseInt(string);
+    }
+
     private static ClockStyle getClockStyle(Context context, SharedPreferences prefs, String key) {
         final String defaultStyle = context.getString(R.string.default_clock_style);
         final String clockStyle = prefs.getString(key, defaultStyle);
         // Use hardcoded locale to perform toUpperCase, because in some languages toUpperCase adds
         // accent to character, which breaks the enum conversion.
         return ClockStyle.valueOf(clockStyle.toUpperCase(Locale.US));
+    }
+
+    private static String getClockColor(Context context, SharedPreferences prefs, String key) {
+        final String defaultColor = context.getString(R.string.default_clock_color);
+        final String clockColor = prefs.getString(key, defaultColor);
+        // Use hardcoded locale to perform toUpperCase, because in some languages toUpperCase adds
+        // accent to character, which breaks the enum conversion.
+        return clockColor.toUpperCase(Locale.US);
     }
 
     /**

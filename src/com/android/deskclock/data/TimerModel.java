@@ -16,10 +16,14 @@
 
 package com.android.deskclock.data;
 
+import static android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP;
+import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
+import static com.android.deskclock.data.Timer.State.EXPIRED;
+import static com.android.deskclock.data.Timer.State.RESET;
+
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -29,14 +33,14 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
+import android.util.ArraySet;
+
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationManagerCompat;
-import android.util.ArraySet;
 
 import com.android.deskclock.AlarmAlertWakeLock;
 import com.android.deskclock.LogUtils;
 import com.android.deskclock.R;
-import com.android.deskclock.Utils;
 import com.android.deskclock.events.Events;
 import com.android.deskclock.settings.SettingsActivity;
 import com.android.deskclock.timer.TimerKlaxon;
@@ -46,11 +50,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import static android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP;
-import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
-import static com.android.deskclock.data.Timer.State.EXPIRED;
-import static com.android.deskclock.data.Timer.State.RESET;
 
 /**
  * All {@link Timer} data is accessed via this model.
@@ -145,7 +144,8 @@ final class TimerModel {
 
         // Update timer notification when locale changes.
         final IntentFilter localeBroadcastFilter = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
-        mContext.registerReceiver(mLocaleChangedReceiver, localeBroadcastFilter);
+        mContext.registerReceiver(mLocaleChangedReceiver, localeBroadcastFilter,
+                Context.RECEIVER_NOT_EXPORTED);
     }
 
     /**
@@ -295,7 +295,7 @@ final class TimerModel {
      * @param eventLabelId the label of the timer event to send; 0 if no event should be sent
      * @return the reset {@code timer} or {@code null} if the timer was deleted
      */
-    Timer resetTimer(Timer timer, boolean allowDelete, @StringRes int eventLabelId) {
+    void resetTimer(Timer timer, boolean allowDelete, @StringRes int eventLabelId) {
         final Timer result = doResetOrDeleteTimer(timer, allowDelete, eventLabelId);
 
         // Update the notification after updating the timer data.
@@ -307,7 +307,7 @@ final class TimerModel {
             updateNotification();
         }
 
-        return result;
+        return;
     }
 
     /**
@@ -474,7 +474,7 @@ final class TimerModel {
     private List<Timer> getMutableTimers() {
         if (mTimers == null) {
             mTimers = TimerDAO.getTimers(mPrefs);
-            Collections.sort(mTimers, Timer.ID_COMPARATOR);
+            mTimers.sort(Timer.ID_COMPARATOR);
         }
 
         return mTimers;
@@ -489,7 +489,7 @@ final class TimerModel {
                     mExpiredTimers.add(timer);
                 }
             }
-            Collections.sort(mExpiredTimers, Timer.EXPIRY_COMPARATOR);
+            mExpiredTimers.sort(Timer.EXPIRY_COMPARATOR);
         }
 
         return mExpiredTimers;
@@ -504,7 +504,7 @@ final class TimerModel {
                     mMissedTimers.add(timer);
                 }
             }
-            Collections.sort(mMissedTimers, Timer.EXPIRY_COMPARATOR);
+            mMissedTimers.sort(Timer.EXPIRY_COMPARATOR);
         }
 
         return mMissedTimers;
@@ -678,16 +678,19 @@ final class TimerModel {
 
         if (nextExpiringTimer == null) {
             // Cancel the existing timer expiration callback.
-            final PendingIntent pi = PendingIntent.getService(mContext,
-                    0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_NO_CREATE);
+            final PendingIntent pi = PendingIntent.getForegroundService(mContext, 0, intent,
+                    PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_NO_CREATE |
+                            PendingIntent.FLAG_IMMUTABLE);
+
             if (pi != null) {
                 mAlarmManager.cancel(pi);
                 pi.cancel();
             }
         } else {
             // Update the existing timer expiration callback.
-            final PendingIntent pi = PendingIntent.getService(mContext,
-                    0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_UPDATE_CURRENT);
+            final PendingIntent pi = PendingIntent.getForegroundService(mContext, 0, intent,
+                    PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_UPDATE_CURRENT |
+                            PendingIntent.FLAG_IMMUTABLE);
             schedulePendingIntent(mAlarmManager, nextExpiringTimer.getExpirationTime(), pi);
         }
     }
@@ -747,7 +750,7 @@ final class TimerModel {
         }
 
         // Sort the unexpired timers to locate the next one scheduled to expire.
-        Collections.sort(unexpired, Timer.EXPIRY_COMPARATOR);
+        unexpired.sort(Timer.EXPIRY_COMPARATOR);
 
         // Otherwise build and post a notification reflecting the latest unexpired timers.
         final Notification notification =
@@ -825,21 +828,15 @@ final class TimerModel {
     private final class PreferenceListener implements OnSharedPreferenceChangeListener {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            switch (key) {
-                case SettingsActivity.KEY_TIMER_RINGTONE:
-                    mTimerRingtoneUri = null;
-                    mTimerRingtoneTitle = null;
-                    break;
+            if (SettingsActivity.KEY_TIMER_RINGTONE.equals(key)) {
+                mTimerRingtoneUri = null;
+                mTimerRingtoneTitle = null;
             }
         }
     }
 
     static void schedulePendingIntent(AlarmManager am, long triggerTime, PendingIntent pi) {
-        if (Utils.isMOrLater()) {
-            // Ensure the timer fires even if the device is dozing.
-            am.setExactAndAllowWhileIdle(ELAPSED_REALTIME_WAKEUP, triggerTime, pi);
-        } else {
-            am.setExact(ELAPSED_REALTIME_WAKEUP, triggerTime, pi);
-        }
+        // Ensure the timer fires even if the device is dozing.
+        am.setExactAndAllowWhileIdle(ELAPSED_REALTIME_WAKEUP, triggerTime, pi);
     }
 }

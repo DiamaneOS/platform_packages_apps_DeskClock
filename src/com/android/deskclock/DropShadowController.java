@@ -16,18 +16,19 @@
 
 package com.android.deskclock;
 
+import static com.android.deskclock.AnimatorUtils.getAlphaAnimator;
+
 import android.animation.ValueAnimator;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.deskclock.data.DataModel;
 import com.android.deskclock.uidata.TabScrollListener;
 import com.android.deskclock.uidata.UiDataModel;
-import com.android.deskclock.uidata.UiDataModel.Tab;
-
-import static com.android.deskclock.AnimatorUtils.getAlphaAnimator;
 
 /**
  * This controller encapsulates the logic that watches a model for changes to scroll state and
@@ -62,6 +63,7 @@ public final class DropShadowController {
      * @param hairlineView at the bottom of the tab bar to be hidden or shown when the drop shadow
      *                     is displayed or hidden, respectively.
      */
+    @SuppressWarnings("unused")
     public DropShadowController(View dropShadowView, UiDataModel uiDataModel, View hairlineView) {
         this(dropShadowView);
         mUiDataModel = uiDataModel;
@@ -85,6 +87,7 @@ public final class DropShadowController {
      * @param dropShadowView to be hidden/shown as {@code recyclerView} reports scrolling changes
      * @param recyclerView a scrollable view that dictates the visibility of {@code dropShadowView}
      */
+    @SuppressWarnings("unused")
     public DropShadowController(View dropShadowView, RecyclerView recyclerView) {
         this(dropShadowView);
         mRecyclerView = recyclerView;
@@ -148,7 +151,7 @@ public final class DropShadowController {
 
         // RecyclerView scrolled.
         @Override
-        public void onScrolled(RecyclerView view, int dx, int dy) {
+        public void onScrolled(@NonNull RecyclerView view, int dx, int dy) {
             updateDropShadow(!Utils.isScrolledToTop(view));
         }
 
@@ -163,7 +166,7 @@ public final class DropShadowController {
         }
 
         // UiDataModel reports scroll change.
-        public void selectedTabScrollToTopChanged(Tab selectedTab, boolean scrolledToTop) {
+        public void selectedTabScrollToTopChanged(boolean scrolledToTop) {
             updateDropShadow(!scrolledToTop);
         }
     }

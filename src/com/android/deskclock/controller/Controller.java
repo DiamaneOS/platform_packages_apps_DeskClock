@@ -16,14 +16,14 @@
 
 package com.android.deskclock.controller;
 
+import static com.android.deskclock.Utils.enforceMainLooper;
+
 import android.app.Activity;
 import android.content.Context;
+
 import androidx.annotation.StringRes;
 
-import com.android.deskclock.Utils;
 import com.android.deskclock.events.EventTracker;
-
-import static com.android.deskclock.Utils.enforceMainLooper;
 
 /**
  * Interactions with Android framework components responsible for part of the user experience are
@@ -55,9 +55,7 @@ public final class Controller {
             mContext = context.getApplicationContext();
             mEventController = new EventController();
             mVoiceController = new VoiceController();
-            if (Utils.isNMR1OrLater()) {
-                mShortcutController = new ShortcutController(mContext);
-            }
+            mShortcutController = new ShortcutController(mContext);
         }
     }
 
@@ -71,14 +69,6 @@ public final class Controller {
     public void addEventTracker(EventTracker eventTracker) {
         enforceMainLooper();
         mEventController.addEventTracker(eventTracker);
-    }
-
-    /**
-     * @param eventTracker to be unregistered from tracking application events
-     */
-    public void removeEventTracker(EventTracker eventTracker) {
-        enforceMainLooper();
-        mEventController.removeEventTracker(eventTracker);
     }
 
     /**
@@ -111,8 +101,6 @@ public final class Controller {
 
     public void updateShortcuts() {
         enforceMainLooper();
-        if (mShortcutController != null) {
-            mShortcutController.updateShortcuts();
-        }
+        mShortcutController.updateShortcuts();
     }
 }

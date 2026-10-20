@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2015 The Android Open Source Project
+ * Copyright (C) 2022-2024 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +17,16 @@
 
 package com.android.deskclock;
 
-import android.annotation.TargetApi;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.android.deskclock.controller.Controller;
 import com.android.deskclock.data.DataModel;
 import com.android.deskclock.events.LogEventTracker;
 import com.android.deskclock.uidata.UiDataModel;
+import com.google.android.material.color.DynamicColors;
 
 public class DeskClockApplication extends Application {
 
@@ -41,25 +41,16 @@ public class DeskClockApplication extends Application {
         UiDataModel.getUiDataModel().init(applicationContext, prefs);
         Controller.getController().setContext(applicationContext);
         Controller.getController().addEventTracker(new LogEventTracker(applicationContext));
+        DynamicColors.applyToActivitiesIfAvailable(this);
     }
 
     /**
      * Returns the default {@link SharedPreferences} instance from the underlying storage context.
      */
-    @TargetApi(Build.VERSION_CODES.N)
     private static SharedPreferences getDefaultSharedPreferences(Context context) {
-        final Context storageContext;
-        if (Utils.isNOrLater()) {
-            // All N devices have split storage areas. Migrate the existing preferences into the new
-            // device encrypted storage area if that has not yet occurred.
-            final String name = PreferenceManager.getDefaultSharedPreferencesName(context);
-            storageContext = context.createDeviceProtectedStorageContext();
-            if (!storageContext.moveSharedPreferencesFrom(context, name)) {
-                LogUtils.wtf("Failed to migrate shared preferences");
-            }
-        } else {
-            storageContext = context;
-        }
-        return PreferenceManager.getDefaultSharedPreferences(storageContext);
+        final Context storageContext = context.createDeviceProtectedStorageContext();
+        return storageContext.getSharedPreferences(
+                PreferenceManager.getDefaultSharedPreferencesName(storageContext),
+                Context.MODE_PRIVATE);
     }
 }

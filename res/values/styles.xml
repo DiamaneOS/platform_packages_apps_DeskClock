@@ -22,28 +22,11 @@
         <item name="android:textColor">@color/white_63p</item>
     </style>
 
-    <style name="widget_medium_thin">
-        <item name="android:fontFamily">sans-serif-thin</item>
-        <item name="android:shadowRadius">@dimen/widget_shadow_radius</item>
-        <item name="android:shadowColor">@color/widget_shadow_color</item>
-        <item name="android:shadowDy">@dimen/widget_shadow_dy</item>
-    </style>
-
-    <style name="label">
-        <item name="android:textSize">@dimen/label_font_size</item>
-    </style>
-
-    <style name="widget_label" parent="label">
-        <item name="android:shadowRadius">@dimen/widget_shadow_radius</item>
-        <item name="android:shadowColor">@color/widget_shadow_color</item>
-        <item name="android:shadowDy">@dimen/widget_shadow_dy</item>
-    </style>
-
     <style name="display_time">
         <item name="android:textSize">56sp</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:fontFeatureSettings" tools:targetApi="21">tnum</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFeatureSettings">tnum</item>
     </style>
 
     <style name="world_clock_time">
@@ -55,6 +38,7 @@
     <style name="body">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="big_thin">
@@ -67,36 +51,25 @@
         <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
-    <style name="widget_big_thin" parent="big_thin">
-        <item name="android:shadowRadius">@dimen/widget_shadow_radius</item>
-        <item name="android:shadowColor">@color/widget_shadow_color</item>
-        <item name="android:shadowDy">@dimen/widget_shadow_dy</item>
-    </style>
-
-    <style name="alarm_label">
-        <item name="android:textSize">@dimen/alarm_label_size</item>
-    </style>
-
-    <style name="alarm_label_bold" parent="alarm_label">
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <style name="PrimaryLabelTextParentAppearance">
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/label_text_size</item>
     </style>
 
-    <style name="PrimaryLabelTextAppearance" parent="PrimaryLabelTextParentAppearance" />
+    <style name="PrimaryLabelTextAppearance" parent="PrimaryLabelTextParentAppearance">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
 
     <style name="SecondaryLabelTextParentAppearance">
-        <item name="android:textColor">@color/white_63p</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
         <item name="android:textSize">@dimen/label_text_size</item>
     </style>
 
-    <style name="SecondaryLabelTextAppearance" parent="SecondaryLabelTextParentAppearance" />
-
-    <style name="TextAppearance.Tab" parent="TextAppearance.Design.Tab">
+    <style name="SecondaryLabelTextAppearance" parent="SecondaryLabelTextParentAppearance">
         <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="navText">
         <item name="android:textSize">12sp</item>
     </style>
 
@@ -112,25 +85,229 @@
         <item name="displayOptions">homeAsUp</item>
     </style>
 
-    <style name="Widget.Button.TimerSetupDigit" parent="Widget.AppCompat.Button.Borderless">
-        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:gravity">center</item>
-        <item name="android:includeFontPadding">false</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    <style name="Widget.Button.TimerSetupDigit" parent="Widget.Material3Expressive.Button.TonalButton">
+        <item name="shapeAppearanceOverlay">@style/Widget.Button.TimerSetupDigit.CircleOverlay</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
         <item name="android:textSize">36sp</item>
+        <item name="android:layout_margin">2.0dip</item>
+        <item name="android:padding">0dp</item>
+        <item name="layout_constraintDimensionRatio">1:1</item>
+        <item name="autoSizeMaxTextSize">36sp</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="Widget.ImageButton" parent="Widget.AppCompat.ImageButton">
-        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    <style name="Widget.Button.TimerSetupDigit.CircleOverlay">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 
-    <style name="Widget.TimePicker" parent="android:Widget.Material.TimePicker"
-        tools:targetApi="21">
-        <item name="android:headerBackground">@android:color/transparent</item>
-        <item name="android:numbersBackgroundColor">@android:color/transparent</item>
+    <style name="Widget.TimePicker" parent="android:Widget.Material.TimePicker">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:headerBackground">?attr/colorSurfaceVariant</item>
+        <item name="android:numbersBackgroundColor">?attr/colorSurfaceVariant</item>
         <item name="android:numbersSelectorColor">?attr/colorAccent</item>
-        <item name="android:numbersTextColor">?android:attr/textColorPrimary</item>
     </style>
 
+    <style name="AlertDialogTheme" parent="@style/ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="android:background">@drawable/popup_background</item>
+        <item name="dialogCornerRadius">28dp</item>
+    </style>
+
+    <style name="DeskClock.Settings.DropDownSpinnerStyle" parent="@android:style/Widget.Material.Spinner">
+        <item name="android:popupBackground">@drawable/popup_background</item>
+    </style>
+
+    <style name="TimerLabelTextAppearance" parent="SecondaryLabelTextAppearance">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="MaterialCardViewStyle">
+        <item name="android:layout_marginTop">8.0dip</item>
+        <item name="android:layout_marginStart">16.0dip</item>
+        <item name="android:layout_marginEnd">16.0dip</item>
+        <item name="elevation">0.0dip</item>
+    </style>
+
+    <style name="DayButtonStyle">
+        <item name="android:textSize">@dimen/day_button_font_size</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/toggle_circle</item>
+        <item name="android:layout_width">@dimen/touch_target_min_size</item>
+        <item name="android:layout_height">@dimen/touch_target_min_size</item>
+        <item name="android:button">@null</item>
+    </style>
+
+    <style name="SnackBarStyle" parent="@style/Widget.Material3.Snackbar">
+        <item name="backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="android:layout_margin">@null</item>
+        <item name="android:layout_marginLeft">8.0dip</item>
+        <item name="android:layout_marginTop">8.0dip</item>
+        <item name="android:layout_marginRight">8.0dip</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="SnackBarButtonStyle" parent="@style/Widget.Material3Expressive.Button.TextButton.Snackbar">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="SnackBarTextStyle" parent="@style/Widget.Material3.Snackbar.TextView">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="TextAppearance.Title" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">22.0sp</item>
+    </style>
+
+    <style name="TimerSetupTime">
+        <item name="layout_constraintBottom_toBottomOf">@id/timer_setup_time_bottom</item>
+        <item name="layout_constraintEnd_toEndOf">@id/timer_setup_digits</item>
+        <item name="layout_constraintStart_toStartOf">@id/timer_setup_digits</item>
+        <item name="layout_constraintTop_toTopOf">@id/timer_setup_time_top</item>
+    </style>
+
+    <style name="TimerSetupDigits">
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintTop_toBottomOf">@id/timer_setup_time</item>
+    </style>
+
+    <style name="Theme.DeskClock.DigitalWidgetTransparentDarkBg" parent="Theme.Material3Expressive.DynamicColors.Light">
+        <item name="appWidgetBackgroundTint">@android:color/transparent</item>
+        <item name="appWidgetLabelTint">@color/widget_label_color</item>
+        <item name="appWidgetTextAppearancePrimary">@style/TextAppearance.DigitalAppWidget.TextClockPrimary.TransparentDarkBg</item>
+        <item name="appWidgetTextAppearancePrimaryLabel">@style/TextAppearance.DigitalAppWidget.Label.TransparentDarkBg</item>
+        <item name="appWidgetTextAppearanceSecondary">@style/TextAppearance.DigitalAppWidget.WorldClock.TransparentDarkBg</item>
+        <item name="appWidgetTextAppearanceSecondaryLabel">@style/TextAppearance.DigitalAppWidget.WorldClock.Label.TransparentDarkBg</item>
+    </style>
+
+    <style name="Theme.DeskClock.DigitalWidgetTransparentLightBg" parent="Theme.Material3Expressive.DynamicColors.Light">
+        <item name="appWidgetBackgroundTint">@android:color/transparent</item>
+        <item name="appWidgetLabelTint">@color/widget_label_color_dark</item>
+        <item name="appWidgetTextAppearancePrimary">@style/TextAppearance.DigitalAppWidget.TextClockPrimary.TransparentLightBg</item>
+        <item name="appWidgetTextAppearancePrimaryLabel">@style/TextAppearance.DigitalAppWidget.Label.TransparentLightBg</item>
+        <item name="appWidgetTextAppearanceSecondary">@style/TextAppearance.DigitalAppWidget.WorldClock.TransparentLightBg</item>
+        <item name="appWidgetTextAppearanceSecondaryLabel">@style/TextAppearance.DigitalAppWidget.WorldClock.Label.TransparentLightBg</item>
+    </style>
+
+    <style name="Theme.DeskClock.DigitalWidgetDarkBg" parent="Theme.Material3Expressive.DynamicColors.Light">
+        <item name="appWidgetBackgroundTint">@android:color/system_accent2_800</item>
+        <item name="appWidgetLabelTint">?attr/colorPrimaryContainer</item>
+        <item name="appWidgetTextAppearancePrimary">@style/TextAppearance.DigitalAppWidget.TextClockPrimary.DarkBg</item>
+        <item name="appWidgetTextAppearancePrimaryLabel">@style/TextAppearance.DigitalAppWidget.Label.DarkBg</item>
+        <item name="appWidgetTextAppearanceSecondary">@style/TextAppearance.DigitalAppWidget.WorldClock.DarkBg</item>
+        <item name="appWidgetTextAppearanceSecondaryLabel">@style/TextAppearance.DigitalAppWidget.WorldClock.Label.DarkBg</item>
+    </style>
+
+    <style name="Theme.DeskClock.DigitalWidgetLightBg" parent="Theme.Material3Expressive.DynamicColors.Light">
+        <item name="appWidgetBackgroundTint">@android:color/system_accent2_100</item>
+        <item name="appWidgetLabelTint">?attr/colorPrimaryContainer</item>
+        <item name="appWidgetTextAppearancePrimary">@style/TextAppearance.DigitalAppWidget.TextClockPrimary.LightBg</item>
+        <item name="appWidgetTextAppearancePrimaryLabel">@style/TextAppearance.DigitalAppWidget.Label.LightBg</item>
+        <item name="appWidgetTextAppearanceSecondary">@style/TextAppearance.DigitalAppWidget.WorldClock.LightBg</item>
+        <item name="appWidgetTextAppearanceSecondaryLabel">@style/TextAppearance.DigitalAppWidget.WorldClock.Label.LightBg</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget" parent="">
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.TextClockPrimary" parent="TextAppearance.DigitalAppWidget">
+        <item name="android:textSize">@dimen/big_font_size</item>
+        <item name="android:textColor">?attr/colorPrimaryContainer</item>
+        <item name="android:fontFeatureSettings">pnum</item>
+        <item name="android:letterSpacing">-0.04</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.TextClockPrimary.TransparentDarkBg">
+        <item name="android:textColor">?attr/colorPrimaryContainer</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.TextClockPrimary.TransparentLightBg">
+        <item name="android:textColor">?attr/colorPrimaryContainer</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.TextClockPrimary.DarkBg">
+        <item name="android:textColor">?attr/colorPrimaryContainer</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.TextClockPrimary.LightBg">
+        <item name="android:textColor">?attr/colorPrimaryContainer</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.Label">
+        <item name="android:textSize">@dimen/label_font_size</item>
+        <item name="android:fontFeatureSettings">pnum</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.Label.TransparentDarkBg" parent="TextAppearance.DigitalAppWidget.Label">
+        <item name="android:textColor">@color/widget_label_color</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.Label.TransparentLightBg" parent="TextAppearance.DigitalAppWidget.Label">
+        <item name="android:textColor">@color/widget_label_color_dark</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.Label.DarkBg" parent="TextAppearance.DigitalAppWidget.Label">
+        <item name="android:textColor">?attr/colorPrimaryContainer</item>
+    </style>
+    <style name="TextAppearance.DigitalAppWidget.Label.LightBg" parent="TextAppearance.DigitalAppWidget.Label">
+        <item name="android:textColor">?attr/colorPrimaryContainer</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.WorldClock.Primary" parent="TextAppearance.DigitalAppWidget">
+        <item name="android:fontFeatureSettings">pnum</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.WorldClock.TransparentDarkBg" parent="TextAppearance.DigitalAppWidget.WorldClock.Primary">
+        <item name="android:textColor">?attr/colorPrimaryContainer</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.WorldClock.TransparentLightBg" parent="TextAppearance.DigitalAppWidget.WorldClock.Primary">
+        <item name="android:textColor">?attr/colorPrimaryContainer</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.WorldClock.DarkBg" parent="TextAppearance.DigitalAppWidget.WorldClock.Primary">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.WorldClock.LightBg" parent="TextAppearance.DigitalAppWidget.WorldClock.Primary">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.WorldClock.Label" parent="TextAppearance.DigitalAppWidget">
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.WorldClock.Label.TransparentDarkBg" parent="TextAppearance.DigitalAppWidget.WorldClock.Label">
+        <item name="android:textColor">@color/widget_label_color</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.WorldClock.Label.TransparentLightBg" parent="TextAppearance.DigitalAppWidget.WorldClock.Label">
+        <item name="android:textColor">@color/widget_label_color_dark</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.WorldClock.Label.DarkBg" parent="TextAppearance.DigitalAppWidget.WorldClock.Label">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <style name="TextAppearance.DigitalAppWidget.WorldClock.Label.LightBg" parent="TextAppearance.DigitalAppWidget.WorldClock.Label">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <style name="Theme.DeskClock.DigitalWidgetConfigurationTheme" parent="Theme.Material3Expressive.DynamicColors.Dark.NoActionBar">
+        <item name="appWidgetConfigBackground">?attr/colorSurface</item>
+        <item name="appWidgetConfigTitle">?attr/colorOnSurface</item>
+        <item name="appWidgetConfigSubtitle">?attr/colorOnSurfaceVariant</item>
+        <item name="appWidgetConfigBorder">?attr/colorOutline</item>
+        <item name="appWidgetThemeTransparent">@style/Theme.DeskClock.DigitalWidgetTransparentLightBg</item>
+        <item name="appWidgetThemeSolid">@style/Theme.DeskClock.DigitalWidgetLightBg</item>
+    </style>
 </resources>
