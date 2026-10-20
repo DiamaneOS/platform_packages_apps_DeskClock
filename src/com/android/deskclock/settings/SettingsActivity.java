@@ -19,8 +19,6 @@ package com.android.deskclock.settings;
 
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.provider.Settings;
@@ -66,8 +64,6 @@ public final class SettingsActivity extends ToolbarBaseActivity {
     public static final String KEY_SCREENSAVER_DAYDREAM_SETTINGS = "screensaver_daydream_settings";
     public static final String KEY_VOLUME_BUTTONS = "volume_button_setting";
     public static final String KEY_WEEK_START = "week_start";
-    public static final String KEY_FLIP_ACTION = "flip_action";
-    public static final String KEY_SHAKE_ACTION = "shake_action";
 
     public static final String DEFAULT_VOLUME_BEHAVIOR = "0";
     public static final String VOLUME_BEHAVIOR_SNOOZE = "1";
@@ -138,8 +134,6 @@ public final class SettingsActivity extends ToolbarBaseActivity {
                 case KEY_CLOCK_STYLE:
                 case KEY_WEEK_START:
                 case KEY_VOLUME_BUTTONS:
-                case KEY_FLIP_ACTION:
-                case KEY_SHAKE_ACTION:
                     final ListPreference listPreference = (ListPreference) pref;
                     final int index = listPreference.findIndexOfValue((String) newValue);
                     listPreference.setSummary(listPreference.getEntries()[index]);
@@ -301,26 +295,6 @@ public final class SettingsActivity extends ToolbarBaseActivity {
             final Preference timerRingtonePref = findPreference(KEY_TIMER_RINGTONE);
             timerRingtonePref.setOnPreferenceClickListener(this);
             timerRingtonePref.setSummary(DataModel.getDataModel().getTimerRingtoneTitle());
-
-            final ListPreference flipActionPref = findPreference(KEY_FLIP_ACTION);
-            setupFlipOrShakeAction(flipActionPref);
-
-            final ListPreference shakeActionPref = findPreference(KEY_SHAKE_ACTION);
-            setupFlipOrShakeAction(shakeActionPref);
-        }
-
-        private void setupFlipOrShakeAction(ListPreference preference) {
-            if (preference != null) {
-                SensorManager sensorManager = (SensorManager)
-                        getActivity().getSystemService(Context.SENSOR_SERVICE);
-                if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) == null) {
-                    preference.setValue("0");  // Turn it off
-                    preference.setVisible(false);
-                } else {
-                    preference.setSummary(preference.getEntry());
-                    preference.setOnPreferenceChangeListener(this);
-                }
-            }
         }
 
         private void refreshListPreference(ListPreference preference) {

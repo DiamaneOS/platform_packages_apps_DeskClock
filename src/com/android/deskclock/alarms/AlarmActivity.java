@@ -96,12 +96,6 @@ public class AlarmActivity extends BaseActivity
 
             if (!mAlarmHandled) {
                 switch (action) {
-                    case AlarmService.ALARM_SNOOZE_ACTION:
-                        snooze();
-                        break;
-                    case AlarmService.ALARM_DISMISS_ACTION:
-                        dismiss();
-                        break;
                     case AlarmService.ALARM_DONE_ACTION:
                         finish();
                         break;
@@ -255,9 +249,7 @@ public class AlarmActivity extends BaseActivity
         if (!mReceiverRegistered) {
             // Register to get the alarm done/snooze/dismiss intent.
             final IntentFilter filter = new IntentFilter(AlarmService.ALARM_DONE_ACTION);
-            filter.addAction(AlarmService.ALARM_SNOOZE_ACTION);
-            filter.addAction(AlarmService.ALARM_DISMISS_ACTION);
-            registerReceiver(mReceiver, filter, Context.RECEIVER_EXPORTED);
+            registerReceiver(mReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
             mReceiverRegistered = true;
         }
 

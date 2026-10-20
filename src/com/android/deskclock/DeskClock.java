@@ -147,8 +147,6 @@ public class DeskClock extends BaseActivity
         setContentView(R.layout.desk_clock);
         mSnackbarAnchor = findViewById(R.id.content);
 
-        checkPermissions();
-
         // Configure the toolbar.
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

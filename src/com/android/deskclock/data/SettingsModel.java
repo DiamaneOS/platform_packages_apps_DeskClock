@@ -157,14 +157,6 @@ final class SettingsModel {
         return SettingsDAO.getSnoozeLength(mPrefs);
     }
 
-    int getFlipAction() {
-        return SettingsDAO.getFlipAction(mPrefs);
-    }
-
-    int getShakeAction() {
-        return SettingsDAO.getShakeAction(mPrefs);
-    }
-
     Uri getDefaultAlarmRingtoneUri() {
         return SettingsDAO.getDefaultAlarmRingtoneUri(mPrefs);
     }
