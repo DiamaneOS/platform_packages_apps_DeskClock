@@ -38,15 +38,13 @@
     <string name="alarm_missed_title" msgid="3828345099754063392">"Báo thức bị nhỡ"</string>
     <string name="alarm_missed_text" msgid="6585658367289194023">"<xliff:g id="ALARM_TIME">%1$s</xliff:g> - <xliff:g id="ALARM_LABEL">%2$s</xliff:g>"</string>
     <string name="alarm_alert_snoozed_text" msgid="7064642998528766113">"Được báo lại"</string>
-    <plurals name="alarm_alert_snooze_duration" formatted="false" msgid="7844300009062867865">
-      <item quantity="other"><xliff:g id="NUMBER">%d</xliff:g> phút</item>
-      <item quantity="one">1 phút</item>
+    <plurals name="alarm_alert_snooze_duration">
+        <item quantity="other"><xliff:g id="NUMBER">%d</xliff:g> phút</item>
     </plurals>
     <string name="alarm_alert_off_text" msgid="4472073417593915002">"Tắt báo thức"</string>
     <string name="alarm_alert_snooze_text" msgid="1774416052207651584">"Báo lại"</string>
-    <plurals name="alarm_alert_snooze_set" formatted="false" msgid="3212729193036041768">
-      <item quantity="other">Báo lại sau <xliff:g id="MINUTES">%d</xliff:g> phút.</item>
-      <item quantity="one">Báo lại sau 1 phút.</item>
+    <plurals name="alarm_alert_snooze_set">
+        <item quantity="other">Báo lại sau <xliff:g id="MINUTES">%d</xliff:g> phút.</item>
     </plurals>
     <string name="alarm_alert_snooze_until" msgid="6958013659168344550">"Báo lại cho tới <xliff:g id="TIME">%s</xliff:g>"</string>
     <string name="alarm_alert_predismiss_title" msgid="5723945586913705445">"Báo thức sắp tới"</string>
@@ -72,29 +70,23 @@
     <item msgid="9115697840826129603">"Báo thức được đặt đổ chuông sau <xliff:g id="HOURS">%2$s</xliff:g> và <xliff:g id="MINUTES">%3$s</xliff:g> nữa tính từ bây giờ."</item>
     <item msgid="2332583385137381060">"Báo thức được đặt đổ chuông sau <xliff:g id="DAYS">%1$s</xliff:g>, <xliff:g id="HOURS">%2$s</xliff:g> và <xliff:g id="MINUTES">%3$s</xliff:g> nữa tính từ bây giờ."</item>
   </string-array>
-    <plurals name="days" formatted="false" msgid="3706846447285206235">
-      <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> ngày</item>
-      <item quantity="one">1 ngày</item>
+    <plurals name="days">
+        <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> ngày</item>
     </plurals>
-    <plurals name="hours" formatted="false" msgid="3871283109767171655">
-      <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> giờ</item>
-      <item quantity="one">1 giờ</item>
+    <plurals name="hours">
+        <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> giờ</item>
     </plurals>
-    <plurals name="hours_short" formatted="false" msgid="3709250715691092925">
-      <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> giờ</item>
-      <item quantity="one">1 giờ</item>
+    <plurals name="hours_short">
+        <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> giờ</item>
     </plurals>
-    <plurals name="minutes" formatted="false" msgid="5484431721696058697">
-      <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> phút</item>
-      <item quantity="one">1 phút</item>
+    <plurals name="minutes">
+        <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> phút</item>
     </plurals>
-    <plurals name="minutes_short" formatted="false" msgid="6397328304369080233">
-      <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> phút</item>
-      <item quantity="one">1 phút</item>
+    <plurals name="minutes_short">
+        <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> phút</item>
     </plurals>
-    <plurals name="seconds" formatted="false" msgid="670343577734266047">
-      <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> giây</item>
-      <item quantity="one">1 giây</item>
+    <plurals name="seconds">
+        <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> giây</item>
     </plurals>
     <string name="every_day" msgid="4100909974923444602">"Hàng ngày"</string>
     <string name="day_concat" msgid="971998564991636532">", "</string>
@@ -105,9 +97,8 @@
     <string name="snooze_duration_title" msgid="1097309861110780483">"Thời lượng báo lại"</string>
     <string name="crescendo_duration_title" msgid="8606408542726189528">"Tăng dần âm lượng"</string>
     <string name="auto_silence_title" msgid="2012754009554434544">"Im lặng sau"</string>
-    <plurals name="auto_silence_summary" formatted="false" msgid="6579258788774360396">
-      <item quantity="other"><xliff:g id="FORMATTED_NUMBER">%s</xliff:g> phút</item>
-      <item quantity="one">1 phút</item>
+    <plurals name="auto_silence_summary">
+        <item quantity="other"><xliff:g id="FORMATTED_NUMBER">%s</xliff:g> phút</item>
     </plurals>
     <string name="auto_silence_never" msgid="4821982647348750809">"Không bao giờ"</string>
   <string-array name="auto_silence_entries">
@@ -400,9 +391,8 @@
     <string name="alarm_is_dismissed" msgid="5509897230565826642">"Đã loại bỏ báo thức <xliff:g id="ALARM_TIME">%s</xliff:g>"</string>
     <string name="alarm_is_set" msgid="5503226382620011088">"Đã đặt báo thức đổ chuông lúc <xliff:g id="ALARM_TIME">%s</xliff:g>"</string>
     <string name="timer_created" msgid="4381027137335885547">"Đã tạo bộ hẹn giờ"</string>
-    <plurals name="expired_timers_dismissed" formatted="false" msgid="1294953410988488149">
-      <item quantity="other">Đã loại bỏ <xliff:g id="NUMBER">%d</xliff:g> hẹn giờ</item>
-      <item quantity="one">Đã loại bỏ hẹn giờ</item>
+    <plurals name="expired_timers_dismissed">
+        <item quantity="other">Đã loại bỏ <xliff:g id="NUMBER">%d</xliff:g> hẹn giờ</item>
     </plurals>
     <string name="timer_deleted" msgid="9110322362460029392">"Đã xóa bộ hẹn giờ"</string>
     <string name="invalid_timer_length" msgid="3104567893212932487">"Thời lượng không hợp lệ trên bộ hẹn giờ"</string>
@@ -413,4 +403,5 @@
     <string name="pick_alarm_to_dismiss" msgid="5408769235866082896">"Chọn báo thức để loại bỏ"</string>
     <string name="no_firing_alarms" msgid="4986161963178722289">"Chưa có báo thức kích hoạt nào"</string>
     <string name="alarm_is_snoozed" msgid="7044644119744928846">"Báo lại báo thức <xliff:g id="ALARM_TIME">%s</xliff:g> sau 10 phút"</string>
+    <string name="seconds"><xliff:g id="seconds" example="44">%d</xliff:g></string>
 </resources>

@@ -413,4 +413,5 @@
     <string name="pick_alarm_to_dismiss" msgid="5408769235866082896">"Scegli la sveglia da ignorare"</string>
     <string name="no_firing_alarms" msgid="4986161963178722289">"Nessuna sveglia da attivare"</string>
     <string name="alarm_is_snoozed" msgid="7044644119744928846">"Sveglia alle <xliff:g id="ALARM_TIME">%s</xliff:g> posticipata di 10 minuti"</string>
+    <string name="seconds"><xliff:g id="seconds" example="44">%d</xliff:g></string>
 </resources>

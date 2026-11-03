@@ -18,16 +18,16 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_label" msgid="6674495003718166674">"கடிகாரம்"</string>
-    <string name="label" msgid="162189613902857319">"லேபிள்"</string>
-    <string name="default_label" msgid="5590025289805630372">"அலாரம்"</string>
+    <string name="label">குறிப்பு</string>
+    <string name="default_label">அலறிமணி</string>
     <string name="alarm_vibrate" msgid="3476686921490362230">"அதிர்வு"</string>
     <string name="delete" msgid="5732434972457000541">"நீக்கு"</string>
-    <string name="default_alarm_ringtone_title" msgid="2916376768509623643">"இயல்பு அலார ஒலி"</string>
-    <string name="alarm_sound" msgid="8754499591391638405">"அலார ஒலி"</string>
-    <string name="timer_sound" msgid="896163086604894735">"டைமர் ஒலி"</string>
-    <string name="add_new_sound" msgid="2546936797351540244">"புதிய ரிங்டோனைச் சேர்"</string>
+    <string name="default_alarm_ringtone_title">இயல்பு அலறிமணியொலி</string>
+    <string name="alarm_sound">அலறிமணியொலி</string>
+    <string name="timer_sound">நேரங்கணிப்பிவொலி</string>
+    <string name="add_new_sound">புதிதுசேர்</string>
     <string name="remove_sound" msgid="2064643204455734239">"அகற்று"</string>
-    <string name="confirm_remove_custom_ringtone" msgid="1724111242265208553">"இந்த ஒலியைப் பயன்படுத்தும் அலாரங்களும் டைமர்களும், அதற்குப் பதிலாக இயல்பு ஒலியை இயக்கும்."</string>
+    <string name="confirm_remove_custom_ringtone">இவ்வொலியைப் பயன்படுத்தும் அலறிமணியும் நேரங்கணிப்பியும் இயல்பொலியை ஒலிக்கும்</string>
     <string name="your_sounds" msgid="1672779351352629681">"உங்கள் ஒலிகள்"</string>
     <string name="device_sounds" msgid="1584894148222639823">"சாதன ஒலிகள்"</string>
     <string name="custom_ringtone_lost_permissions" msgid="3406310054255354331">"ஒலி உள்ளடக்கத்தை அணுக முடியவில்லை."</string>
@@ -238,18 +238,18 @@
     <string name="minutes_seconds" msgid="6189446107009577914">"<xliff:g id="MINUTES">%1$d</xliff:g>:<xliff:g id="SECONDS">%2$02d</xliff:g>"</string>
     <!-- no translation found for seconds (6550091082396571898) -->
     <skip />
-  <string-array name="sw_share_strings">
-    <item msgid="842841032273927988">"சிறுத்தை போல் வேகமாக உள்ளீர்கள்."</item>
-    <item msgid="6332879039890727169">"உங்கள் கடின உழைப்பின் பலனை அனுபவிக்கவும்."</item>
-    <item msgid="815382761274660130">"Android வேகமான செயலுக்கு பெயர்போனது ஆனால் உங்களைவிட வேகமானதல்ல!"</item>
-    <item msgid="7916250650982813737">"ப்பூ."</item>
-    <item msgid="6836603904515182333">"L33t முறை."</item>
-    <item msgid="7508085100680861631">"இத்தகைய வியத்தகு வேகம்."</item>
-    <item msgid="5961245252909589573">"மீண்டும் வேகமாகச் செல்வோம்."</item>
-    <item msgid="5211891900854545940">"இடப்பக்கம் குதித்தாலே போதும்."</item>
-    <item msgid="9071353477103826053">"உங்கள் வேகத்திற்கு வரம்பு உண்டு."</item>
-    <item msgid="3785193933691117181">"ஒளியை ஒத்த வேகம்."</item>
-  </string-array>
+  <string-array name="sw_share_strings" translatable="true">
+        <item>நீவிர் மிக விரைவாளி.</item>
+        <item>நின் உழைப்பின் பயனைத் துய்.</item>
+        <item>ஆண்ட்ராய்டு விரைவானதென்பர், ஆனால் நின்னளவு விரையாது!</item>
+        <item>அப்பாடா.</item>
+        <item>வித்தகக்காலம்.</item>
+        <item>எத்துணை வியத்தகு விரைவு.</item>
+        <item>மீண்டுங்காலச்சுருள் செய்வோம்.</item>
+        <item>இடப்புறம் ஒரு தாவலே.</item>
+        <item>நினக்கு விரைவு இனிக்கும்.</item>
+        <item>ஒளிரைவு.</item>
+    </string-array>
     <string name="home_label" msgid="4436139365695453870">"தாய்நாடு"</string>
     <string name="cities_activity_title" msgid="8552462751129256730">"நகரங்கள்"</string>
     <string name="clock_settings" msgid="8317286807280600391">"கடிகாரம்"</string>
@@ -413,4 +413,5 @@
     <string name="pick_alarm_to_dismiss" msgid="5408769235866082896">"விலக்க வேண்டிய அலாரத்தைத் தேர்வுசெய்க"</string>
     <string name="no_firing_alarms" msgid="4986161963178722289">"இயக்கத்தில் உள்ள அலாரங்கள் எதுவுமில்லை"</string>
     <string name="alarm_is_snoozed" msgid="7044644119744928846">"<xliff:g id="ALARM_TIME">%s</xliff:g> அலாரம் 10 நிமிடங்களுக்கு உறக்கநிலையில் வைக்கப்பட்டது"</string>
+    <string name="seconds"><xliff:g id="seconds" example="44">%d</xliff:g></string>
 </resources>

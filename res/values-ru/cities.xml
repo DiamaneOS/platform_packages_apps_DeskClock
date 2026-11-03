@@ -180,7 +180,7 @@
     <string name="C166" msgid="8977286721038142474">"Б<xliff:g id="SEPARATOR">=</xliff:g>Брюссель<xliff:g id="TIMEZONE">|Europe/Brussels</xliff:g>"</string>
     <string name="C167" msgid="5502175796232774744">"Б<xliff:g id="SEPARATOR">=</xliff:g>Бухарест<xliff:g id="TIMEZONE">|Europe/Bucharest</xliff:g>"</string>
     <string name="C168" msgid="6750159439632567316">"Б<xliff:g id="SEPARATOR">=</xliff:g>Будапешт<xliff:g id="TIMEZONE">|Europe/Budapest</xliff:g>"</string>
-    <string name="C169" msgid="591483187800562071">"К<xliff:g id="SEPARATOR">=</xliff:g>Кишинёв<xliff:g id="TIMEZONE">|Europe/Chisinau</xliff:g>"</string>
+    <string name="C169">C<xliff:g id="separator">=</xliff:g>Кишинев<xliff:g id="timezone">|Europe/Chisinau</xliff:g></string>
     <string name="C170" msgid="157539770076958216">"К<xliff:g id="SEPARATOR">=</xliff:g>Копенгаген<xliff:g id="TIMEZONE">|Europe/Copenhagen</xliff:g>"</string>
     <string name="C171" msgid="4774534094571993566">"Д<xliff:g id="SEPARATOR">=</xliff:g>Дублин<xliff:g id="TIMEZONE">|Europe/Dublin</xliff:g>"</string>
     <string name="C172" msgid="6781166861618808351">"Г<xliff:g id="SEPARATOR">=</xliff:g>Гибралтар<xliff:g id="TIMEZONE">|Europe/Gibraltar</xliff:g>"</string>

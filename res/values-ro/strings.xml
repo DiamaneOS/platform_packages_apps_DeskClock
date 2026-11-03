@@ -423,4 +423,5 @@
     <string name="pick_alarm_to_dismiss" msgid="5408769235866082896">"Alegeți alarma pe care doriți să o închideți"</string>
     <string name="no_firing_alarms" msgid="4986161963178722289">"Nicio alarmă activată"</string>
     <string name="alarm_is_snoozed" msgid="7044644119744928846">"Alarma de la <xliff:g id="ALARM_TIME">%s</xliff:g> a fost amânată cu 10 minute"</string>
+    <string name="seconds"><xliff:g id="seconds" example="44">%d</xliff:g></string>
 </resources>

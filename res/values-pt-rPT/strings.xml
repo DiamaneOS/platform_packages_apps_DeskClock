@@ -98,7 +98,7 @@
     </plurals>
     <string name="every_day" msgid="4100909974923444602">"Todos os dias"</string>
     <string name="day_concat" msgid="971998564991636532">", "</string>
-    <string name="loading_widget" msgid="5306242862476796500">"A carregar…"</string>
+    <string name="loading_widget">A carregar\u2026</string>
     <string name="analog_gadget" msgid="1670505720837152766">"Relógio analógico"</string>
     <string name="digital_gadget" msgid="2326954556720571358">"Relógio digital"</string>
     <string name="settings" msgid="5849739030579520686">"Definições"</string>
@@ -168,10 +168,10 @@
   </string-array>
     <string name="week_start_title" msgid="4268917518596832096">"Começar a semana no(a)"</string>
   <string-array name="week_start_entries">
-    <item msgid="9010198173394482639">"sábado"</item>
-    <item msgid="3993530639455360921">"domingo"</item>
-    <item msgid="8594709368683324282">"Segunda-feira"</item>
-  </string-array>
+        <item>sábado</item>
+        <item>domingo</item>
+        <item>segunda-feira</item>
+    </string-array>
     <string name="alarm_volume_title" msgid="8506245173912428522">"Volume do alarme"</string>
     <string name="silent_ringtone_title" msgid="6177287302898634765">"Silencioso"</string>
     <string name="unknown_ringtone_title" msgid="6637522029614550112">"Desconhecido"</string>
@@ -238,18 +238,18 @@
     <string name="minutes_seconds" msgid="6189446107009577914">"<xliff:g id="MINUTES">%1$d</xliff:g>:<xliff:g id="SECONDS">%2$02d</xliff:g>"</string>
     <!-- no translation found for seconds (6550091082396571898) -->
     <skip />
-  <string-array name="sw_share_strings">
-    <item msgid="842841032273927988">"É um verdadeiro ás da velocidade."</item>
-    <item msgid="6332879039890727169">"Aproveite os frutos do seu trabalho."</item>
-    <item msgid="815382761274660130">"Os Androids são conhecidos por serem rápidos, mas não tão rápidos como você!"</item>
-    <item msgid="7916250650982813737">"Ufa."</item>
-    <item msgid="6836603904515182333">"Tempos formidáveis."</item>
-    <item msgid="7508085100680861631">"Mas que velocidade estupenda."</item>
-    <item msgid="5961245252909589573">"Vamos viajar de novo no tempo."</item>
-    <item msgid="5211891900854545940">"Apenas um salto para a esquerda."</item>
-    <item msgid="9071353477103826053">"Tem um fraco por correrias."</item>
-    <item msgid="3785193933691117181">"Velocidade fotónica."</item>
-  </string-array>
+  <string-array name="sw_share_strings" translatable="true">
+        <item>É um verdadeiro ás da velocidade.</item>
+        <item>Aproveite os frutos do seu trabalho.</item>
+        <item>Os Androids são conhecidos por serem rápidos, mas não tão rápidos como você!</item>
+        <item>Ufa.</item>
+        <item>Tempos lendários.</item>
+        <item>Mas que velocidade estupenda.</item>
+        <item>Vamos viajar de novo no tempo.</item>
+        <item>Apenas um salto para a esquerda.</item>
+        <item>Tem um fraco por correrias.</item>
+        <item>Velocidade fotónica.</item>
+    </string-array>
     <string name="home_label" msgid="4436139365695453870">"Casa"</string>
     <string name="cities_activity_title" msgid="8552462751129256730">"Cidades"</string>
     <string name="clock_settings" msgid="8317286807280600391">"Relógio"</string>
@@ -377,7 +377,7 @@
     <string name="timers_in_use" msgid="5570729467344408506">"<xliff:g id="NUMBER">%d</xliff:g> temporizadores"</string>
     <string name="screensaver_settings" msgid="1780742944194267226">"Definições de proteção de ecrã"</string>
     <string name="night_mode_title" msgid="5983813889469616299">"Modo noturno"</string>
-    <string name="night_mode_summary" msgid="1017350187324162631">"Apresentação muito esbatida (para salas escuras)"</string>
+    <string name="night_mode_summary">Ecrã com luminosidade reduzida (para salas escuras)</string>
     <string name="expand_alarm" msgid="7392616528943305020">"Expandir alarme"</string>
     <string name="collapse_alarm" msgid="3561772046433483980">"Reduzir alarme"</string>
     <string name="alarm_undo" msgid="5710042601177655254">"anular"</string>
@@ -398,7 +398,7 @@
     <string name="no_alarms_with_label" msgid="6250998794542941665">"Nenhum alarme contém a etiqueta"</string>
     <string name="no_alarm_scheduled_for_this_time" msgid="4463069177414482818">"Nenhum alarme programado para esta hora"</string>
     <string name="alarm_is_dismissed" msgid="5509897230565826642">"Alarme das <xliff:g id="ALARM_TIME">%s</xliff:g> ignorado"</string>
-    <string name="alarm_is_set" msgid="5503226382620011088">"O alarme está definido para <xliff:g id="ALARM_TIME">%s</xliff:g>"</string>
+    <string name="alarm_is_set">O alarme está definido para a(s) <xliff:g id="ALARM_TIME">%s</xliff:g></string>
     <string name="timer_created" msgid="4381027137335885547">"Temporizador criado"</string>
     <plurals name="expired_timers_dismissed" formatted="false" msgid="1294953410988488149">
       <item quantity="other"><xliff:g id="NUMBER">%d</xliff:g> temporizadores ignorados</item>
@@ -412,5 +412,6 @@
     <string name="dismiss_alarm" msgid="7204593078688533541">"Ignorar alarme"</string>
     <string name="pick_alarm_to_dismiss" msgid="5408769235866082896">"Selecionar o alarme a ignorar"</string>
     <string name="no_firing_alarms" msgid="4986161963178722289">"Nenhum alarme acionado"</string>
-    <string name="alarm_is_snoozed" msgid="7044644119744928846">"Alarme das <xliff:g id="ALARM_TIME">%s</xliff:g> suspenso durante 10 minutos"</string>
+    <string name="alarm_is_snoozed">Alarme das <xliff:g id="ALARM_TIME">%s</xliff:g> suspendido durante 10 minutos</string>
+    <string name="seconds"><xliff:g id="seconds" example="44">%d</xliff:g></string>
 </resources>

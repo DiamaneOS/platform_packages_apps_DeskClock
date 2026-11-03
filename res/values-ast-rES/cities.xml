@@ -15,24 +15,24 @@
     limitations under the License
   -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" xmlns:tools="http://schemas.android.com/tools" tools:ignore="Typos">
-  <string name="C1">A<xliff:g id="separator">=</xliff:g>Abidjan<xliff:g id="timezone">|Africa/Abidjan</xliff:g></string>
+  <string name="C1">A<xliff:g id="separator">=</xliff:g>Abixán<xliff:g id="timezone">|Africa/Abidjan</xliff:g></string>
   <string name="C2">A<xliff:g id="separator">=</xliff:g>Accra<xliff:g id="timezone">|Africa/Accra</xliff:g></string>
-  <string name="C3">A<xliff:g id="separator">=</xliff:g>Addis Ababa<xliff:g id="timezone">|Africa/Addis_Ababa</xliff:g></string>
-  <string name="C4">A<xliff:g id="separator">=</xliff:g>Algiers<xliff:g id="timezone">|Africa/Algiers</xliff:g></string>
+  <string name="C3">A<xliff:g id="separator">=</xliff:g>Adís Abeba<xliff:g id="timezone">|Africa/Addis_Ababa</xliff:g></string>
+  <string name="C4">A<xliff:g id="separator">=</xliff:g>Arxel<xliff:g id="timezone">|Africa/Algiers</xliff:g></string>
   <string name="C5">B<xliff:g id="separator">=</xliff:g>Blantyre<xliff:g id="timezone">|Africa/Blantyre</xliff:g></string>
   <string name="C6">B<xliff:g id="separator">=</xliff:g>Brazzaville<xliff:g id="timezone">|Africa/Brazzaville</xliff:g></string>
-  <string name="C7">C<xliff:g id="separator">=</xliff:g>Cairo<xliff:g id="timezone">|Africa/Cairo</xliff:g></string>
+  <string name="C7">C<xliff:g id="separator">=</xliff:g>El Cairu<xliff:g id="timezone">|Africa/Cairo</xliff:g></string>
   <string name="C8">C<xliff:g id="separator">=</xliff:g>Casablanca<xliff:g id="timezone">|Africa/Casablanca</xliff:g></string>
-  <string name="C9">C<xliff:g id="separator">=</xliff:g>Conakry<xliff:g id="timezone">|Africa/Conakry</xliff:g></string>
+  <string name="C9">C<xliff:g id="separator">=</xliff:g>Conacri<xliff:g id="timezone">|Africa/Conakry</xliff:g></string>
   <string name="C10">D<xliff:g id="separator">=</xliff:g>Dakar<xliff:g id="timezone">|Africa/Dakar</xliff:g></string>
   <string name="C11">D<xliff:g id="separator">=</xliff:g>Dar es Salaam<xliff:g id="timezone">|Africa/Dar_es_Salaam</xliff:g></string>
-  <string name="C12">D<xliff:g id="separator">=</xliff:g>Djibouti<xliff:g id="timezone">|Africa/Djibouti</xliff:g></string>
-  <string name="C13">F<xliff:g id="separator">=</xliff:g>Freetown<xliff:g id="timezone">|Africa/Freetown</xliff:g></string>
+  <string name="C12">X<xliff:g id="separator">=</xliff:g>Xibuti<xliff:g id="timezone">|Africa/Djibouti</xliff:g></string>
+  <string name="C13">C<xliff:g id="separator">=</xliff:g>Ciudá Llibre<xliff:g id="timezone">|Africa/Freetown</xliff:g></string>
   <string name="C14">G<xliff:g id="separator">=</xliff:g>Gaborone<xliff:g id="timezone">|Africa/Gaborone</xliff:g></string>
-  <string name="C15">H<xliff:g id="separator">=</xliff:g>Harare<xliff:g id="timezone">|Africa/Harare</xliff:g></string>
+  <string name="C15">H<xliff:g id="separator">=</xliff:g>Ḥarare<xliff:g id="timezone">|Africa/Harare</xliff:g></string>
   <string name="C16">J<xliff:g id="separator">=</xliff:g>Johannesburg<xliff:g id="timezone">|Africa/Johannesburg</xliff:g></string>
   <string name="C17">K<xliff:g id="separator">=</xliff:g>Kampala<xliff:g id="timezone">|Africa/Kampala</xliff:g></string>
-  <string name="C18">K<xliff:g id="separator">=</xliff:g>Khartoum<xliff:g id="timezone">|Africa/Khartoum</xliff:g></string>
+  <string name="C18">H<xliff:g id="separator">=</xliff:g>Ḥartum<xliff:g id="timezone">|Africa/Khartoum</xliff:g></string>
   <string name="C19">K<xliff:g id="separator">=</xliff:g>Kigali<xliff:g id="timezone">|Africa/Kigali</xliff:g></string>
   <string name="C20">K<xliff:g id="separator">=</xliff:g>Kinshasa<xliff:g id="timezone">|Africa/Kinshasa</xliff:g></string>
   <string name="C21">L<xliff:g id="separator">=</xliff:g>Lagos<xliff:g id="timezone">|Africa/Lagos</xliff:g></string>
@@ -304,55 +304,55 @@
   <string name="C295">H<xliff:g id="separator">=</xliff:g>Haifa<xliff:g id="timezone">|Asia/Jerusalem</xliff:g></string>
   <string name="C296">S<xliff:g id="separator">=</xliff:g>San Juan<xliff:g id="timezone">|America/Puerto_Rico</xliff:g></string>
   <string name="C297">T<xliff:g id="separator">=</xliff:g>Tegucigalpa<xliff:g id="timezone">|America/Tegucigalpa</xliff:g></string>
-  <string name="C298">P<xliff:g id="separator">=</xliff:g>Paramaribo<xliff:g id="timezone">|America/Paramaribo</xliff:g></string>
+  <string name="C298">P<xliff:g id="separator">=</xliff:g>Paramaribu<xliff:g id="timezone">|America/Paramaribo</xliff:g></string>
   <string name="C299">Q<xliff:g id="separator">=</xliff:g>Quito<xliff:g id="timezone">|America/Panama</xliff:g></string>
   <string name="C300">L<xliff:g id="separator">=</xliff:g>Ljubljana<xliff:g id="timezone">|Europe/Ljubljana</xliff:g></string>
   <string name="C301">A<xliff:g id="separator">=</xliff:g>Ashgabat<xliff:g id="timezone">|Asia/Ashgabat</xliff:g></string>
   <string name="C302">A<xliff:g id="separator">=</xliff:g>Asmara<xliff:g id="timezone">|Africa/Asmara</xliff:g></string>
   <string name="C303">B<xliff:g id="separator">=</xliff:g>Bandar Seri Begawan<xliff:g id="timezone">|Asia/Brunei</xliff:g></string>
   <string name="C304">B<xliff:g id="separator">=</xliff:g>Bangui<xliff:g id="timezone">|Africa/Bangui</xliff:g></string>
-  <string name="C305">B<xliff:g id="separator">=</xliff:g>Banjul<xliff:g id="timezone">|Africa/Banjul</xliff:g></string>
+  <string name="C305">B<xliff:g id="separator">=</xliff:g>Banxul<xliff:g id="timezone">|Africa/Banjul</xliff:g></string>
   <string name="C306">B<xliff:g id="separator">=</xliff:g>Bishkek<xliff:g id="timezone">|Asia/Bishkek</xliff:g></string>
   <string name="C307">B<xliff:g id="separator">=</xliff:g>Bissau<xliff:g id="timezone">|Africa/Bissau</xliff:g></string>
-  <string name="C308">B<xliff:g id="separator">=</xliff:g>Bujumbura<xliff:g id="timezone">|Africa/Bujumbura</xliff:g></string>
+  <string name="C308">B<xliff:g id="separator">=</xliff:g>Buxumbura<xliff:g id="timezone">|Africa/Bujumbura</xliff:g></string>
   <string name="C309">D<xliff:g id="separator">=</xliff:g>Dili<xliff:g id="timezone">|Asia/Dili</xliff:g></string>
-  <string name="C310">D<xliff:g id="separator">=</xliff:g>Dushanbe<xliff:g id="timezone">|Asia/Dushanbe</xliff:g></string>
+  <string name="C310">D<xliff:g id="separator">=</xliff:g>Duxambé<xliff:g id="timezone">|Asia/Dushanbe</xliff:g></string>
   <string name="C311">F<xliff:g id="separator">=</xliff:g>Funafuti<xliff:g id="timezone">|Pacific/Funafuti</xliff:g></string>
-  <string name="C312">H<xliff:g id="separator">=</xliff:g>Honiara<xliff:g id="timezone">|Pacific/Guadalcanal</xliff:g></string>
-  <string name="C313">J<xliff:g id="separator">=</xliff:g>Juba<xliff:g id="timezone">|Africa/Juba</xliff:g></string>
+  <string name="C312">H<xliff:g id="separator">=</xliff:g>Ḥoniara<xliff:g id="timezone">|Pacific/Guadalcanal</xliff:g></string>
+  <string name="C313">X<xliff:g id="separator">=</xliff:g>Xuba<xliff:g id="timezone">|Africa/Juba</xliff:g></string>
   <string name="C314">K<xliff:g id="separator">=</xliff:g>Kingstown<xliff:g id="timezone">|America/St_Vincent</xliff:g></string>
   <string name="C315">L<xliff:g id="separator">=</xliff:g>Libreville<xliff:g id="timezone">|Africa/Libreville</xliff:g></string>
   <string name="C316">L<xliff:g id="separator">=</xliff:g>Lomé<xliff:g id="timezone">|Africa/Lome</xliff:g></string>
   <string name="C317">L<xliff:g id="separator">=</xliff:g>Luanda<xliff:g id="timezone">|Africa/Luanda</xliff:g></string>
   <string name="C318">L<xliff:g id="separator">=</xliff:g>Lusaka<xliff:g id="timezone">|Africa/Lusaka</xliff:g></string>
-  <string name="C319">M<xliff:g id="separator">=</xliff:g>Majuro<xliff:g id="timezone">|Pacific/Majuro</xliff:g></string>
-  <string name="C320">M<xliff:g id="separator">=</xliff:g>Malabo<xliff:g id="timezone">|Africa/Malabo</xliff:g></string>
-  <string name="C321">M<xliff:g id="separator">=</xliff:g>Maputo<xliff:g id="timezone">|Africa/Maputo</xliff:g></string>
+  <string name="C319">M<xliff:g id="separator">=</xliff:g>Mayuru<xliff:g id="timezone">|Pacific/Majuro</xliff:g></string>
+  <string name="C320">M<xliff:g id="separator">=</xliff:g>Malabu<xliff:g id="timezone">|Africa/Malabo</xliff:g></string>
+  <string name="C321">M<xliff:g id="separator">=</xliff:g>Maputu<xliff:g id="timezone">|Africa/Maputo</xliff:g></string>
   <string name="C322">M<xliff:g id="separator">=</xliff:g>Mbabane<xliff:g id="timezone">|Africa/Mbabane</xliff:g></string>
   <string name="C323">M<xliff:g id="separator">=</xliff:g>Moroni<xliff:g id="timezone">|Indian/Comoro</xliff:g></string>
-  <string name="C324">N<xliff:g id="separator">=</xliff:g>N\'Djamena<xliff:g id="timezone">|Africa/Ndjamena</xliff:g></string>
+  <string name="C324">X<xliff:g id="separator">=</xliff:g>Xamena<xliff:g id="timezone">|Africa/Ndjamena</xliff:g></string>
   <string name="C325">N<xliff:g id="separator">=</xliff:g>Ngerulmud<xliff:g id="timezone">|Pacific/Palau</xliff:g></string>
-  <string name="C326">N<xliff:g id="separator">=</xliff:g>Niamey<xliff:g id="timezone">|Africa/Niamey</xliff:g></string>
+  <string name="C326">N<xliff:g id="separator">=</xliff:g>Niaméi<xliff:g id="timezone">|Africa/Niamey</xliff:g></string>
   <string name="C327">N<xliff:g id="separator">=</xliff:g>Nicosia<xliff:g id="timezone">|Europe/Nicosia</xliff:g></string>
-  <string name="C328">N<xliff:g id="separator">=</xliff:g>Nouakchott<xliff:g id="timezone">|Africa/Nouakchott</xliff:g></string>
-  <string name="C329">N<xliff:g id="separator">=</xliff:g>Nuku\'alofa<xliff:g id="timezone">|Pacific/Tongatapu</xliff:g></string>
-  <string name="C330">O<xliff:g id="separator">=</xliff:g>Ouagadougou<xliff:g id="timezone">|Africa/Ouagadougou</xliff:g></string>
+  <string name="C328">N<xliff:g id="separator">=</xliff:g>Nuakxot<xliff:g id="timezone">|Africa/Nouakchott</xliff:g></string>
+  <string name="C329">N<xliff:g id="separator">=</xliff:g>Nuku\'Alofa<xliff:g id="timezone">|Pacific/Tongatapu</xliff:g></string>
+  <string name="C330">U<xliff:g id="separator">=</xliff:g>Uagadugú<xliff:g id="timezone">|Africa/Ouagadougou</xliff:g></string>
   <string name="C331">P<xliff:g id="separator">=</xliff:g>Palikir<xliff:g id="timezone">|Pacific/Noumea</xliff:g></string>
   <string name="C332">P<xliff:g id="separator">=</xliff:g>Philipsburg<xliff:g id="timezone">|America/Lower_Princes</xliff:g></string>
   <string name="C333">P<xliff:g id="separator">=</xliff:g>Podgorica<xliff:g id="timezone">|Europe/Podgorica</xliff:g></string>
-  <string name="C334">P<xliff:g id="separator">=</xliff:g>Port Moresby<xliff:g id="timezone">|Pacific/Palau</xliff:g></string>
-  <string name="C335">P<xliff:g id="separator">=</xliff:g>Port Vila<xliff:g id="timezone">|Pacific/Efate</xliff:g></string>
-  <string name="C336">P<xliff:g id="separator">=</xliff:g>Porto-Novo<xliff:g id="timezone">|Africa/Porto-Novo</xliff:g></string>
-  <string name="C337">P<xliff:g id="separator">=</xliff:g>Priština<xliff:g id="timezone">|Europe/Belgrade</xliff:g></string>
-  <string name="C338">R<xliff:g id="separator">=</xliff:g>Roseau<xliff:g id="timezone">|America/Dominica</xliff:g></string>
-  <string name="C339">T<xliff:g id="separator">=</xliff:g>Tashkent<xliff:g id="timezone">|Asia/Tashkent</xliff:g></string>
-  <string name="C340">T<xliff:g id="separator">=</xliff:g>Tbilisi<xliff:g id="timezone">|Asia/Tbilisi</xliff:g></string>
+  <string name="C334">P<xliff:g id="separator">=</xliff:g>Puertu Moresbi<xliff:g id="timezone">|Pacific/Palau</xliff:g></string>
+  <string name="C335">P<xliff:g id="separator">=</xliff:g>Puertu Villa<xliff:g id="timezone">|Pacific/Efate</xliff:g></string>
+  <string name="C336">P<xliff:g id="separator">=</xliff:g>Puertu Nuevu<xliff:g id="timezone">|Africa/Porto-Novo</xliff:g></string>
+  <string name="C337">P<xliff:g id="separator">=</xliff:g>Prístina<xliff:g id="timezone">|Europe/Belgrade</xliff:g></string>
+  <string name="C338">R<xliff:g id="separator">=</xliff:g>Rousseau<xliff:g id="timezone">|America/Dominica</xliff:g></string>
+  <string name="C339">T<xliff:g id="separator">=</xliff:g>Taxkent<xliff:g id="timezone">|Asia/Tashkent</xliff:g></string>
+  <string name="C340">T<xliff:g id="separator">=</xliff:g>Tblisi<xliff:g id="timezone">|Asia/Tbilisi</xliff:g></string>
   <string name="C341">T<xliff:g id="separator">=</xliff:g>Thimphu<xliff:g id="timezone">|Asia/Thimphu</xliff:g></string>
   <string name="C342">T<xliff:g id="separator">=</xliff:g>Tirana<xliff:g id="timezone">|Europe/Tirane</xliff:g></string>
   <string name="C343">V<xliff:g id="separator">=</xliff:g>Vaduz<xliff:g id="timezone">|Europe/Vaduz</xliff:g></string>
-  <string name="C344">V<xliff:g id="separator">=</xliff:g>Vientiane<xliff:g id="timezone">|Asia/Vientiane</xliff:g></string>
-  <string name="C345">W<xliff:g id="separator">=</xliff:g>Windhoek<xliff:g id="timezone">|Africa/Windhoek</xliff:g></string>
-  <string name="C346">Y<xliff:g id="separator">=</xliff:g>Yaoundé<xliff:g id="timezone">|Africa/Douala</xliff:g></string>
-  <string name="C347">Y<xliff:g id="separator">=</xliff:g>Yaren District<xliff:g id="timezone">|Pacific/Nauru</xliff:g></string>
-  <string name="C348">Y<xliff:g id="separator">=</xliff:g>Yerevan<xliff:g id="timezone">|Asia/Yerevan</xliff:g></string>
+  <string name="C344">V<xliff:g id="separator">=</xliff:g>Vientián<xliff:g id="timezone">|Asia/Vientiane</xliff:g></string>
+  <string name="C345">W<xliff:g id="separator">=</xliff:g>Windḥoek<xliff:g id="timezone">|Africa/Windhoek</xliff:g></string>
+  <string name="C346">Y<xliff:g id="separator">=</xliff:g>Yaundé<xliff:g id="timezone">|Africa/Douala</xliff:g></string>
+  <string name="C347">Y<xliff:g id="separator">=</xliff:g>Yaren<xliff:g id="timezone">|Pacific/Nauru</xliff:g></string>
+  <string name="C348">Y<xliff:g id="separator">=</xliff:g>Yereván<xliff:g id="timezone">|Asia/Yerevan</xliff:g></string>
 </resources>

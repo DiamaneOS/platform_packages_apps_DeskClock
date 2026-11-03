@@ -413,4 +413,5 @@
     <string name="pick_alarm_to_dismiss" msgid="5408769235866082896">"Válassza ki az elvetni kívánt ébresztést"</string>
     <string name="no_firing_alarms" msgid="4986161963178722289">"Nincs beállítva ébresztés"</string>
     <string name="alarm_is_snoozed" msgid="7044644119744928846">"<xliff:g id="ALARM_TIME">%s</xliff:g> – ébresztés elhalasztva 10 perccel"</string>
+    <string name="seconds"><xliff:g id="seconds" example="44">%d</xliff:g></string>
 </resources>
